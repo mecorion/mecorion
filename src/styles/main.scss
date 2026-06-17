@@ -1,8 +1,9 @@
 // // ИМПОРТ СТИЛЕЙ // //
 @use 'var' as *;
 @use 'el-components' as *;
+@use 'mecorion-ui' as *;
 
-@import 'tailwindcss';
+// @import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 // // // // // // // // //
 
@@ -11,6 +12,7 @@
 * {
   font-family: "Rubik", sans-serif;
   line-height: 1 !important;
+  box-sizing: border-box;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -20,6 +22,16 @@ h1, h2, h3, h4, h5, h6 {
 
 body {
   height: 100dvh;
+  margin: 0;
+  background: var(--bg-color-page);
+  color: var(--text-color-primary);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
 .svg-icon {
@@ -42,6 +54,10 @@ body {
   svg {
     fill: var(--color-primary);
   }
+}
+
+#app {
+  min-height: 100dvh;
 }
 
 // // // // // // // // //

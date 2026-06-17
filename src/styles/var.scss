@@ -2,60 +2,81 @@
   color-scheme: dark;
 
   // Основные цвета — темные аналоги
-  --color-primary: #0EA5E9;
-  --color-primary-dark: #0369A1;
+  --color-primary: #ff6f8f;
+  --color-primary-dark: #e85c7f;
   --color-success: #66BB6A;
   --color-warning: #f4a261;
-  --color-danger: #EF5350;
-  --color-error: #F44336;
+  --color-danger: #ff5676;
+  --color-error: #ff4d6d;
   --color-info: #90A4AE;
   --color-focus: #388E3C;
   --color-deactive: #616161;
 
   --frozen-color: #42A5F5;
-  --hover-color: #424242;
+  --hover-color: #211f36;
 
-  --gradient-color: linear-gradient(360deg, #38a051 0%, #185363 93.27%);
+  --gradient-color: linear-gradient(135deg, #ff6f8f 0%, #7c5cff 48%, #18d4ff 100%);
 
   // Текстовые цвета
   --text-color-primary: #ffffff;
-  --text-color-regular: #E0E0E0;
-  --text-color-secondary: #898989;
-  --text-color-placeholder: #9E9E9E;
+  --text-color-regular: #d6d2ea;
+  --text-color-secondary: #9d98b6;
+  --text-color-placeholder: #827d9f;
   --text-color-disabled: #616161;
   --text-color-revers: #202020;
 
   // Фон
-  --bg-color: #202020;
-  --bg-color-section: #292929;
-  --bg-color-page: #121212;
+  --bg-color: #171528;
+  --bg-color-section: #2c2948;
+  --bg-color-page: #211f36;
   --bg-color-glass: rgba(255, 255, 255, 0.1);
   --bg-color-glass-state: rgba(255, 255, 255, 0.15);
-  --bg-color-second: #1E1E1E;
+  --bg-color-second: #141224;
 
   // Border
-  --border-color: #333333;
-  --border-color-light: #555555;
-  --border-color-lighter: #616161;
-  --border-color-extra-light: #757575;
-  --border-color-dark: #333333;
-  --border-color-darker: #212121;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-color-light: rgba(255, 255, 255, 0.1);
+  --border-color-lighter: rgba(255, 255, 255, 0.14);
+  --border-color-extra-light: rgba(255, 255, 255, 0.18);
+  --border-color-dark: rgba(0, 0, 0, 0.24);
+  --border-color-darker: rgba(0, 0, 0, 0.34);
 
   // Input
-  --bg-color-input: #292929;
-  --border-color-input: #333333;
+  --bg-color-input: #141224;
+  --border-color-input: rgba(255, 255, 255, 0.08);
 
   // Fill
-  --fill-color: #212121;
-  --fill-color-light: #2D2D2D;
-  --fill-color-lighter: #333333;
-  --fill-color-extra-light: #3A3A3A;
-  --fill-color-dark: #1A1A1A;
-  --fill-color-darker: #151515;
-  --fill-color-blank: #1E1E1E;
+  --fill-color: #171528;
+  --fill-color-light: #211f36;
+  --fill-color-lighter: #2c2948;
+  --fill-color-extra-light: #363253;
+  --fill-color-dark: #141224;
+  --fill-color-darker: #100f1d;
+  --fill-color-blank: #171528;
 
-  --icon-color: #B0B0B0;
-  --box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.4);
+  --icon-color: #9d98b6;
+  --box-shadow: 0 22px 52px rgba(0, 0, 0, 0.28);
+
+  --mc-bg: #2c2948;
+  --mc-sidebar: #211f36;
+  --mc-surface: #171528;
+  --mc-surface-deep: #141224;
+  --mc-surface-raised: #19172b;
+  --mc-surface-hover: #211f36;
+  --mc-border-soft: rgba(255, 255, 255, 0.06);
+  --mc-border-strong: rgba(255, 255, 255, 0.16);
+  --mc-text-primary: #f7f5ff;
+  --mc-text-secondary: #d6d2ea;
+  --mc-text-muted: #9d98b6;
+  --mc-text-faint: #736f8d;
+  --mc-accent: #ff6f8f;
+  --mc-accent-strong: #ff86a3;
+  --mc-accent-contrast: #171528;
+  --mc-success: #68d49b;
+  --mc-warning: #f0bf6a;
+  --mc-danger: #ff5676;
+  --mc-info: #8f86ff;
+  --mc-shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.2);
 
   /* PRIMARY */
   --el-color-primary: var(--color-primary) !important;
@@ -254,6 +275,49 @@
 
   --icon-color: #909399;
   --box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.15);
+
+  --mc-bg: #f4f3fb;
+  --mc-sidebar: #ffffff;
+  --mc-surface: #ffffff;
+  --mc-surface-deep: #f2f1f8;
+  --mc-surface-raised: #ffffff;
+  --mc-surface-hover: #f8f1f4;
+  --mc-border-soft: rgba(35, 31, 64, 0.1);
+  --mc-border-strong: rgba(35, 31, 64, 0.2);
+  --mc-text-primary: #211f36;
+  --mc-text-secondary: #4e4968;
+  --mc-text-muted: #77718f;
+  --mc-text-faint: #9c96ad;
+  --mc-accent: #d93f66;
+  --mc-accent-strong: #b72f52;
+  --mc-accent-contrast: #ffffff;
+  --mc-success: #24885b;
+  --mc-warning: #b87922;
+  --mc-danger: #c92f54;
+  --mc-info: #645ad8;
+  --mc-shadow-soft: 0 18px 42px rgba(32, 29, 54, 0.1);
+
+  --mc-font-display: clamp(2.75rem, 5vw, 4.75rem);
+  --mc-font-title-1: 2.5rem;
+  --mc-font-title-2: 2rem;
+  --mc-font-title-3: 1.5rem;
+  --mc-font-lg: 1.125rem;
+  --mc-font-md: 1rem;
+  --mc-font-sm: .875rem;
+  --mc-font-xs: .75rem;
+  --mc-space-1: .25rem;
+  --mc-space-2: .5rem;
+  --mc-space-3: .75rem;
+  --mc-space-4: 1rem;
+  --mc-space-5: 1.25rem;
+  --mc-space-6: 1.5rem;
+  --mc-space-8: 2rem;
+  --mc-space-10: 2.5rem;
+  --mc-radius-xs: .375rem;
+  --mc-radius-sm: .625rem;
+  --mc-radius-md: 1rem;
+  --mc-radius-lg: 1.5rem;
+  --mc-radius-xl: 2rem;
 
   line-height: 1.25;
   font-weight: 400;
