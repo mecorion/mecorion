@@ -1,0 +1,439 @@
+@mixin dark {
+  color-scheme: dark;
+
+  // Основные цвета — темные аналоги
+  --color-primary: #0EA5E9;
+  --color-primary-dark: #0369A1;
+  --color-success: #66BB6A;
+  --color-warning: #f4a261;
+  --color-danger: #EF5350;
+  --color-error: #F44336;
+  --color-info: #90A4AE;
+  --color-focus: #388E3C;
+  --color-deactive: #616161;
+
+  --frozen-color: #42A5F5;
+  --hover-color: #424242;
+
+  --gradient-color: linear-gradient(360deg, #38a051 0%, #185363 93.27%);
+
+  // Текстовые цвета
+  --text-color-primary: #ffffff;
+  --text-color-regular: #E0E0E0;
+  --text-color-secondary: #898989;
+  --text-color-placeholder: #9E9E9E;
+  --text-color-disabled: #616161;
+  --text-color-revers: #202020;
+
+  // Фон
+  --bg-color: #202020;
+  --bg-color-section: #292929;
+  --bg-color-page: #121212;
+  --bg-color-glass: rgba(255, 255, 255, 0.1);
+  --bg-color-glass-state: rgba(255, 255, 255, 0.15);
+  --bg-color-second: #1E1E1E;
+
+  // Border
+  --border-color: #333333;
+  --border-color-light: #555555;
+  --border-color-lighter: #616161;
+  --border-color-extra-light: #757575;
+  --border-color-dark: #333333;
+  --border-color-darker: #212121;
+
+  // Input
+  --bg-color-input: #292929;
+  --border-color-input: #333333;
+
+  // Fill
+  --fill-color: #212121;
+  --fill-color-light: #2D2D2D;
+  --fill-color-lighter: #333333;
+  --fill-color-extra-light: #3A3A3A;
+  --fill-color-dark: #1A1A1A;
+  --fill-color-darker: #151515;
+  --fill-color-blank: #1E1E1E;
+
+  --icon-color: #B0B0B0;
+  --box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.4);
+
+  /* PRIMARY */
+  --el-color-primary: var(--color-primary) !important;
+  --el-color-primary-light-3: color-mix(in srgb, var(--color-primary) 85%, black 15%) !important; /* slightly darkened */
+  --el-color-primary-light-5: color-mix(in srgb, var(--color-primary) 80%, black 20%) !important;
+  --el-color-primary-light-7: color-mix(in srgb, var(--color-primary) 70%, black 30%) !important;
+  --el-color-primary-light-8: color-mix(in srgb, var(--color-primary) 60%, black 40%) !important;
+  --el-color-primary-light-9: color-mix(in srgb, var(--color-primary) 50%, black 50%) !important;
+  --el-color-primary-dark-2: color-mix(in srgb, var(--color-primary) 70%, black 30%) !important;
+
+  /* SUCCESS */
+  --el-color-success: var(--color-success) !important;
+  --el-color-success-light-3: color-mix(in srgb, var(--color-success) 85%, black 15%) !important;
+  --el-color-success-light-5: color-mix(in srgb, var(--color-success) 80%, black 20%) !important;
+  --el-color-success-light-7: color-mix(in srgb, var(--color-success) 70%, black 30%) !important;
+  --el-color-success-light-8: color-mix(in srgb, var(--color-success) 60%, black 40%) !important;
+  --el-color-success-light-9: color-mix(in srgb, var(--color-success) 50%, black 50%) !important;
+  --el-color-success-dark-2: color-mix(in srgb, var(--color-success) 70%, black 30%) !important;
+
+  /* WARNING */
+  --el-color-warning: var(--color-warning) !important;
+  --el-color-warning-light-3: color-mix(in srgb, var(--color-warning) 85%, black 15%);
+  --el-color-warning-light-5: color-mix(in srgb, var(--color-warning) 80%, black 20%);
+  --el-color-warning-light-7: color-mix(in srgb, var(--color-warning) 70%, black 30%);
+  --el-color-warning-light-8: color-mix(in srgb, var(--color-warning) 60%, black 40%);
+  --el-color-warning-light-9: color-mix(in srgb, var(--color-warning) 50%, black 50%);
+  --el-color-warning-dark-2: color-mix(in srgb, var(--color-warning) 70%, black 30%);
+
+  /* DANGER */
+  --el-color-danger: var(--color-danger) !important;
+  --el-color-danger-light-3: color-mix(in srgb, var(--color-danger) 85%, black 15%) !important;
+  --el-color-danger-light-5: color-mix(in srgb, var(--color-danger) 80%, black 20%) !important;
+  --el-color-danger-light-7: color-mix(in srgb, var(--color-danger) 70%, black 30%) !important;
+  --el-color-danger-light-8: color-mix(in srgb, var(--color-danger) 60%, black 40%) !important;
+  --el-color-danger-light-9: color-mix(in srgb, var(--color-danger) 50%, black 50%) !important;
+  --el-color-danger-dark-2: color-mix(in srgb, var(--color-danger) 70%, black 30%) !important;
+
+  /* ERROR */
+  --el-color-error: var(--color-error);
+  --el-color-error-light-3: color-mix(in srgb, var(--color-error) 85%, black 15%);
+  --el-color-error-light-5: color-mix(in srgb, var(--color-error) 80%, black 20%);
+  --el-color-error-light-7: color-mix(in srgb, var(--color-error) 70%, black 30%);
+  --el-color-error-light-8: color-mix(in srgb, var(--color-error) 60%, black 40%);
+  --el-color-error-light-9: color-mix(in srgb, var(--color-error) 50%, black 50%);
+  --el-color-error-dark-2: color-mix(in srgb, var(--color-error) 70%, black 30%);
+
+  /* INFO */
+  --el-color-info: var(--color-info) !important;
+  --el-color-info-light-3: color-mix(in srgb, var(--color-info) 85%, black 15%) !important;
+  --el-color-info-light-5: color-mix(in srgb, var(--color-info) 80%, black 20%) !important;
+  --el-color-info-light-7: color-mix(in srgb, var(--color-info) 70%, black 30%) !important;
+  --el-color-info-light-8: color-mix(in srgb, var(--color-info) 60%, black 40%) !important;
+  --el-color-info-light-9: color-mix(in srgb, var(--color-info) 50%, black 50%) !important;
+  --el-color-info-dark-2: color-mix(in srgb, var(--color-info) 70%, black 30%) !important;
+
+  // Background
+  --el-bg-color: var(--bg-color);
+  --el-bg-color-page: var(--bg-color-page);
+  --el-bg-color-overlay: var(--bg-color-section);
+
+  // Text
+  --el-text-color-primary: var(--text-color-primary);
+  --el-text-color-regular: var(--text-color-regular);
+  --el-text-color-secondary: var(--text-color-secondary);
+  --el-text-color-placeholder: var(--text-color-placeholder);
+  --el-text-color-disabled: var(--text-color-disabled);
+
+  // Border
+  --el-border-color: var(--border-color);
+  --el-border-color-light: var(--border-color-light);
+  --el-border-color-lighter: var(--border-color-lighter);
+  --el-border-color-extra-light: var(--border-color-extra-light);
+  --el-border-color-dark: var(--border-color-dark);
+  --el-border-color-darker: var(--border-color-darker);
+
+  // Fill
+  --el-fill-color: var(--fill-color);
+  --el-fill-color-light: var(--fill-color-light);
+  --el-fill-color-lighter: var(--fill-color-lighter);
+  --el-fill-color-extra-light: var(--fill-color-extra-light);
+  --el-fill-color-dark: var(--fill-color-dark);
+  --el-fill-color-darker: var(--fill-color-darker);
+  --el-fill-color-blank: var(--fill-color-blank);
+
+  // Disabled
+  --el-disabled-bg-color: var(--fill-color-light);
+  --el-disabled-text-color: var(--text-color-disabled);
+  --el-disabled-border-color: var(--border-color-light);
+
+  // Overlay & Mask
+  --el-overlay-color: rgba(0, 0, 0, 0.6);
+  --el-overlay-color-light: rgba(0, 0, 0, 0.5);
+  --el-overlay-color-lighter: rgba(0, 0, 0, 0.3);
+  --el-mask-color: rgba(0, 0, 0, 0.7);
+  --el-mask-color-extra-light: rgba(0, 0, 0, 0.3);
+
+  // SVG icon
+  --el-svg-monochrome-grey: var(--icon-color);
+
+  // Цвета белый/черный поменяны местами
+  --el-color-white: var(--white-color);
+  --el-color-black: var(--black-color);
+}
+
+:root {
+  color-scheme: light;
+
+  // Indicator Color
+  --color-primary: #0EA5E9;
+  --color-primary-dark: #0369A1;
+  --color-success: #3EAF4E;
+  --color-warning: #f4a261;
+  --color-danger: #CC2D4A;
+  --color-error: #D62828;
+  --color-info: #909399;
+  --color-focus: #167F4A;
+  --color-deactive: #4C4D4F;
+
+  --frozen-color: #1E88E5;
+  --hover-color: #EEEEEE;
+
+  --white-color: #ffffff;
+  --black-color: #202020;
+
+  --color-primary-rgb: rgba(14. 165, 233, 1);
+  --color-success-rgb: rgba(62, 175, 78, 1);
+  --color-warning-rgb: rgba(244, 162, 97, 1);
+  --color-danger-rgb: rgba(204, 45, 74, 1);
+  --color-error-rgb: rgba(214, 40, 40, 1);
+  --color-info-rgb: rgba(144, 147, 153, 1);
+
+  // Mixed Colors (gradients etc.)
+  --gradient-color: linear-gradient(225deg, #38a051 0%, #185363 93.27%);
+
+  // Text Colors
+  --text-color-primary: #202020;
+  --text-color-regular: #606266;
+  --text-color-secondary: #4C4C4C;
+  --text-color-placeholder: #909090;
+  --text-color-disabled: #c0c4cc;
+  --text-color-revers: #ffffff;
+
+  // Main Colors
+  --bg-color: #ffffff;
+  --bg-color-section: #eeeeee;
+  --bg-color-page: #f5f5f5;
+  --bg-color-glass: rgba(133, 133, 133, 0.45);
+  --bg-color-glass-state: rgba(27, 33, 39, .55);
+  --bg-color-second: #fafafa;
+
+  // Border Colors
+  --border-color: #dcdfe6;
+  --border-color-light: #e4e7ed;
+  --border-color-lighter: #ebeef5;
+  --border-color-extra-light: #f2f6fc;
+  --border-color-dark: #d4d7de;
+  --border-color-darker: #cdd0d6;
+
+  // Input Styles
+  --bg-color-input: #FAFAFA;
+  --border-color-input: #D4D4D4;
+
+  // Font Sizes
+  --font-size-extra-large: 3rem;
+  --font-size-large: 2.5rem;
+  --font-size-medium: 2rem;
+  --font-size-medium-well: 1.5rem;
+  --font-size-base: 1rem;
+  --font-size-small: .875rem;
+  --font-size-extra-small: .75rem;
+
+  // Border Radius
+  --border-radius-round: 3.625rem;
+  --border-radius-large: 2rem;
+  --border-radius-medium: 1.5rem;
+  --border-radius-base: 1rem;
+  --border-radius-small: .625rem;
+  --border-radius-extra-small: .3125rem;
+
+  // Component Styles
+  --component-size-large: 3rem;
+  --component-size-default: 2rem;
+  --component-size-small: 1.625rem;
+  --component-size-big: 10.5rem;
+  --component-bg-color: #FAFAFA;
+  --component-bg-color-second: #FFFFFF;
+
+  // Fill Colors
+  --fill-color: #F0F2F5;
+  --fill-color-light: #F5F7FA;
+  --fill-color-lighter: #FAFAFA;
+  --fill-color-extra-light: #FAFCFF;
+  --fill-color-dark: #EBEDF0;
+  --fill-color-darker: #E6E8EB;
+  --fill-color-blank: #FFFFFF;
+
+  --icon-color: #909399;
+  --box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.15);
+
+  line-height: 1.25;
+  font-weight: 400;
+  color: var(--sw-text-color-primary);
+  background-color: var(--sw-bg-color);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+
+  /* ELEMENT PLUS VARIABLES */
+  /* PRIMARY */
+  --el-color-primary: var(--color-primary) !important;
+  --el-color-primary-light-3: color-mix(in srgb, var(--color-primary) 70%, white 30%) !important;
+  --el-color-primary-light-5: color-mix(in srgb, var(--color-primary) 50%, white 50%) !important;
+  --el-color-primary-light-7: color-mix(in srgb, var(--color-primary) 30%, white 70%) !important;
+  --el-color-primary-light-8: color-mix(in srgb, var(--color-primary) 20%, white 80%) !important;
+  --el-color-primary-light-9: color-mix(in srgb, var(--color-primary) 10%, white 90%) !important;
+  --el-color-primary-dark-2: color-mix(in srgb, var(--color-primary) 85%, black 15%) !important;
+
+  /* SUCCESS */
+  --el-color-success: var(--color-success) !important;
+  --el-color-success-light-3: color-mix(in srgb, var(--color-success) 70%, white 30%) !important;
+  --el-color-success-light-5: color-mix(in srgb, var(--color-success) 50%, white 50%) !important;
+  --el-color-success-light-7: color-mix(in srgb, var(--color-success) 30%, white 70%) !important;
+  --el-color-success-light-8: color-mix(in srgb, var(--color-success) 20%, white 80%) !important;
+  --el-color-success-light-9: color-mix(in srgb, var(--color-success) 10%, white 90%) !important;
+  --el-color-success-dark-2: color-mix(in srgb, var(--color-success) 85%, black 15%) !important;
+
+  /* WARNING */
+  --el-color-warning: var(--color-warning) !important;
+  --el-color-warning-light-3: color-mix(in srgb, var(--color-warning) 70%, white 30%);
+  --el-color-warning-light-5: color-mix(in srgb, var(--color-warning) 50%, white 50%);
+  --el-color-warning-light-7: color-mix(in srgb, var(--color-warning) 30%, white 70%);
+  --el-color-warning-light-8: color-mix(in srgb, var(--color-warning) 20%, white 80%);
+  --el-color-warning-light-9: color-mix(in srgb, var(--color-warning) 10%, white 90%);
+  --el-color-warning-dark-2: color-mix(in srgb, var(--color-warning) 85%, black 15%);
+
+  /* DANGER */
+  --el-color-danger: var(--color-danger) !important;
+  --el-color-danger-light-3: color-mix(in srgb, var(--color-danger) 70%, white 30%) !important;
+  --el-color-danger-light-5: color-mix(in srgb, var(--color-danger) 50%, white 50%) !important;
+  --el-color-danger-light-7: color-mix(in srgb, var(--color-danger) 30%, white 70%) !important;
+  --el-color-danger-light-8: color-mix(in srgb, var(--color-danger) 20%, white 80%) !important;
+  --el-color-danger-light-9: color-mix(in srgb, var(--color-danger) 10%, white 90%) !important;
+  --el-color-danger-dark-2: color-mix(in srgb, var(--color-danger) 85%, black 15%) !important;
+
+  /* ERROR */
+  --el-color-error: var(--color-error);
+  --el-color-error-light-3: color-mix(in srgb, var(--color-error) 70%, white 30%);
+  --el-color-error-light-5: color-mix(in srgb, var(--color-error) 50%, white 50%);
+  --el-color-error-light-7: color-mix(in srgb, var(--color-error) 30%, white 70%);
+  --el-color-error-light-8: color-mix(in srgb, var(--color-error) 20%, white 80%);
+  --el-color-error-light-9: color-mix(in srgb, var(--color-error) 10%, white 90%);
+  --el-color-error-dark-2: color-mix(in srgb, var(--color-error) 85%, black 15%);
+
+  /* INFO */
+  --el-color-info: var(--color-info) !important;
+  --el-color-info-light-3: color-mix(in srgb, var(--color-info) 70%, white 30%) !important;
+  --el-color-info-light-5: color-mix(in srgb, var(--color-info) 50%, white 50%) !important;
+  --el-color-info-light-7: color-mix(in srgb, var(--color-info) 30%, white 70%) !important;
+  --el-color-info-light-8: color-mix(in srgb, var(--color-info) 20%, white 80%) !important;
+  --el-color-info-light-9: color-mix(in srgb, var(--color-info) 10%, white 90%) !important;
+  --el-color-info-dark-2: color-mix(in srgb, var(--color-info) 85%, black 15%) !important;
+
+  // BACKGROUND COLOR
+  --el-bg-color: var(--bg-color);
+  --el-bg-color-page: var(--bg-color-page);
+  --el-bg-color-overlay: var(--bg-color-section);
+
+  // TEXT COLOR
+  --el-text-color-primary: var(--text-color-primary);
+  --el-text-color-regular: var(--text-color-regular);
+  --el-text-color-secondary: var(--text-color-secondary);
+  --el-text-color-placeholder: var(--text-color-placeholder);
+  --el-text-color-disabled: var(--text-color-disabled);
+
+  // BORDER COLOR
+  --el-border-color: #dcdfe6;
+  --el-border-color-light: #e4e7ed;
+  --el-border-color-lighter: #ebeef5;
+  --el-border-color-extra-light: #f2f6fc;
+  --el-border-color-dark: #d4d7de;
+  --el-border-color-darker: #cdd0d6;
+
+  // FILL COLOR
+  --el-fill-color: #f0f2f5;
+  --el-fill-color-light: #f5f7fa;
+  --el-fill-color-lighter: #fafafa;
+  --el-fill-color-extra-light: #fafcff;
+  --el-fill-color-dark: #ebedf0;
+  --el-fill-color-darker: #e6e8eb;
+  --el-fill-color-blank: #ffffff;
+
+  // BOX SHADOW
+  --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04), 0px 8px 20px rgba(0, 0, 0, 0.08);
+  --el-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.12);
+  --el-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.12);
+  --el-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, 0.08), 0px 12px 32px rgba(0, 0, 0, 0.12), 0px 8px 16px -8px rgba(0, 0, 0, 0.16);
+
+  // DISABLED
+  --el-disabled-bg-color: var(--fill-color-light);
+  --el-disabled-text-color: var(--text-color-placeholder);
+  --el-disabled-border-color: var(--border-color-light);
+
+  // OVERLAY
+  --el-overlay-color: rgba(0, 0, 0, 0.8);
+  --el-overlay-color-light: rgba(0, 0, 0, 0.7);
+  --el-overlay-color-lighter: rgba(0, 0, 0, 0.5);
+
+  // MASK COLOR
+  --el-mask-color: rgba(255, 255, 255, 0.9);
+  --el-mask-color-extra-light: rgba(255, 255, 255, 0.3);
+
+  // BORDER SETTINGS
+  --el-border-width: 1px;
+  --el-border-style: solid;
+  --el-border-color-hover: var(--text-color-disabled);
+  --el-border: var(--el-border-width) var(--el-border-style) var(--el-border-color);
+
+  --el-svg-monochrome-grey: var(--icon-color);
+
+  --el-color-white: var(--white-color);
+  --el-color-black: var(--black-color);
+
+  // RGB COLORS
+  --el-color-primary-rgb: var(--color-primary-rgb);
+  --el-color-success-rgb: var(--color-success-rgb);
+  --el-color-warning-rgb: var(--color-warning-rgb);
+  --el-color-danger-rgb: var(--color-danger-rgb);
+  --el-color-error-rgb: var(--color-error-rgb);
+  --el-color-info-rgb: var(--color-info-rgb);
+
+  // FONT SIZE
+  --el-font-size-extra-large: var(--font-size-extra-large) !important;
+  --el-font-size-large: var(--font-size-large) !important;
+  --el-font-size-medium: var(--font-size-medium) !important;
+  --el-font-size-medium-well: var(--font-size-medium-well) !important;
+  --el-font-size-base: var(--font-size-base) !important;
+  --el-font-size-small: var(--font-size-small) !important;
+  --el-font-size-extra-small: var(--font-size-extra-small) !important;
+
+  --el-font-family: "Montserrat", Roboto, Arial;
+  --el-font-weight-primary: 500;
+  --el-font-line-height-primary: 1;
+
+  --el-index-normal: 1;
+  --el-index-top: 1000;
+  --el-index-popper: 2000;
+
+  // BORDER RADIUS
+  --el-border-radius-base: var(--border-radius-base) !important;
+  --el-border-radius-small: var(--border-radius-small) !important;
+  --el-border-radius-round: var(--border-radius-medium) !important;
+  --el-border-radius-circle: var(--el-border-radius-round) !important;
+
+  // TRANSITION
+  --el-transition-duration: 0.3s;
+  --el-transition-duration-fast: 0.2s;
+  --el-transition-function-ease-in-out-bezier: cubic-bezier(0.645,0.045,0.355,1);
+  --el-transition-function-fast-bezier: cubic-bezier(0.23,1,0.32,1);
+  --el-transition-all: all var(--el-transition-duration) var(--el-transition-function-ease-in-out-bezier);
+  --el-transition-fade: opacity var(--el-transition-duration) var(--el-transition-function-fast-bezier);
+  --el-transition-md-fade: transform var(--el-transition-duration) var(--el-transition-function-fast-bezier), opacity var(--el-transition-duration) var(--el-transition-function-fast-bezier);
+  --el-transition-fade-linear: opacity var(--el-transition-duration-fast) linear;
+  --el-transition-border: border-color var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);
+  --el-transition-box-shadow: box-shadow var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);
+  --el-transition-color: color var(--el-transition-duration-fast) var(--el-transition-function-ease-in-out-bezier);
+
+  // COMPONENT SIZES
+  --el-component-size-large: var(--component-size-large);
+  --el-component-size: var(--component-size-default);
+  --el-component-size-small: var(--component-size-small);
+
+  &.dark {
+    @include dark
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {@include dark;}
+}
