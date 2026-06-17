@@ -122,6 +122,14 @@ onBeforeUnmount(() => {
               <span v-if="sidebarVisible">Мультсериалы</span>
             </RouterLink>
           </el-menu-item>
+
+          <!-- UI Kit -->
+          <el-menu-item class="nav-link">
+            <RouterLink to="/ui-kit" class="nav-link__item">
+              <HomeIcon class="svg-icon"/>
+              <span v-if="sidebarVisible">UI Kit</span>
+            </RouterLink>
+          </el-menu-item>
         </el-menu>
       </nav>
     </div>
