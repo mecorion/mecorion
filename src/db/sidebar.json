@@ -1,0 +1,113 @@
+{
+    "id": "mcrn-sidebar",
+    "title": "Mecorion",
+    "logo": {
+        "type": "image",
+        "src": "/assets/logo.svg",
+        "alt": "Mecorion Logo"
+    },
+    "position": "left",
+    "sections": [
+        {
+            "id": "home",
+            "title": "Главная",
+            "icon": "home",
+            "route": "/",
+            "type": "link",
+            "visible": true,
+            "disabled": false
+        },
+        {
+            "id": "books",
+            "title": "Книги",
+            "icon": "book-open",
+            "route": "/books",
+            "type": "link",
+            "visible": true,
+            "disabled": false
+        },
+        {
+            "id": "music",
+            "title": "Музыка",
+            "icon": "music",
+            "route": "/music",
+            "type": "link",
+            "visible": true,
+            "disabled": false
+        },
+        {
+            "id": "video",
+            "title": "Видео",
+            "icon": "video",
+            "route": "/video",
+            "type": "link",
+            "visible": true,
+            "disabled": false
+        },
+        {
+            "id": "system",
+            "title": "Система",
+            "order": 5,
+            "items": [
+                {
+                    "id": "notifications",
+                    "title": "Уведомления",
+                    "icon": "bell",
+                    "route": "/notifications",
+                    "type": "link",
+                    "visible": true,
+                    "disabled": false,
+                    "badge": {
+                        "value": 3,
+                        "variant": "danger"
+                    }
+                },
+                {
+                    "id": "settings",
+                    "title": "Настройки",
+                    "icon": "settings",
+                    "route": "/settings",
+                    "type": "link",
+                    "visible": true,
+                    "disabled": false
+                },
+                {
+                    "id": "admin",
+                    "title": "Администрирование",
+                    "icon": "shield",
+                    "route": "/admin",
+                    "type": "link",
+                    "visible": true,
+                    "disabled": false,
+                    "permissions": [
+                        "admin.access"
+                    ]
+                }
+            ]
+        }
+    ],
+    "footer": {
+        "user": {
+            "id": "user-1",
+            "name": "Acc",
+            "email": "acc@example.com",
+            "avatar": "/assets/avatar.png"
+        },
+        "items": [
+            {
+                "id": "profile",
+                "title": "Профиль",
+                "icon": "user",
+                "route": "/profile",
+                "type": "link"
+            },
+            {
+                "id": "logout",
+                "title": "Выйти",
+                "icon": "log-out",
+                "type": "action",
+                "action": "logout"
+            }
+        ]
+    }
+}
