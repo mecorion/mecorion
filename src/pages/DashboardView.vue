@@ -1,37 +1,71 @@
 <script setup>
-import {computed} from "vue";
 import {RouterLink} from "vue-router";
+import musicArt from "@/assets/illustrations/dashboard/music-bars.svg";
+import videoArt from "@/assets/illustrations/dashboard/video-wave.svg";
+import booksArt from "@/assets/illustrations/dashboard/books.svg";
+import lifeArt from "@/assets/illustrations/dashboard/life.svg";
+import cloudArt from "@/assets/illustrations/dashboard/cloud.svg";
+import sentinelArt from "@/assets/illustrations/dashboard/sentinel.svg";
 
 const services = [
   {
     id: "music",
     title: "Музыка",
-    subtitle: "Личная медиатека",
+    subtitle: "Личная коллекция, поиск и простой плеер для локальных треков.",
     icon: "♪",
     route: "/music",
-    state: "Готово к запуску",
+    state: "Готово",
     tone: "rose",
-  },
-  {
-    id: "books",
-    title: "Книги",
-    subtitle: "Полка и заметки",
-    icon: "Aa",
-    state: "Скоро",
-    tone: "violet",
+    art: musicArt,
+    recommended: true,
   },
   {
     id: "video",
     title: "Видео",
-    subtitle: "Смотреть позже",
+    subtitle: "Ваш медиаплеер для фильмов и видео.",
     icon: "▶",
     route: "/home",
-    state: "Библиотека",
+    state: "Готово",
     tone: "cyan",
+    art: videoArt,
+  },
+  {
+    id: "books",
+    title: "Книги",
+    subtitle: "Полка, заметки и чтение без отвлечений.",
+    icon: "Aa",
+    state: "Скоро",
+    tone: "violet",
+    art: booksArt,
+  },
+  {
+    id: "life",
+    title: "Mecorion Life",
+    subtitle: "Заметки, цели и трекер повседневных привычек.",
+    icon: "⌁",
+    state: "Скоро",
+    tone: "rose",
+    art: lifeArt,
+  },
+  {
+    id: "cloud",
+    title: "Cloud",
+    subtitle: "Ваши файлы, безопасно и всегда под рукой.",
+    icon: "☁",
+    state: "Скоро",
+    tone: "cyan",
+    art: cloudArt,
+  },
+  {
+    id: "sentinel",
+    title: "Sentinel / Admin",
+    subtitle: "Панель администрирования и инструменты контроля системы.",
+    icon: "◇",
+    state: "Скоро",
+    tone: "violet",
+    art: sentinelArt,
   },
 ];
-
-const activeServices = computed(() => services.filter((service) => service.route));
 </script>
 
 <template>
@@ -55,81 +89,50 @@ const activeServices = computed(() => services.filter((service) => service.route
     </header>
 
     <main class="dashboard-canvas">
-      <section class="dashboard-intro">
-        <p class="workspace-eyebrow">Ваше пространство</p>
-        <h1>Добрый вечер, Вадим.</h1>
-        <p>Сервисы Mecorion живут отдельно, но остаются в одном личном контуре.</p>
-      </section>
-
-      <section class="dashboard-flow" aria-label="Сервисы Mecorion">
-        <div class="dashboard-flow__rail" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
+      <section class="dashboard-overview">
+        <div class="dashboard-intro">
+          <p class="workspace-eyebrow">Ваше пространство</p>
+          <h1>Добрый вечер, Вадим.</h1>
+          <p>Mecorion - ваша личная экосистема сервисов.</p>
         </div>
 
-        <article class="dashboard-focus">
-          <div class="dashboard-focus__topline">
-            <span class="workspace-eyebrow">Следующий сервис</span>
-            <span class="service-status service-status--ready">Готов</span>
-          </div>
-          <div class="music-signal" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <div class="dashboard-focus__content">
-            <div>
-              <span class="service-icon service-icon--rose">♪</span>
-              <h2>Музыка</h2>
-              <p>Личная коллекция, поиск и простой плеер для локальных треков.</p>
-            </div>
-            <RouterLink class="mc-button mc-button--primary dashboard-focus__button" to="/music">
-              Открыть музыку <span aria-hidden="true">→</span>
-            </RouterLink>
-          </div>
-        </article>
-
-        <aside class="dashboard-pulse">
-          <p class="workspace-eyebrow">Сейчас в контуре</p>
-          <div class="dashboard-pulse__metric"><strong>03</strong><span>сервиса</span></div>
-          <p>Единый аккаунт и независимые интерфейсы для каждой задачи.</p>
-          <div class="dashboard-pulse__line" aria-hidden="true"><span></span></div>
+        <aside class="dashboard-health" aria-label="Статус системы">
+          <span class="dashboard-health__indicator" aria-hidden="true"></span>
+          <div><strong>Система в порядке</strong><small>Все сервисы работают стабильно</small></div>
+          <span class="dashboard-health__pulse" aria-hidden="true">〽</span>
         </aside>
-
-        <div class="dashboard-services">
-          <RouterLink
-            v-for="service in activeServices"
-            :key="service.id"
-            :to="service.route"
-            class="service-tile"
-            :class="`service-tile--${service.tone}`"
-          >
-            <span class="service-icon" :class="`service-icon--${service.tone}`">{{ service.icon }}</span>
-            <span class="service-tile__copy">
-              <strong>{{ service.title }}</strong>
-              <small>{{ service.subtitle }}</small>
-            </span>
-            <span class="service-tile__action" aria-hidden="true">↗</span>
-          </RouterLink>
-
-          <div
-            v-for="service in services.filter((item) => !item.route)"
-            :key="service.id"
-            class="service-tile service-tile--locked"
-          >
-            <span class="service-icon" :class="`service-icon--${service.tone}`">{{ service.icon }}</span>
-            <span class="service-tile__copy">
-              <strong>{{ service.title }}</strong>
-              <small>{{ service.subtitle }}</small>
-            </span>
-            <span class="service-status">{{ service.state }}</span>
-          </div>
-        </div>
       </section>
 
-      <section class="dashboard-notes">
-        <div>
-          <p class="workspace-eyebrow">Система</p>
-          <h2>Единый профиль для всех сервисов</h2>
-        </div>
-        <p>Настройки, уведомления и доступы будут собраны здесь, без смешения с интерфейсами приложений.</p>
+      <section class="dashboard-services" aria-label="Сервисы Mecorion">
+        <component
+          :is="service.route ? RouterLink : 'article'"
+          v-for="service in services"
+          :key="service.id"
+          :to="service.route"
+          class="service-card"
+          :class="[
+            `service-card--${service.tone}`,
+            {'service-card--ready': service.state === 'Готово', 'service-card--soon': service.state === 'Скоро', 'service-card--featured': service.recommended}
+          ]"
+        >
+          <div class="service-card__header">
+            <span class="service-icon" :class="`service-icon--${service.tone}`">{{ service.icon }}</span>
+            <span class="service-status" :class="{'service-status--ready': service.state === 'Готово'}">{{ service.state }}</span>
+          </div>
+          <div class="service-card__copy">
+            <h2>{{ service.title }}</h2>
+            <p>{{ service.subtitle }}</p>
+          </div>
+          <span v-if="service.recommended" class="service-card__recommendation">Рекомендуем</span>
+          <img class="service-card__art" :src="service.art" alt="" aria-hidden="true" />
+          <span v-if="service.route" class="service-card__action" aria-hidden="true">↗</span>
+        </component>
+      </section>
+
+      <section class="dashboard-notes" aria-label="О Mecorion">
+        <span class="dashboard-notes__mark" aria-hidden="true">✦</span>
+        <div><strong>Единая экосистема. Полный контроль.</strong><p>Сервисы Mecorion работают вместе, чтобы вы могли сосредоточиться на главном.</p></div>
+        <button class="mc-button mc-button--ghost mc-button--sm" type="button">Узнать больше <span aria-hidden="true">→</span></button>
       </section>
     </main>
   </div>
