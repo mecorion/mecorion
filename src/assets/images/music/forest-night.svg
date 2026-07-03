@@ -1,0 +1,9 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="640" fill="#171528"/>
+  <circle cx="460" cy="168" r="92" fill="#FF6F8F" fill-opacity=".9"/>
+  <path d="M0 468L105 302L184 420L289 232L405 420L493 287L640 493V640H0V468Z" fill="#282442"/>
+  <path d="M0 531L129 373L207 482L303 334L423 486L520 379L640 522V640H0V531Z" fill="#343052"/>
+  <path d="M109 640L250 388L391 640H109Z" fill="#111020"/>
+  <text x="48" y="86" fill="#F7F5FF" font-family="Arial, sans-serif" font-size="32" font-weight="700">ЛЕСНИК</text>
+  <text x="50" y="120" fill="#9D98B6" font-family="Arial, sans-serif" font-size="16">КОРОЛЬ И ШУТ</text>
+</svg>
