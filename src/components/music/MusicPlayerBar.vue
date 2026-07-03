@@ -51,8 +51,8 @@ function loadCurrentTrack() {
 }
 
 function seek(event) {
-  if (!audio.value || !player.duration) return;
-  audio.value.currentTime = (Number(event.target.value) / 100) * player.duration;
+  if (!player.duration) return;
+  player.requestSeek((Number(event.target.value) / 100) * player.duration);
 }
 
 function changeVolume(event) {
@@ -109,6 +109,9 @@ onBeforeUnmount(() => {
 // пользовательского события, иначе autoplay policy может заблокировать звук.
 watch(() => player.currentTrackId, loadCurrentTrack, {flush: "sync"});
 watch(() => player.isPlaying, applyPlaybackState, {flush: "sync"});
+watch(() => player.seekRevision, () => {
+  if (audio.value) audio.value.currentTime = Math.min(player.seekTarget, player.duration || player.seekTarget);
+});
 watch(() => [player.volume, player.isMuted], () => {
   if (audio.value) audio.value.volume = player.isMuted ? 0 : player.volume;
 }, {immediate: true});
@@ -117,9 +120,12 @@ watch(() => [player.volume, player.isMuted], () => {
 <template>
   <footer class="memusic-player">
     <div v-if="player.currentTrack" class="memusic-player__track">
-      <MusicArtwork :track="player.currentTrack" />
+      <button class="memusic-player__artwork-button" type="button" aria-label="Открыть режим плеера" @click="player.openPlayerMode">
+        <MusicArtwork :track="player.currentTrack" />
+      </button>
       <div><strong>{{ player.currentTrack.title }}</strong><small>{{ player.currentTrack.artist }}</small></div>
       <button
+        class="memusic-player__like-button"
         :class="{'is-active': player.likedTrackIds.includes(player.currentTrack.id)}"
         type="button"
         :aria-label="player.likedTrackIds.includes(player.currentTrack.id) ? 'Убрать из любимых' : 'Добавить в любимые'"
@@ -143,6 +149,7 @@ watch(() => [player.volume, player.isMuted], () => {
     </div>
 
     <div class="memusic-player__tools">
+      <button type="button" aria-label="Открыть режим плеера" @click="player.openPlayerMode">⛶</button>
       <button :class="{'is-active': player.isQueueOpen}" type="button" aria-label="Открыть очередь" @click="player.isQueueOpen = !player.isQueueOpen">≡</button>
       <button type="button" :aria-label="player.isMuted ? 'Включить звук' : 'Выключить звук'" @click="player.toggleMute">{{ volumeIcon }}</button>
       <input aria-label="Громкость" type="range" min="0" max="1" step="0.01" :value="player.volume" @input="changeVolume" />

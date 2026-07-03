@@ -28,6 +28,9 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
     localTrackIds: [],
     localFolderName: "",
     isQueueOpen: false,
+    isPlayerModeOpen: false,
+    seekTarget: 0,
+    seekRevision: 0,
     isInitialized: false,
   }),
 
@@ -157,6 +160,22 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
     toggleMute() {
       this.isMuted = !this.isMuted;
       this.persistPreferences();
+    },
+
+    requestSeek(seconds) {
+      // Отдельный revision нужен, чтобы два последовательных запроса на одну
+      // и ту же позицию всё равно дошли до единственного audio-элемента.
+      this.seekTarget = Math.max(0, Number(seconds) || 0);
+      this.seekRevision += 1;
+      this.currentTime = this.seekTarget;
+    },
+
+    openPlayerMode() {
+      if (this.currentTrack) this.isPlayerModeOpen = true;
+    },
+
+    closePlayerMode() {
+      this.isPlayerModeOpen = false;
     },
 
     addToHistory(trackId) {
