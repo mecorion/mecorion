@@ -4,7 +4,10 @@ import HomePage from "@/pages/HomePage.vue";
 import PlayerPage from "@/pages/PlayerPage.vue";
 import UiKitView from "@/pages/UiKitView.vue";
 import DashboardView from "@/pages/DashboardView.vue";
-import MusicView from "@/pages/MusicView.vue";
+
+// Music содержит собственный layout и аудиодвижок, поэтому загружается
+// отдельным chunk только при переходе пользователя в сервис.
+const MusicView = () => import("@/pages/MusicView.vue");
 
 const routes = [
     {path: "/", component: DashboardView, meta: {workspace: true}},
