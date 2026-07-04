@@ -1,5 +1,6 @@
 <script setup>
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
+import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicHeader from "@/components/music/MusicHeader.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
@@ -10,30 +11,35 @@ import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
 import LocalMusicView from "@/components/music/LocalMusicView.vue";
 import {getTracksByIds, musicGenres, musicPlaylists, musicTracks} from "@/music/catalog.js";
+import {filterAndSortTracks} from "@/music/trackFilters.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 
 const player = useMusicPlayerStore();
 const activeSection = ref("home");
 const query = ref("");
 const selectedPlaylistId = ref(null);
+const onlineFilters = ref({sort: "title"});
+const libraryFilters = ref({sort: "title"});
 
 const featuredPlaylist = musicPlaylists[0];
 const featuredTracks = getTracksByIds(featuredPlaylist.trackIds);
 
 const filteredTracks = computed(() => {
   const normalized = query.value.trim().toLocaleLowerCase("ru");
-  if (!normalized) return musicTracks;
-
-  return musicTracks.filter((track) =>
+  const matchesQuery = !normalized ? musicTracks : musicTracks.filter((track) =>
     [track.title, track.artist, track.album]
       .join(" ")
       .toLocaleLowerCase("ru")
       .includes(normalized),
   );
+
+  return filterAndSortTracks(matchesQuery, onlineFilters.value);
 });
 
 const selectedPlaylist = computed(() => musicPlaylists.find((playlist) => playlist.id === selectedPlaylistId.value) ?? null);
 const selectedPlaylistTracks = computed(() => selectedPlaylist.value ? getTracksByIds(selectedPlaylist.value.trackIds) : []);
+const librarySourceTracks = computed(() => selectedPlaylist.value ? selectedPlaylistTracks.value : player.likedTracks);
+const filteredLibraryTracks = computed(() => filterAndSortTracks(librarySourceTracks.value, libraryFilters.value));
 const recentTracks = computed(() => {
   const history = getTracksByIds(player.recentlyPlayedIds);
   return history.length ? history : musicTracks;
@@ -49,6 +55,10 @@ function openPlaylist(playlistId) {
   selectedPlaylistId.value = playlistId;
   activeSection.value = "library";
 }
+
+watch(selectedPlaylistId, () => {
+  libraryFilters.value = {sort: "title"};
+});
 </script>
 
 <template>
@@ -113,14 +123,15 @@ function openPlaylist(playlistId) {
             <h1>{{ query ? `Результаты для «${query}»` : 'Исследуйте музыку' }}</h1>
           </section>
 
+          <MusicFilters v-model="onlineFilters" :tracks="musicTracks" context="online" />
+
           <MusicTrackList
-            v-if="query"
             :tracks="filteredTracks"
-            title="Треки"
+            :title="query ? 'Треки' : 'Вся онлайн-музыка'"
             empty-text="По этому запросу ничего не найдено"
           />
 
-          <template v-else>
+          <template v-if="!query">
             <section class="memusic-genre-section">
               <div class="memusic-section-heading"><h2>Настроения и жанры</h2></div>
               <div class="memusic-genre-grid">
@@ -129,7 +140,6 @@ function openPlaylist(playlistId) {
                 </button>
               </div>
             </section>
-            <MusicTrackList :tracks="musicTracks" title="Вся музыка" />
           </template>
         </template>
 
@@ -146,8 +156,14 @@ function openPlaylist(playlistId) {
             <p class="memusic-kicker">Коллекция</p><h1>Моя музыка</h1><p>Избранные треки и сохранённые подборки.</p>
           </section>
 
+          <MusicFilters
+            v-model="libraryFilters"
+            :tracks="librarySourceTracks"
+            :context="selectedPlaylist ? 'playlist' : 'favorites'"
+          />
+
           <MusicTrackList
-            :tracks="selectedPlaylist ? selectedPlaylistTracks : player.likedTracks"
+            :tracks="filteredLibraryTracks"
             :title="selectedPlaylist ? 'Треки плейлиста' : 'Любимые треки'"
             empty-text="Добавляйте треки в любимые кнопкой с сердцем"
           />

@@ -5,6 +5,7 @@ import VideoCard from "../components/VideoCard.vue";
 import {useRequestsStore} from "@/stores/requests.js";
 import {openVideo} from "@/utils/helpers.js";
 import HorizontalVideoCard from "@/components/HorizontalVideoCard.vue";
+import VideoPlayer from "../components/VideoPlayer.vue";
 
 const route = useRoute();
 const requests = useRequestsStore()
@@ -48,6 +49,11 @@ const filteredVideos = computed(() => {
           :key="item.id"
           @click="openVideo(item)"
           :video="item"
+      />
+      <VideoPlayer
+        src=""
+        preview=""
+        title=""
       />
     </div>
   </div>

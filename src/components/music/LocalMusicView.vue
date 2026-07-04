@@ -1,8 +1,10 @@
 <script setup>
 import {computed, ref} from "vue";
 import LocalMusicExplorer from "@/components/music/LocalMusicExplorer.vue";
+import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import {createLocalTracks, filesFromDirectoryInput, scanDirectoryHandle} from "@/music/localLibrary.js";
+import {filterAndSortTracks} from "@/music/trackFilters.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 
 const player = useMusicPlayerStore();
@@ -13,9 +15,11 @@ const scanStage = ref("");
 const scannedFiles = ref(0);
 const processedFiles = ref(0);
 const scanError = ref("");
+const filters = ref({sort: "title"});
 
 const hasLocalLibrary = computed(() => player.localTracks.length > 0);
 const totalSize = computed(() => player.localTracks.reduce((sum, track) => sum + track.fileSize, 0));
+const filteredLocalTracks = computed(() => filterAndSortTracks(player.localTracks, filters.value));
 const totalSizeLabel = computed(() => {
   if (totalSize.value < 1024 ** 2) return `${Math.round(totalSize.value / 1024)} КБ`;
   return `${(totalSize.value / 1024 ** 2).toFixed(1)} МБ`;
@@ -117,7 +121,10 @@ async function handleFallbackSelection(event) {
         <button :class="{'is-active': viewMode === 'explorer'}" type="button" @click="viewMode = 'explorer'"><span aria-hidden="true">▰</span> Проводник</button>
       </nav>
 
-      <MusicTrackList v-if="viewMode === 'playlist'" :tracks="player.localTracks" title="Все локальные треки" />
+      <template v-if="viewMode === 'playlist'">
+        <MusicFilters v-model="filters" :tracks="player.localTracks" context="local" />
+        <MusicTrackList :tracks="filteredLocalTracks" title="Локальные треки" empty-text="Нет треков с такими параметрами" />
+      </template>
       <LocalMusicExplorer v-else :tracks="player.localTracks" :root-name="player.localFolderName" />
     </template>
   </section>

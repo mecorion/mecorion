@@ -38,6 +38,7 @@ lerna-debug.log*
 tmp/
 temp/
 .svo
+memory.md
 
 src/assets/music
 src/assets/music/
