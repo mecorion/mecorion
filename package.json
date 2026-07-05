@@ -6,7 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "api:dev": "npm --prefix apps/music-api run dev",
+    "api:build": "npm --prefix apps/music-api run build",
+    "api:typecheck": "npm --prefix apps/music-api run typecheck",
+    "db:up": "docker-compose up -d postgres",
+    "db:down": "docker-compose down",
+    "db:migrate": "npm --prefix apps/music-api run db:migrate",
+    "db:seed": "npm --prefix apps/music-api run db:seed"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
