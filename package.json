@@ -3,37 +3,23 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "api:dev": "npm --prefix apps/music-api run dev",
-    "api:build": "npm --prefix apps/music-api run build",
-    "api:typecheck": "npm --prefix apps/music-api run typecheck",
-    "db:up": "docker-compose up -d postgres",
-    "db:down": "docker-compose down",
-    "db:migrate": "npm --prefix apps/music-api run db:migrate",
-    "db:seed": "npm --prefix apps/music-api run db:seed"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.1.12",
-    "axios": "^1.13.2",
-    "element-plus": "^2.11.7",
-    "js-cookie": "^3.0.5",
-    "pinia": "^3.0.4",
-    "plyr": "^3.8.3",
-    "vue": "^3.5.18",
-    "vue-plyr": "^7.0.0",
-    "vue-router": "^4.5.1"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.12",
-    "@vitejs/plugin-vue": "^6.0.1",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "sass": "^1.93.3",
-    "tailwindcss": "^4.1.12",
-    "vite": "^7.1.2",
-    "vite-svg-loader": "^5.1.0"
+    "dev": "npm --workspace @mecorion/web run dev --",
+    "build": "npm --workspace @mecorion/web run build",
+    "preview": "npm --workspace @mecorion/web run preview",
+    "api:dev": "npm --workspace @mecorion/api run dev",
+    "api:build": "npm --workspace @mecorion/api run build",
+    "api:typecheck": "npm --workspace @mecorion/api run typecheck",
+    "worker:dev": "npm --workspace @mecorion/media-worker run dev",
+    "worker:build": "npm --workspace @mecorion/media-worker run build",
+    "db:up": "docker-compose -f infrastructure/docker-compose.yml up -d postgres",
+    "db:down": "docker-compose -f infrastructure/docker-compose.yml down",
+    "db:migrate": "npm --workspace @mecorion/api run db:migrate",
+    "db:seed": "npm --workspace @mecorion/api run db:seed",
+    "typecheck": "npm --workspace @mecorion/api run typecheck && npm --workspace @mecorion/media-worker run typecheck"
   }
 }

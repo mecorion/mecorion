@@ -1,0 +1,9 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="640" fill="#101325"/>
+  <circle cx="320" cy="264" r="142" fill="#FF6F8F" fill-opacity=".85"/>
+  <path d="M0 421H640V640H0V421Z" fill="#171528"/>
+  <path d="M320 421L142 640H498L320 421Z" fill="#252143"/>
+  <path d="M320 421V640M276 421L225 640M364 421L415 640M0 478H640M0 548H640" stroke="#21C7D9" stroke-opacity=".55" stroke-width="3"/>
+  <text x="42" y="78" fill="#F7F5FF" font-family="Arial, sans-serif" font-size="30" font-weight="700">LET ME LOVE YOU</text>
+  <text x="44" y="112" fill="#8BDDEA" font-family="Arial, sans-serif" font-size="16">DJ SNAKE · JUSTIN BIEBER</text>
+</svg>
