@@ -40,6 +40,13 @@ temp/
 .svo
 memory.md
 
-src/assets/music
-src/assets/music/
-src/assets/music/**/*
+apps/web/src/assets/music
+apps/web/src/assets/music/
+apps/web/src/assets/music/**/*
+
+# Local object-storage emulation
+data/**
+!data/
+!data/README.md
+!data/**/
+!data/**/.gitkeep
