@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import Fastify from "fastify";
 import {ZodError} from "zod";
 import {config} from "../config/config.js";
+import {registerAuthModule} from "../../modules/auth/auth.module.js";
 import {registerMusicModule} from "../../modules/music/music.module.js";
 import {registerHealthRoutes} from "./health.routes.js";
 
@@ -11,9 +12,11 @@ export async function createApp() {
   await app.register(cors, {
     origin: config.CORS_ORIGIN,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
   await registerHealthRoutes(app);
+  await registerAuthModule(app);
   await registerMusicModule(app);
 
   app.setErrorHandler((error, _request, reply) => {

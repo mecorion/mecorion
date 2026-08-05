@@ -1,6 +1,6 @@
 <template>
   <LoadingUI v-if="isLoading" />
-  <RouterView v-else-if="isWorkspace" />
+  <RouterView v-else-if="isStandalone" />
   <MainLayout v-else />
 </template>
 
@@ -17,7 +17,7 @@ const requests = useRequestsStore();
 const route = useRoute();
 
 const isLoading = ref(true);
-const isWorkspace = computed(() => route.meta.workspace === true);
+const isStandalone = computed(() => route.meta.workspace === true || route.meta.standalone === true);
 
 onMounted(() => {
   app.initializeTheme();
