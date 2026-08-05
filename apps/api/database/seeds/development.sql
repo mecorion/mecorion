@@ -1,5 +1,18 @@
 BEGIN;
 
+INSERT INTO identity.users (
+  id, email, display_name, password_hash, password_salt, role
+) VALUES
+  (
+    '00000000-0000-4000-8000-000000000001',
+    'admin@mecorion.local',
+    'Администратор Mecorion',
+    'BEoy_56wRjrKsO-Q4JHWgFWo3igr939FKRx3HQ6Dad6awBU5vzUI4PsXzleHdA587qA0dkfjmOt57KJNyEt4DA',
+    'mecorion-dev-seed',
+    'admin'
+  )
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO music.artists (id, name, slug, verified) VALUES
   ('10000000-0000-4000-8000-000000000001', 'Король и Шут', 'korol-i-shut', true),
   ('10000000-0000-4000-8000-000000000002', 'DJ Snake', 'dj-snake', true),
@@ -35,4 +48,3 @@ INSERT INTO music.track_genres (track_id, genre_id) VALUES
 ON CONFLICT DO NOTHING;
 
 COMMIT;
-
