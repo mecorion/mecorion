@@ -88,6 +88,28 @@ npm run build
 npm run db:up
 ```
 
+По умолчанию проект поднимает PostgreSQL 18 в Docker-контейнере:
+
+```text
+database: mecorion
+user: mecorion
+password: mecorion
+host: 127.0.0.1
+port: 5432
+```
+
+Перед запуском API создай локальный env-файл:
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+`DATABASE_URL` должен совпадать с настройками Docker Compose:
+
+```env
+DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
+```
+
 Применение миграций:
 
 ```bash
@@ -119,7 +141,55 @@ npm run api:build
 npm run worker:build
 ```
 
-## 4. Корневые файлы
+## 4. Авторизация и роли
+
+Авторизация уже вынесена из frontend-заглушки в Mecorion API.
+
+Backend-часть:
+
+- миграция схемы лежит в `apps/api/database/migrations/002_identity_auth_schema.sql`;
+- auth-модуль лежит в `apps/api/src/modules/auth`;
+- пользователи хранятся в `identity.users`;
+- серверные сессии хранятся в `identity.sessions`;
+- пароли хранятся как `scrypt`-хеш + соль;
+- frontend хранит только случайный session token, а не пароль и не user role как
+  источник истины.
+
+Основные API routes:
+
+- `POST /api/v1/auth/sign-up` — регистрация пользователя;
+- `POST /api/v1/auth/sign-in` — вход пользователя;
+- `GET /api/v1/auth/me` — проверка текущей сессии;
+- `POST /api/v1/auth/logout` — отзыв текущей сессии.
+
+Текущие роли:
+
+- `user` — обычный пользователь;
+- `admin` — администратор платформы;
+- `super_admin` — будущий полный администратор экосистемы.
+
+Frontend-часть:
+
+- auth-клиент лежит в `apps/web/src/auth/session.js`;
+- `/sign-in` и `/sign-up` вызывают Mecorion API;
+- route guard в `apps/web/src/router/index.js` подтверждает локальный токен
+  через `GET /api/v1/auth/me` перед входом в защищённые разделы.
+
+Для локальной разработки frontend ожидает API по адресу
+`http://127.0.0.1:4000`. Его можно переопределить переменной:
+
+```bash
+VITE_MECORION_API_URL=http://127.0.0.1:4000
+```
+
+Dev-seed создаёт администратора:
+
+```text
+email: admin@mecorion.local
+password: mecorion-admin
+```
+
+## 5. Корневые файлы
 
 ### `package.json`
 
@@ -179,7 +249,12 @@ Roadmap по развитию Mecorion Music.
 
 План backend-развития музыкального модуля.
 
-## 5. `apps`
+### `MEMORY.md`
+
+Локальный дневник Codex с текущим контекстом и планами работы. Файл
+игнорируется Git и не должен попадать в коммиты.
+
+## 6. `apps`
 
 `apps` содержит запускаемые приложения. Главное правило:
 
@@ -190,7 +265,7 @@ apps = процессы, которые можно запустить
 Если часть проекта открывает порт, имеет entrypoint или работает как отдельный
 процесс, она должна жить в `apps`.
 
-## 6. `apps/web`
+## 7. `apps/web`
 
 `apps/web` — frontend всей экосистемы Mecorion.
 
@@ -425,6 +500,11 @@ core/
 #### `core/database`
 
 Создаёт пул PostgreSQL-соединений и экспортирует общую функцию `query`.
+
+В локальной разработке API подключается к PostgreSQL по `DATABASE_URL`.
+Если используется контейнер из `infrastructure/docker-compose.yml`, то
+подключение идёт к базе `mecorion` внутри контейнера через проброшенный порт
+`127.0.0.1:5432`.
 
 Все SQL-запросы должны быть параметризованными:
 
@@ -1050,4 +1130,3 @@ apps/media-worker
 docs/diagrams
 mecorion.md
 ```
-

@@ -1,0 +1,72 @@
+<mxfile host="app.diagrams.net" modified="2026-08-06T00:00:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="MEC-AUTH-01" name="MEC-AUTH-01 Identity Auth">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Mecorion Identity/Auth проектирование" style="text;html=1;strokeColor=none;fillColor=none;fontSize=28;fontStyle=1;fontColor=#f7f3ff;align=left;verticalAlign=middle;spacingLeft=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="720" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Одна БД: mecorion. Общая схема identity используется всеми сервисами: Music, Video, Book и будущими модулями." style="text;html=1;strokeColor=none;fillColor=none;fontSize=15;fontColor=#a9a3c7;align=left;verticalAlign=top;spacingLeft=0;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="900" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="browser" value="Browser / Client&#xa;apps/web" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#171329;strokeColor=#756e9e;fontColor=#f7f3ff;fontSize=16;fontStyle=1;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="Mecorion API&#xa;apps/api&#xa;&#xa;Auth routes:&#xa;/sign-up&#xa;/sign-in&#xa;/me&#xa;/logout" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#211c3a;strokeColor=#ff6f91;fontColor=#f7f3ff;fontSize=16;fontStyle=1;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="360" y="160" width="230" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="db" value="PostgreSQL Database&#xa;mecorion" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#11101e;strokeColor=#6bd6ff;fontColor=#f7f3ff;fontSize=18;fontStyle=1;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="710" y="155" width="260" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge_browser_api" value="HTTP + JSON" style="endArrow=block;html=1;rounded=0;strokeColor=#ff6f91;fontColor=#a9a3c7;fontSize=13;strokeWidth=2;" edge="1" parent="1" source="browser" target="api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_api_db" value="SQL через DATABASE_URL" style="endArrow=block;html=1;rounded=0;strokeColor=#6bd6ff;fontColor=#a9a3c7;fontSize=13;strokeWidth=2;" edge="1" parent="1" source="api" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="identity_box" value="schema: identity" style="swimlane;whiteSpace=wrap;html=1;startSize=40;rounded=1;arcSize=6;fillColor=#100d1d;strokeColor=#3f3a5f;fontColor=#ff6f91;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="120" width="500" height="530" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tUser" value="identity.tUser&#xa;&#xa;id uuid PK&#xa;email unique&#xa;display_name&#xa;role: user/admin/super_admin&#xa;status: active/pending/disabled/deleted&#xa;created_at / updated_at&#xa;disabled_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#211c3a;strokeColor=#ff6f91;fontColor=#f7f3ff;fontSize=14;fontStyle=1;align=left;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="180" width="210" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="tCredential" value="identity.tCredential&#xa;&#xa;id uuid PK&#xa;user_id FK -&gt; tUser.id&#xa;type: password/oauth&#xa;provider: local/google/yandex&#xa;provider_user_id&#xa;password_hash / password_salt&#xa;last_used_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#171329;strokeColor=#756e9e;fontColor=#f7f3ff;fontSize=14;fontStyle=1;align=left;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="180" width="210" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="tSession" value="identity.tSession&#xa;&#xa;id uuid PK&#xa;user_id FK -&gt; tUser.id&#xa;token_hash unique&#xa;user_agent&#xa;ip_address&#xa;expires_at&#xa;revoked_at&#xa;last_seen_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#171329;strokeColor=#756e9e;fontColor=#f7f3ff;fontSize=14;fontStyle=1;align=left;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="1185" y="420" width="210" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rel_user_credential" value="1 user → many credentials" style="endArrow=block;html=1;rounded=0;strokeColor=#ff6f91;fontColor=#a9a3c7;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="tUser" target="tCredential">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_user_session" value="1 user → many sessions" style="endArrow=block;html=1;rounded=0;strokeColor=#ff6f91;fontColor=#a9a3c7;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="tUser" target="tSession">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flows_box" value="Основные auth-потоки" style="swimlane;whiteSpace=wrap;html=1;startSize=40;rounded=1;arcSize=6;fillColor=#100d1d;strokeColor=#3f3a5f;fontColor=#ff6f91;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="390" width="910" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="signup" value="Регистрация&#xa;&#xa;1. Client отправляет email, имя, пароль&#xa;2. API проверяет уникальность email&#xa;3. Создает tUser&#xa;4. Создает tCredential с password_hash&#xa;5. Создает tSession&#xa;6. Возвращает session token" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#211c3a;strokeColor=#ff6f91;fontColor=#f7f3ff;fontSize=14;fontStyle=1;align=left;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="90" y="455" width="260" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="signin" value="Вход&#xa;&#xa;1. Client отправляет email и пароль&#xa;2. API ищет tUser по email&#xa;3. API ищет password credential&#xa;4. Проверяет пароль через hash&#xa;5. Создает tSession&#xa;6. Возвращает session token" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#171329;strokeColor=#756e9e;fontColor=#f7f3ff;fontSize=14;fontStyle=1;align=left;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="385" y="455" width="260" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="me_logout" value="Проверка / выход&#xa;&#xa;/me:&#xa;1. Client отправляет Bearer token&#xa;2. API считает hash(token)&#xa;3. Ищет активную tSession&#xa;4. Возвращает текущего tUser&#xa;&#xa;/logout:&#xa;API ставит revoked_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#171329;strokeColor=#756e9e;fontColor=#f7f3ff;fontSize=14;fontStyle=1;align=left;spacing=12;" vertex="1" parent="1">
+          <mxGeometry x="680" y="455" width="260" height="270" as="geometry" />
+        </mxCell>
+
+        <mxCell id="notes" value="Проектное решение: token хранится у клиента, но в БД лежит только token_hash.&#xa;Identity не хранит музыку, видео или книги. Она отвечает только за аккаунт, сессию и права." style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#26172b;strokeColor=#ff6f91;fontColor=#f7f3ff;fontSize=15;fontStyle=1;align=left;spacing=14;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="690" width="500" height="110" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

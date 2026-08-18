@@ -15,9 +15,29 @@ npm run api:dev
 
 API будет доступно по адресу `http://127.0.0.1:4000`.
 
+Локальный PostgreSQL запускается через Docker Compose:
+
+```text
+image: postgres:18
+database: mecorion
+user: mecorion
+password: mecorion
+port: 5432
+```
+
+`apps/api/.env` должен содержать такой `DATABASE_URL`:
+
+```env
+DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
+```
+
 ## Маршруты
 
 - `GET /health` — состояние API и PostgreSQL;
+- `POST /api/v1/auth/sign-up` — регистрация;
+- `POST /api/v1/auth/sign-in` — вход;
+- `GET /api/v1/auth/me` — текущий пользователь;
+- `POST /api/v1/auth/logout` — выход;
 - `GET /api/v1/tracks` — треки с фильтрами и пагинацией;
 - `GET /api/v1/tracks/:id` — один трек;
 - `POST /api/v1/tracks` — создание тестового трека;
