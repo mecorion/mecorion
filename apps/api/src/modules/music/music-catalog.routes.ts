@@ -1,5 +1,5 @@
 import type {FastifyInstance} from "fastify";
-import {query} from "../../core/database/database.js";
+import {query} from "../../core/database.js";
 
 interface ArtistRow {
   id: string;

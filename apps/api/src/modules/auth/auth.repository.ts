@@ -1,5 +1,5 @@
 import type {FastifyRequest} from "fastify";
-import {query} from "../../core/database/database.js";
+import {query} from "../../core/database.js";
 import {hashSessionToken} from "./auth.crypto.js";
 
 export interface AuthUser {

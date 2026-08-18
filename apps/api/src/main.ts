@@ -1,5 +1,5 @@
-import {config} from "./core/config/config.js";
-import {database} from "./core/database/database.js";
+import {config} from "./core/config.js";
+import {database} from "./core/database.js";
 import {createApp} from "./core/http/app.js";
 
 const app = await createApp();

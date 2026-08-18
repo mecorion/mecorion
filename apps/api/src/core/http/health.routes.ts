@@ -1,5 +1,5 @@
 import type {FastifyInstance} from "fastify";
-import {query} from "../database/database.js";
+import {query} from "../database.js";
 
 export async function registerHealthRoutes(app: FastifyInstance) {
   app.get("/health", async (_request, reply) => {

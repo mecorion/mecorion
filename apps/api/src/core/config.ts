@@ -1,7 +1,7 @@
 import "dotenv/config";
 import {z} from "zod";
 
-const EnvironmentSchema = z.object({
+const schema = z.object({
   HOST: z.string().default("127.0.0.1"),
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
@@ -9,7 +9,7 @@ const EnvironmentSchema = z.object({
   CORS_ORIGIN: z.string().url().default("http://127.0.0.1:5173"),
 });
 
-const result = EnvironmentSchema.safeParse(process.env);
+const result = schema.safeParse(process.env);
 
 if (!result.success) {
   console.error("Некорректная конфигурация Music API", result.error.flatten().fieldErrors);

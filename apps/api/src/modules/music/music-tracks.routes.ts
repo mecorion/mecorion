@@ -1,6 +1,6 @@
 import type {FastifyInstance} from "fastify";
 import {z} from "zod";
-import {query} from "../../core/database/database.js";
+import {query} from "../../core/database.js";
 
 interface TrackRow {
   id: string;
