@@ -32,22 +32,22 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-    let authenticated = isAuthenticated();
+    // let authenticated = isAuthenticated();
 
     // Локальная сессия даёт быстрый optimistic-check, но перед входом в
     // защищённые зоны подтверждаем токен на API. Так frontend не доверяет
     // устаревшему localStorage после logout или истечения server-side session.
-    if ((to.meta.requiresAuth || to.meta.guestOnly) && authenticated) {
-        authenticated = Boolean(await fetchCurrentUser());
-    }
+    // if ((to.meta.requiresAuth || to.meta.guestOnly) && authenticated) {
+    //     authenticated = Boolean(await fetchCurrentUser());
+    // }
 
-    if (to.meta.requiresAuth && !authenticated) {
-        return {path: "/sign-in", query: {redirect: to.fullPath}};
-    }
+    // if (to.meta.requiresAuth && !authenticated) {
+    //     return {path: "/sign-in", query: {redirect: to.fullPath}};
+    // }
 
-    if (to.meta.guestOnly && authenticated) {
-        return "/dashboard";
-    }
+    // if (to.meta.guestOnly && authenticated) {
+    //     return "/dashboard";
+    // }
 
     return true;
 });
