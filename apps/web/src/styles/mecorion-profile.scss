@@ -43,6 +43,7 @@
   .profile-loading,
   .profile-card,
   .profile-stat-strip {
+    min-width: 0;
     border: 1px solid var(--mc-border-soft);
     border-radius: var(--mc-radius-md);
     background: color-mix(in srgb, var(--mc-surface) 92%, transparent);
@@ -79,6 +80,7 @@
 
   .profile-card--identity {
     display: grid;
+    min-width: 0;
     grid-template-columns: 170px minmax(0, 1fr);
     gap: 26px;
   }
@@ -124,6 +126,12 @@
     margin-top: 10px !important;
     font-size: clamp(32px, 3vw, 46px);
     line-height: 1.05 !important;
+  }
+
+  .profile-identity,
+  .profile-status-copy,
+  .profile-widget {
+    min-width: 0;
   }
 
   .profile-identity h1 span {
@@ -181,6 +189,7 @@
     align-items: center;
     justify-content: center;
     min-height: 42px;
+    min-width: 0;
     border-radius: 7px;
     padding: 0 20px;
     font-weight: 850;
@@ -603,6 +612,10 @@
       grid-template-columns: 1fr;
     }
 
+    .profile-role-switch__item {
+      width: 100%;
+    }
+
     .profile-card--identity,
     .profile-status-layout,
     .profile-meta,
@@ -625,6 +638,24 @@
       flex-direction: column;
     }
 
+    .profile-id {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .profile-actions {
+      flex-direction: column;
+    }
+
+    .profile-primary-action,
+    .profile-secondary-action,
+    .profile-wide-action,
+    .profile-interest-panel button,
+    .profile-list-panel button,
+    .profile-analytics-panel button {
+      width: 100%;
+    }
+
     .profile-stat-strip article {
       border-right: 0;
       border-bottom: 1px solid var(--mc-border-soft);
@@ -638,6 +669,82 @@
     .profile-footer {
       flex-wrap: wrap;
       padding: 18px;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .profile-page {
+      width: min(100% - 20px, 1500px);
+      padding-top: 14px;
+    }
+
+    .profile-card {
+      padding: 16px;
+    }
+
+    .profile-avatar {
+      width: 96px;
+      height: 96px;
+      font-size: 28px;
+    }
+
+    .profile-avatar button {
+      width: 34px;
+      height: 34px;
+      bottom: 4px;
+    }
+
+    .profile-identity h1 {
+      font-size: 28px;
+    }
+
+    .profile-bio {
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .profile-status-layout,
+    .profile-analytics-metrics {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-list-item {
+      grid-template-columns: 38px minmax(0, 1fr);
+    }
+
+    .profile-list-item small {
+      grid-column: 2;
+      width: max-content;
+      max-width: 100%;
+    }
+
+    .profile-footer {
+      gap: 12px;
+      padding: 14px 10px;
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .profile-page {
+      width: min(100% - 16px, 1500px);
+    }
+
+    .profile-card {
+      padding: 14px;
+    }
+
+    .profile-identity h1 {
+      font-size: 25px;
+    }
+
+    .profile-identity h1 span {
+      font-size: 11px;
+    }
+
+    .profile-progress-ring {
+      width: 116px;
+      height: 116px;
     }
   }
 }
