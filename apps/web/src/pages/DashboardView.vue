@@ -1,6 +1,7 @@
 <script setup>
 import {computed} from "vue";
 import {RouterLink} from "vue-router";
+import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import musicArt from "@/assets/illustrations/dashboard/music-bars.svg";
 import videoArt from "@/assets/illustrations/dashboard/video-wave.svg";
 import booksArt from "@/assets/illustrations/dashboard/books.svg";
@@ -49,33 +50,6 @@ const dashboardByRole = {
 
 const dashboard = computed(() => dashboardByRole[currentUser.role] ?? dashboardByRole.base);
 
-const primaryNavigation = [
-  {title: "Домой", icon: "⌂", active: true},
-  {title: "Исследовать", icon: "⌕"},
-  {title: "Сервисы", icon: "▦"},
-  {title: "Сохранённое", icon: "▯"},
-  {title: "Загрузки", icon: "⇩"},
-];
-
-const serviceNavigation = [
-  {title: "Music", icon: "♫", route: "/music"},
-  {title: "Video", icon: "▻", route: "/home"},
-  {title: "Books", icon: "▥"},
-  {title: "Drive", icon: "☁"},
-  {title: "VPN", icon: "◇"},
-  {title: "Agents", icon: "☷"},
-];
-
-const communityNavigation = [
-  {title: "Resolutions", icon: "⚑"},
-  {title: "Requests", icon: "▤"},
-];
-
-const accountNavigation = [
-  {title: "Профиль", icon: "♙", route: "/profile"},
-  {title: "Настройки", icon: "⚙"},
-];
-
 const trendingItems = [
   {title: "Dune", type: "Фильм", tone: "orange"},
   {title: "House of the Dragon", type: "Сериал", tone: "gold"},
@@ -92,82 +66,7 @@ const activity = [
 </script>
 
 <template>
-  <div class="mecorion-workspace dashboard-shell">
-    <aside class="dashboard-sidebar" aria-label="Навигация Mecorion">
-      <RouterLink class="workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
-        <span class="workspace-brand__mark">M</span>
-        <span>Mecorion</span>
-      </RouterLink>
-
-      <nav class="dashboard-nav" aria-label="Основное меню">
-        <component
-          :is="item.route ? RouterLink : 'button'"
-          v-for="item in primaryNavigation"
-          :key="item.title"
-          :to="item.route"
-          type="button"
-          class="dashboard-nav__item"
-          :class="{'dashboard-nav__item--active': item.active}"
-        >
-          <span aria-hidden="true">{{ item.icon }}</span>{{ item.title }}
-        </component>
-      </nav>
-
-      <div class="dashboard-nav-group">
-        <p>Сервисы</p>
-        <component
-          :is="item.route ? RouterLink : 'button'"
-          v-for="item in serviceNavigation"
-          :key="item.title"
-          :to="item.route"
-          type="button"
-          class="dashboard-nav__item"
-        >
-          <span aria-hidden="true">{{ item.icon }}</span>{{ item.title }}
-        </component>
-      </div>
-
-      <div class="dashboard-nav-group">
-        <p>Сообщество</p>
-        <button v-for="item in communityNavigation" :key="item.title" class="dashboard-nav__item" type="button">
-          <span aria-hidden="true">{{ item.icon }}</span>{{ item.title }}
-        </button>
-      </div>
-
-      <div class="dashboard-nav-group">
-        <p>Аккаунт</p>
-        <component
-          :is="item.route ? RouterLink : 'button'"
-          v-for="item in accountNavigation"
-          :key="item.title"
-          :to="item.route"
-          class="dashboard-nav__item"
-          type="button"
-        >
-          <span aria-hidden="true">{{ item.icon }}</span>{{ item.title }}
-        </component>
-      </div>
-
-      <button class="dashboard-sidebar__support" type="button"><span aria-hidden="true">?</span> Помощь и поддержка</button>
-    </aside>
-
-    <section class="dashboard-board">
-      <header class="dashboard-topbar">
-        <label class="dashboard-search">
-          <span aria-hidden="true">⌕</span>
-          <input type="search" placeholder="Поиск по Mecorion" />
-        </label>
-        <div class="dashboard-topbar__account">
-          <button class="dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления"><span>♧</span><i>3</i></button>
-          <button class="dashboard-icon-button" type="button" aria-label="Синхронизация"><span>◌</span></button>
-          <RouterLink class="dashboard-user-chip" to="/profile">
-            <span>{{ currentUser.initials }}</span>
-            <strong>{{ currentUser.name }}</strong>
-            <small>Mecorion ID: {{ currentUser.id }}</small>
-          </RouterLink>
-        </div>
-      </header>
-
+  <WorkspaceLayout>
       <main class="dashboard-content">
         <section class="dashboard-main-column">
           <article class="dashboard-hero">
@@ -289,6 +188,5 @@ const activity = [
           </section>
         </aside>
       </main>
-    </section>
-  </div>
+  </WorkspaceLayout>
 </template>

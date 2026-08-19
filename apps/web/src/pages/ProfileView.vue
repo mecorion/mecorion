@@ -1,7 +1,8 @@
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
-import {RouterLink, useRoute, useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import ProfileSection from "@/components/profile/ProfileSection.vue";
+import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {fetchMockProfile, profileRoles} from "@/profile/profile.mock.js";
 
 const route = useRoute();
@@ -47,30 +48,7 @@ watch(
 </script>
 
 <template>
-  <div class="mecorion-workspace profile-shell">
-    <header class="profile-topbar">
-      <RouterLink class="workspace-brand" to="/dashboard" aria-label="Mecorion dashboard">
-        <span class="workspace-brand__mark">M</span>
-        <span>Mecorion</span>
-      </RouterLink>
-
-      <label class="profile-search">
-        <span aria-hidden="true">⌕</span>
-        <input type="search" placeholder="Поиск по сервисам, контенту и людям" />
-      </label>
-
-      <div class="profile-topbar__actions">
-        <button class="profile-icon-button profile-icon-button--notice" type="button" aria-label="Уведомления">
-          <span>♧</span><i>3</i>
-        </button>
-        <button class="profile-user-menu" type="button" aria-label="Открыть меню профиля">
-          <span>{{ profile?.initials ?? 'ВД' }}</span>
-          <strong>{{ profile?.name ?? 'Вадим' }}</strong>
-          <small>⌄</small>
-        </button>
-      </div>
-    </header>
-
+  <WorkspaceLayout>
     <main class="profile-page">
       <section class="profile-role-switch" aria-label="Mock роли пользователя">
         <span>Mock API роль:</span>
@@ -172,14 +150,14 @@ watch(
           </article>
         </section>
       </template>
-    </main>
 
-    <footer class="profile-footer">
-      <a href="#">Помощь</a>
-      <a href="#">Безопасность</a>
-      <a href="#">Конфиденциальность</a>
-      <a href="#">Условия использования</a>
-      <span>◎ Русский⌄</span>
-    </footer>
-  </div>
+      <footer class="profile-footer">
+        <a href="#">Помощь</a>
+        <a href="#">Безопасность</a>
+        <a href="#">Конфиденциальность</a>
+        <a href="#">Условия использования</a>
+        <span>◎ Русский⌄</span>
+      </footer>
+    </main>
+  </WorkspaceLayout>
 </template>
