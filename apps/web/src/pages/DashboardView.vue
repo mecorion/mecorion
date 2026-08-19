@@ -72,7 +72,7 @@ const communityNavigation = [
 ];
 
 const accountNavigation = [
-  {title: "Профиль", icon: "♙"},
+  {title: "Профиль", icon: "♙", route: "/profile"},
   {title: "Настройки", icon: "⚙"},
 ];
 
@@ -136,9 +136,16 @@ const activity = [
 
       <div class="dashboard-nav-group">
         <p>Аккаунт</p>
-        <button v-for="item in accountNavigation" :key="item.title" class="dashboard-nav__item" type="button">
+        <component
+          :is="item.route ? RouterLink : 'button'"
+          v-for="item in accountNavigation"
+          :key="item.title"
+          :to="item.route"
+          class="dashboard-nav__item"
+          type="button"
+        >
           <span aria-hidden="true">{{ item.icon }}</span>{{ item.title }}
-        </button>
+        </component>
       </div>
 
       <button class="dashboard-sidebar__support" type="button"><span aria-hidden="true">?</span> Помощь и поддержка</button>
@@ -153,11 +160,11 @@ const activity = [
         <div class="dashboard-topbar__account">
           <button class="dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления"><span>♧</span><i>3</i></button>
           <button class="dashboard-icon-button" type="button" aria-label="Синхронизация"><span>◌</span></button>
-          <button class="dashboard-user-chip" type="button">
+          <RouterLink class="dashboard-user-chip" to="/profile">
             <span>{{ currentUser.initials }}</span>
             <strong>{{ currentUser.name }}</strong>
             <small>Mecorion ID: {{ currentUser.id }}</small>
-          </button>
+          </RouterLink>
         </div>
       </header>
 
