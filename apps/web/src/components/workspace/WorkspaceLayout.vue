@@ -13,6 +13,7 @@ const currentUser = {
 const primaryNavigation = [
   {title: "Главная", icon: "⌂", route: "/dashboard"},
   {title: "Исследовать", icon: "⌕"},
+  {title: "Пространства", icon: "⌘", route: "/spaces"},
   {title: "Сервисы", icon: "▦"},
   {title: "Сохранённое", icon: "▯"},
   {title: "Загрузки", icon: "⇩"},

@@ -8,6 +8,7 @@ import LandingView from "@/pages/LandingView.vue";
 import SignInView from "@/pages/SignInView.vue";
 import SignUpView from "@/pages/SignUpView.vue";
 import ProfileView from "@/pages/ProfileView.vue";
+import SpacesView from "@/pages/SpacesView.vue";
 import {fetchCurrentUser, isAuthenticated} from "@/auth/session.js";
 
 // Music содержит собственный layout и аудиодвижок, поэтому загружается
@@ -19,6 +20,7 @@ const routes = [
     {path: "/sign-in", component: SignInView, meta: {standalone: true, guestOnly: true}},
     {path: "/sign-up", component: SignUpView, meta: {standalone: true, guestOnly: true}},
     {path: "/dashboard", component: DashboardView, meta: {workspace: true, requiresAuth: true}},
+    {path: "/spaces", component: SpacesView, meta: {workspace: true, requiresAuth: true}},
     {path: "/profile", component: ProfileView, meta: {workspace: true, requiresAuth: true}},
     {path: "/music", component: MusicView, meta: {workspace: true, requiresAuth: true}},
     {path: "/home", component: HomePage, meta: {needsContent: true, requiresAuth: true}},
