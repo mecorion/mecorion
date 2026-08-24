@@ -18,6 +18,56 @@ const mediaCards = [
   {logo: 'MU', title: 'Music', text: 'Альбомы, плейлисты и синхронизация'},
   {logo: 'AI', title: 'AI Tools', text: 'Помощники и интеллектуальные сценарии'},
 ];
+
+const iconModules = import.meta.glob('../assets/icons/mc/vpn/**/*.svg', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+const iconStyleOrder = ['outline', 'solid', 'duotone'];
+
+const iconStyleLabels = {
+  outline: 'Outline',
+  solid: 'Solid',
+  duotone: 'Duotone',
+};
+
+const formatIconName = (name) => name
+  .split('-')
+  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+  .join(' ');
+
+const iconGroups = Object.entries(iconModules)
+  .reduce((groups, [filePath, url]) => {
+    const match = filePath.match(/\/vpn\/([^/]+)\/([^/]+)\.svg$/);
+
+    if (!match) {
+      return groups;
+    }
+
+    const [, style, name] = match;
+
+    if (!groups[style]) {
+      groups[style] = [];
+    }
+
+    groups[style].push({
+      name,
+      label: formatIconName(name),
+      svg: url,
+    });
+
+    return groups;
+  }, {});
+
+const iconSections = iconStyleOrder
+  .filter((style) => iconGroups[style]?.length)
+  .map((style) => ({
+    style,
+    label: iconStyleLabels[style],
+    icons: iconGroups[style].sort((a, b) => a.label.localeCompare(b.label)),
+  }));
 </script>
 
 <template>
@@ -135,6 +185,62 @@ const mediaCards = [
 
       <section class="mc-section">
         <div class="mc-section__header">
+          <h2 class="mc-title-2">Иконки</h2>
+          <p class="mc-text">Mecorion VPN Icons: 24×24, stroke 1.75, три вариации для продуктовых экранов.</p>
+        </div>
+
+        <div class="uikit-icon-preview">
+          <article
+            v-for="section in iconSections"
+            :key="section.style"
+            class="mc-card uikit-icon-preview__group"
+          >
+            <header class="uikit-icon-preview__header">
+              <div>
+                <p class="mc-caption">apps/web/src/assets/icons/mc/vpn/{{ section.style }}</p>
+                <h3 class="mc-title-3">{{ section.label }}</h3>
+              </div>
+              <span class="uikit-icon-preview__count">{{ section.icons.length }}</span>
+            </header>
+
+            <div class="uikit-icon-grid">
+              <article
+                v-for="icon in section.icons"
+                :key="`${section.style}-${icon.name}`"
+                class="uikit-icon-tile"
+              >
+                <div class="uikit-icon-tile__sizes" :class="`uikit-icon-tile__sizes--${section.style}`">
+                  <span
+                    class="uikit-icon-tile__icon uikit-icon-tile__icon--sm"
+                    :aria-label="`${icon.label} 16px`"
+                    role="img"
+                    v-html="icon.svg"
+                  />
+                  <span
+                    class="uikit-icon-tile__icon uikit-icon-tile__icon--md"
+                    :aria-label="`${icon.label} 24px`"
+                    role="img"
+                    v-html="icon.svg"
+                  />
+                  <span
+                    class="uikit-icon-tile__icon uikit-icon-tile__icon--lg"
+                    :aria-label="`${icon.label} 32px`"
+                    role="img"
+                    v-html="icon.svg"
+                  />
+                </div>
+                <div class="uikit-icon-tile__meta">
+                  <strong>{{ icon.label }}</strong>
+                  <span>{{ icon.name }}.svg</span>
+                </div>
+              </article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="mc-section">
+        <div class="mc-section__header">
           <h2 class="mc-title-2">Формы</h2>
           <p class="mc-text">Поля рассчитаны на тёмный интерфейс и читаемые состояния фокуса.</p>
         </div>
@@ -178,44 +284,3 @@ const mediaCards = [
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.uikit-view {
-  display: flex;
-  justify-content: center;
-  padding-bottom: var(--mc-space-10);
-}
-
-.uikit-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 520px);
-  align-items: end;
-  gap: var(--mc-space-6);
-  padding: var(--mc-space-8);
-  border-radius: var(--mc-radius-xl);
-  background:
-    radial-gradient(circle at 78% 18%, rgba(255, 111, 143, .16), transparent 34%),
-    var(--mc-surface);
-  border: 1px solid var(--mc-border-soft);
-}
-
-.uikit-type-scale {
-  display: grid;
-  gap: var(--mc-space-5);
-}
-
-.uikit-product-card {
-  align-items: flex-start;
-  min-height: 300px;
-
-  .mc-card-logo {
-    margin-bottom: auto;
-  }
-}
-
-@media (max-width: 900px) {
-  .uikit-hero {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
