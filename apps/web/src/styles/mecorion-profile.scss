@@ -747,4 +747,122 @@
       height: 116px;
     }
   }
+
+  /* Profile refresh: единый card/table стиль с dashboard и корректный mobile до 320px. */
+  .profile-page {
+    width: min(100%, 1540px);
+    padding: clamp(22px, 2.4vw, 36px) clamp(16px, 2.6vw, 42px);
+  }
+
+  .profile-role-switch,
+  .profile-loading,
+  .profile-card,
+  .profile-stat-strip,
+  .profile-widget,
+  .profile-footer {
+    border-radius: 14px;
+    border-color: var(--mc-border-soft);
+    background: color-mix(in srgb, var(--mc-surface) 96%, var(--mc-surface-deep));
+    box-shadow: var(--mc-shadow-card);
+  }
+
+  .profile-role-switch {
+    margin-bottom: 20px;
+  }
+
+  .profile-role-switch__item {
+    border-radius: 10px;
+  }
+
+  .profile-hero-grid {
+    grid-template-columns: minmax(0, 1.6fr) minmax(320px, .9fr);
+  }
+
+  .profile-card--identity {
+    grid-template-columns: minmax(112px, 150px) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .profile-avatar {
+    width: clamp(112px, 12vw, 150px);
+    height: clamp(112px, 12vw, 150px);
+  }
+
+  .profile-identity h1 {
+    font-size: clamp(28px, 2.5vw, 40px);
+  }
+
+  .profile-primary-action,
+  .profile-secondary-action,
+  .profile-wide-action,
+  .profile-interest-panel button,
+  .profile-list-panel button,
+  .profile-analytics-panel button {
+    border-radius: 10px;
+  }
+
+  .profile-primary-action {
+    color: #fff;
+    box-shadow: 0 12px 24px color-mix(in srgb, var(--mc-accent) 18%, transparent);
+  }
+
+  @media (max-width: 1180px) {
+    .profile-hero-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .profile-page {
+      padding: 18px 14px 28px;
+    }
+
+    .profile-role-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .profile-role-switch span {
+      grid-column: 1 / -1;
+    }
+
+    .profile-card--identity {
+      grid-template-columns: 1fr;
+      justify-items: start;
+    }
+
+    .profile-meta {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .profile-page {
+      width: 100%;
+      padding: 16px 12px 24px;
+    }
+
+    .profile-card,
+    .profile-stat-strip,
+    .profile-widget {
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .profile-identity h1 {
+      font-size: 26px;
+    }
+
+    .profile-status-layout,
+    .profile-progress-list,
+    .profile-analytics-metrics {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-progress-ring {
+      justify-self: start;
+    }
+  }
 }
