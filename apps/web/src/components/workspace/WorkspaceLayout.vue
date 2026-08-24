@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
           </button>
           <RouterLink class="mcrn-user-chip dashboard-user-chip" to="/profile">
             <span class="mcrn-user-chip__avatar">{{ currentUser.initials }}</span>
-            <span>
+            <span class="mcrn-user-chip__content">
               <strong>{{ currentUser.name }}</strong>
               <small>Mecorion ID: {{ currentUser.id }}</small>
             </span>
