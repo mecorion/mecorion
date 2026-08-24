@@ -1,9 +1,9 @@
 const roleProfiles = {
   user: {
     role: "user",
-    name: "Вадим",
-    initials: "ВД",
-    mecorionId: "7A3F9C",
+    name: "Иван",
+    initials: "ИИ",
+    mecorionId: "000000",
     badge: "Новый пользователь",
     avatarTone: "rose",
     bio: "Привет! Я только начинаю свой путь в Mecorion. Изучаю возможности платформы и планирую делиться интересным контентом.",
@@ -48,9 +48,9 @@ const roleProfiles = {
   },
   agent: {
     role: "agent",
-    name: "София",
-    initials: "СФ",
-    mecorionId: "9E2C7A",
+    name: "Иван",
+    initials: "ИИ",
+    mecorionId: "000001",
     badge: "Агент",
     avatarTone: "violet",
     bio: "Курирую контент и управляю публикациями в сообществах и тематических пространствах Mecorion.",
@@ -94,9 +94,9 @@ const roleProfiles = {
   },
   moderator: {
     role: "moderator",
-    name: "Алексей",
-    initials: "АЛ",
-    mecorionId: "8F3D7A",
+    name: "Иван",
+    initials: "ИИ",
+    mecorionId: "000002",
     badge: "Модератор",
     avatarTone: "cyan",
     bio: "Помогаю поддерживать Mecorion безопасным и комфортным. Проверяю отчёты, принимаю решения и поддерживаю стандарты качества сообщества.",

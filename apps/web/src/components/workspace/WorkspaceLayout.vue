@@ -8,9 +8,9 @@ const app = useAppStore();
 const isSidebarOpen = ref(false);
 
 const currentUser = {
-  name: "Вадим",
-  initials: "ВД",
-  id: "7A3F9C",
+  name: "Иван",
+  initials: "ИИ",
+  id: "000000",
 };
 
 const primaryNavigation = [
@@ -25,7 +25,7 @@ const primaryNavigation = [
 const serviceNavigation = [
   {title: "Music", icon: "music", route: "/music"},
   {title: "Video", icon: "play", route: "/home"},
-  {title: "Books", icon: "book"},
+  {title: "Books", icon: "book", route: "/books"},
   {title: "Drive", icon: "cloud"},
   {title: "VPN", icon: "shield"},
   {title: "Agents", icon: "users"},
@@ -51,6 +51,14 @@ const navigationGroups = computed(() => [
 function isRouteActive(item) {
   if (!item.route) {
     return false;
+  }
+
+  if (item.route === "/spaces") {
+    return route.path === "/spaces" || route.path.startsWith("/space/");
+  }
+
+  if (item.route === "/books") {
+    return route.path === "/books";
   }
 
   return route.path === item.route;

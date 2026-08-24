@@ -9,9 +9,9 @@ import cloudArt from "@/assets/illustrations/dashboard/cloud.svg";
 import sentinelArt from "@/assets/illustrations/dashboard/sentinel.svg";
 
 const currentUser = {
-  name: "Вадим",
-  initials: "ВД",
-  id: "7A3F9C",
+  name: "Иван",
+  initials: "ИИ",
+  id: "000000",
   role: "base",
   plan: "Free",
   profileProgress: 40,
@@ -51,10 +51,10 @@ const dashboardByRole = {
 const dashboard = computed(() => dashboardByRole[currentUser.role] ?? dashboardByRole.base);
 
 const trendingItems = [
-  {title: "Dune", type: "Фильм", tone: "orange"},
-  {title: "House of the Dragon", type: "Сериал", tone: "gold"},
-  {title: "Hurry Up Tomorrow", type: "Альбом", tone: "dark"},
-  {title: "Sapiens", type: "Книга", tone: "paper"},
+  {title: "Фильм дня", type: "Фильм", tone: "orange"},
+  {title: "Сериал недели", type: "Сериал", tone: "gold"},
+  {title: "Новый альбом", type: "Альбом", tone: "dark"},
+  {title: "Книга месяца", type: "Книга", tone: "paper"},
 ];
 
 const activity = [

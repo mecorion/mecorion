@@ -1,4 +1,5 @@
 <script setup>
+import {RouterLink} from "vue-router";
 import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.js";
 </script>
@@ -35,11 +36,12 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
       </section>
 
       <section class="spaces-featured-rail" aria-label="Рекомендуемые пространства">
-        <article
+        <RouterLink
           v-for="space in featuredSpaces"
-          :key="space.title"
+          :key="space.id"
           class="spaces-card"
           :class="[`spaces-card--${space.tone}`, {'spaces-card--wide': space.size === 'wide'}]"
+          :to="`/space/${space.id}`"
         >
           <div class="spaces-card__content">
             <span class="spaces-card__icon">{{ space.icon }}</span>
@@ -52,16 +54,17 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
             <div><dt>{{ space.members }}</dt><dd>участников</dd></div>
           </dl>
 
-          <button class="spaces-card__open" type="button" :aria-label="`Открыть ${space.title}`">→</button>
-        </article>
+          <span class="spaces-card__open" :aria-label="`Открыть ${space.title}`">→</span>
+        </RouterLink>
       </section>
 
       <section class="spaces-compact-grid" aria-label="Другие пространства">
-        <article
+        <RouterLink
           v-for="space in compactSpaces"
-          :key="space.title"
+          :key="space.id"
           class="spaces-mini-card"
           :class="`spaces-mini-card--${space.tone}`"
+          :to="`/space/${space.id}`"
         >
           <span>{{ space.icon }}</span>
           <div>
@@ -69,8 +72,8 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
             <p>{{ space.description }}</p>
             <small>{{ space.posts }} публикаций · {{ space.members }} участников</small>
           </div>
-          <button type="button" :aria-label="`Открыть ${space.title}`">→</button>
-        </article>
+          <span class="spaces-mini-card__open" :aria-label="`Открыть ${space.title}`">→</span>
+        </RouterLink>
       </section>
 
       <section class="spaces-callout">

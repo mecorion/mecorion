@@ -22,7 +22,7 @@ const emit = defineEmits(["update:query", "focus-search"]);
 
     <div class="memusic-header__actions">
       <button class="memusic-icon-button" type="button" aria-label="Уведомления">◌<i></i></button>
-      <button class="memusic-profile" type="button"><span>ВД</span><strong>Вадим</strong></button>
+      <button class="memusic-profile" type="button"><span>ИИ</span><strong>Иван</strong></button>
     </div>
   </header>
 </template>

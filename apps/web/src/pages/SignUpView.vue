@@ -62,7 +62,7 @@ async function submit() {
 
         <label class="mc-field">
           <span class="mc-field__label">Имя</span>
-          <input v-model="form.name" class="mc-field__control" type="text" autocomplete="name" placeholder="Вадим" />
+          <input v-model="form.name" class="mc-field__control" type="text" autocomplete="name" placeholder="Иван" />
         </label>
 
         <label class="mc-field">
