@@ -22,6 +22,12 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
 <template>
   <WorkspaceLayout>
     <main v-if="publication && space" class="publication-page">
+      <nav class="mcrn-route-path" aria-label="Путь">
+        <RouterLink to="/spaces">/</RouterLink>
+        <RouterLink :to="`/space/${space.id}`">{{ space.title }}</RouterLink>
+        <span aria-current="page">{{ publication.title }}</span>
+      </nav>
+
       <RouterLink class="space-back-link" :to="`/space/${space.id}`">← {{ space.title }}</RouterLink>
 
       <section class="publication-hero">

@@ -7,6 +7,11 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
 <template>
   <WorkspaceLayout>
     <main class="spaces-page">
+      <nav class="mcrn-route-path" aria-label="Путь">
+        <RouterLink to="/dashboard">/</RouterLink>
+        <span aria-current="page">Пространства</span>
+      </nav>
+
       <section class="spaces-hero">
         <div>
           <p class="workspace-eyebrow">Корневое пространство</p>

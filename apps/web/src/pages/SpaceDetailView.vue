@@ -27,6 +27,11 @@ const publications = computed(() => {
 <template>
   <WorkspaceLayout>
     <main v-if="space" class="space-detail-page">
+      <nav class="mcrn-route-path" aria-label="Путь">
+        <RouterLink to="/spaces">/</RouterLink>
+        <span aria-current="page">{{ space.title }}</span>
+      </nav>
+
       <section class="space-detail-hero" :class="`spaces-card--${space.tone}`">
         <RouterLink class="space-back-link" to="/spaces">← Все пространства</RouterLink>
         <div class="space-detail-hero__content">
