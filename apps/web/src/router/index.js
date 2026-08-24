@@ -12,6 +12,7 @@ import SpacesView from "@/pages/SpacesView.vue";
 import SpaceDetailView from "@/pages/SpaceDetailView.vue";
 import PublicationView from "@/pages/PublicationView.vue";
 import BooksView from "@/pages/BooksView.vue";
+import VideoServiceView from "@/pages/VideoServiceView.vue";
 import {fetchCurrentUser, isAuthenticated} from "@/auth/session.js";
 
 // Music содержит собственный layout и аудиодвижок, поэтому загружается
@@ -29,6 +30,7 @@ const routes = [
     {path: "/books", component: BooksView, meta: {workspace: true, requiresAuth: true}},
     {path: "/profile", component: ProfileView, meta: {workspace: true, requiresAuth: true}},
     {path: "/music", component: MusicView, meta: {workspace: true, requiresAuth: true}},
+    {path: "/video", component: VideoServiceView, meta: {workspace: true, requiresAuth: true}},
     {path: "/home", component: HomePage, meta: {needsContent: true, requiresAuth: true}},
     {path: "/videos/:category", component: VideoPage, props: true, meta: {needsContent: true, requiresAuth: true}},
     {path: "/watch", component: PlayerPage, meta: {needsContent: true, requiresAuth: true}},

@@ -373,6 +373,10 @@ export function getBookServicePublications() {
   return publications.filter((publication) => ["book", "collection"].includes(publication.type));
 }
 
+export function getVideoServicePublications() {
+  return publications.filter((publication) => publication.type === "video");
+}
+
 export function getSpaceBreadcrumb(publication) {
   const space = getSpaceById(publication.spaceId);
   const subspace = getSubspaceById(publication.subspaceId);

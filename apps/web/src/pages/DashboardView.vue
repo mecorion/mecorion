@@ -33,7 +33,7 @@ const dashboardByRole = {
     welcomeText: "Это ваше персональное пространство в Mecorion. Здесь всё, что нужно для работы, учёбы, развлечений и общения — в одном месте.",
     services: [
       {id: "music", title: "Music", description: "Музыка без ограничений", icon: "♫", route: "/music", art: musicArt, tone: "rose"},
-      {id: "video", title: "Video", description: "Фильмы, шоу и трансляции", icon: "▷", route: "/home", art: videoArt, tone: "cyan"},
+      {id: "video", title: "Video", description: "Фильмы, шоу и трансляции", icon: "▷", route: "/video", art: videoArt, tone: "cyan"},
       {id: "books", title: "Books", description: "Книги и аудио в одном месте", icon: "▥", route: null, art: booksArt, tone: "violet"},
       {id: "drive", title: "Drive", description: "Ваши файлы в безопасности", icon: "☁", route: null, art: cloudArt, tone: "blue"},
       {id: "vpn", title: "VPN", description: "Приватность без границ", icon: "◇", route: null, art: sentinelArt, tone: "green"},

@@ -24,7 +24,7 @@ const primaryNavigation = [
 
 const serviceNavigation = [
   {title: "Music", icon: "music", route: "/music"},
-  {title: "Video", icon: "play", route: "/home"},
+  {title: "Video", icon: "play", route: "/video"},
   {title: "Books", icon: "book", route: "/books"},
   {title: "Drive", icon: "cloud"},
   {title: "VPN", icon: "shield"},
