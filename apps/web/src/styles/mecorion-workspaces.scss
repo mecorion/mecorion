@@ -1143,31 +1143,7 @@
     }
   }
 
-  /* Unified 2026 shell refresh: светлый workspace в стиле современных admin UI. */
-  .mecorion-workspace.dashboard-shell {
-    --mc-bg: #f7f8fc;
-    --mc-sidebar: #ffffff;
-    --mc-surface: #ffffff;
-    --mc-surface-deep: #f3f4fb;
-    --mc-surface-raised: #ffffff;
-    --mc-surface-hover: #fff3f6;
-    --mc-border-soft: rgba(34, 31, 62, .1);
-    --mc-border-strong: rgba(34, 31, 62, .2);
-    --mc-text-primary: #17152b;
-    --mc-text-secondary: #4d4a67;
-    --mc-text-muted: #77738d;
-    --mc-text-faint: #9d98ad;
-    --mc-accent: #e23367;
-    --mc-accent-strong: #c91d54;
-    --mc-accent-contrast: #ffffff;
-    --mc-success: #22a66c;
-    --mc-warning: #c27a20;
-    --mc-info: #6d5df5;
-    --mc-shadow-soft: 0 18px 42px rgba(32, 29, 54, .08);
-    --mc-shadow-card: 0 18px 44px rgba(32, 29, 54, .08);
-    color-scheme: light;
-  }
-
+  /* Compatibility workspace refresh. Токены темы теперь живут в mcrn-theme-* файлах. */
   .dashboard-shell {
     grid-template-columns: var(--mc-sidebar-width) minmax(0, 1fr);
     background:

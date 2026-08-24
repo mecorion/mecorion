@@ -1,0 +1,57 @@
+@layer theme {
+  :root,
+  :root.light,
+  .mcrn-theme-light {
+    color-scheme: light;
+
+    --mcrn-color-bg: #f7f8fc;
+    --mcrn-color-bg-soft: #f1f3fa;
+    --mcrn-color-surface: #ffffff;
+    --mcrn-color-surface-muted: #f6f7fb;
+    --mcrn-color-surface-hover: #fff2f6;
+    --mcrn-color-sidebar: #ffffff;
+    --mcrn-color-border: rgba(33, 31, 54, .10);
+    --mcrn-color-border-strong: rgba(33, 31, 54, .20);
+
+    --mcrn-color-text: #17152b;
+    --mcrn-color-text-soft: #4e4a67;
+    --mcrn-color-text-muted: #77738d;
+    --mcrn-color-text-faint: #a09bae;
+    --mcrn-color-text-inverse: #ffffff;
+
+    --mcrn-color-accent: #e23367;
+    --mcrn-color-accent-strong: #c91d54;
+    --mcrn-color-accent-soft: #fde8ef;
+    --mcrn-color-success: #22a66c;
+    --mcrn-color-warning: #c27a20;
+    --mcrn-color-danger: #cf2d56;
+    --mcrn-color-info: #6d5df5;
+
+    --mcrn-shadow-soft: 0 18px 42px rgba(32, 29, 54, .08);
+    --mcrn-shadow-card: 0 18px 44px rgba(32, 29, 54, .08);
+    --mcrn-shadow-float: 0 24px 70px rgba(32, 29, 54, .18);
+
+    /* Compatibility bridge. Старые mc-классы читают эти значения. */
+    --mc-bg: var(--mcrn-color-bg);
+    --mc-sidebar: var(--mcrn-color-sidebar);
+    --mc-surface: var(--mcrn-color-surface);
+    --mc-surface-deep: var(--mcrn-color-bg-soft);
+    --mc-surface-raised: var(--mcrn-color-surface);
+    --mc-surface-hover: var(--mcrn-color-surface-hover);
+    --mc-border-soft: var(--mcrn-color-border);
+    --mc-border-strong: var(--mcrn-color-border-strong);
+    --mc-text-primary: var(--mcrn-color-text);
+    --mc-text-secondary: var(--mcrn-color-text-soft);
+    --mc-text-muted: var(--mcrn-color-text-muted);
+    --mc-text-faint: var(--mcrn-color-text-faint);
+    --mc-accent: var(--mcrn-color-accent);
+    --mc-accent-strong: var(--mcrn-color-accent-strong);
+    --mc-accent-contrast: var(--mcrn-color-text-inverse);
+    --mc-success: var(--mcrn-color-success);
+    --mc-warning: var(--mcrn-color-warning);
+    --mc-danger: var(--mcrn-color-danger);
+    --mc-info: var(--mcrn-color-info);
+    --mc-shadow-soft: var(--mcrn-shadow-soft);
+    --mc-shadow-card: var(--mcrn-shadow-card);
+  }
+}

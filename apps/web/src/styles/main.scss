@@ -1,5 +1,8 @@
 // // ИМПОРТ СТИЛЕЙ // //
 @use 'var' as *;
+@use 'mcrn-theme-light' as *;
+@use 'mcrn-theme-dark' as *;
+@use 'mcrn-theme-core' as *;
 @use 'el-components' as *;
 @use 'mecorion-foundation' as *;
 @use 'mecorion-ui' as *;
@@ -8,36 +11,13 @@
 @use 'mecorion-spaces' as *;
 @use 'mecorion-music' as *;
 @use 'mecorion-profile' as *;
+@use 'mcrn-core' as *;
+@use 'mcrn-uikit' as *;
 
 // @import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 // // // // // // // // //
 
-
-// // СБРОС СТИЛЕЙ // //
-* {
-  font-family: "Rubik", sans-serif;
-  box-sizing: border-box;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-body {
-  min-height: 100dvh;
-  margin: 0;
-  background: var(--bg-color-page);
-  color: var(--text-color-primary);
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
 
 .svg-icon {
   fill: var(--icon-color);

@@ -1,8 +1,10 @@
 <script setup>
-import {computed, ref, watch} from "vue";
+import {computed, onBeforeUnmount, ref, watch} from "vue";
 import {RouterLink, useRoute} from "vue-router";
+import {useAppStore} from "@/stores/app.js";
 
 const route = useRoute();
+const app = useAppStore();
 const isSidebarOpen = ref(false);
 
 const currentUser = {
@@ -84,34 +86,42 @@ function closeSidebar() {
 }
 
 watch(() => route.path, closeSidebar);
+
+watch(isSidebarOpen, (isOpen) => {
+  document.documentElement.classList.toggle("mcrn-menu-open", isOpen);
+});
+
+onBeforeUnmount(() => {
+  document.documentElement.classList.remove("mcrn-menu-open");
+});
 </script>
 
 <template>
-  <div class="mecorion-workspace dashboard-shell">
+  <div class="mecorion-workspace mcrn-shell dashboard-shell">
     <button
       v-if="isSidebarOpen"
-      class="dashboard-sidebar-scrim"
+      class="mcrn-sidebar-scrim dashboard-sidebar-scrim"
       type="button"
       aria-label="Закрыть меню"
       @click="closeSidebar"
     ></button>
 
-    <aside class="dashboard-sidebar" :class="{'dashboard-sidebar--open': isSidebarOpen}" aria-label="Навигация Mecorion">
-      <RouterLink class="workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
-        <span class="workspace-brand__mark">M</span>
+    <aside class="mcrn-sidebar dashboard-sidebar" :class="{'mcrn-sidebar--open dashboard-sidebar--open': isSidebarOpen}" aria-label="Навигация Mecorion">
+      <RouterLink class="mcrn-brand workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
+        <span class="mcrn-brand__mark workspace-brand__mark">M</span>
         <span>Mecorion</span>
       </RouterLink>
 
       <template v-for="group in navigationGroups" :key="group.label ?? 'primary'">
-        <nav v-if="!group.label" class="dashboard-nav" :aria-label="group.navLabel">
+        <nav v-if="!group.label" class="mcrn-nav dashboard-nav" :aria-label="group.navLabel">
           <component
             :is="item.route ? RouterLink : 'button'"
             v-for="item in group.items"
             :key="item.title"
             :to="item.route"
             type="button"
-            class="dashboard-nav__item"
-            :class="{'dashboard-nav__item--active': isRouteActive(item)}"
+            class="sidebar-link dashboard-nav__item"
+            :class="{'active sidebar-link--active dashboard-nav__item--active': isRouteActive(item)}"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24">
               <component
@@ -125,16 +135,16 @@ watch(() => route.path, closeSidebar);
           </component>
         </nav>
 
-        <div v-else class="dashboard-nav-group">
-          <p>{{ group.label }}</p>
+        <div v-else class="mcrn-nav-group dashboard-nav-group">
+          <p class="mcrn-nav-group__label">{{ group.label }}</p>
           <component
             :is="item.route ? RouterLink : 'button'"
             v-for="item in group.items"
             :key="item.title"
             :to="item.route"
             type="button"
-            class="dashboard-nav__item"
-            :class="{'dashboard-nav__item--active': isRouteActive(item)}"
+            class="sidebar-link dashboard-nav__item"
+            :class="{'active sidebar-link--active dashboard-nav__item--active': isRouteActive(item)}"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24">
               <component
@@ -149,15 +159,15 @@ watch(() => route.path, closeSidebar);
         </div>
       </template>
 
-      <button class="dashboard-sidebar__support" type="button">
+      <button class="sidebar-link dashboard-sidebar__support" type="button">
         <span aria-hidden="true">?</span>
         Помощь и поддержка
       </button>
     </aside>
 
     <section class="dashboard-board">
-      <header class="dashboard-topbar">
-        <button class="dashboard-menu-button" type="button" aria-label="Открыть меню" @click="isSidebarOpen = true">
+      <header class="mcrn-topbar dashboard-topbar">
+        <button class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Открыть меню" @click="isSidebarOpen = true">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <component
               :is="path[0]"
@@ -168,7 +178,7 @@ watch(() => route.path, closeSidebar);
           </svg>
         </button>
 
-        <label class="dashboard-search">
+        <label class="mcrn-search dashboard-search">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <component
               :is="path[0]"
@@ -181,8 +191,8 @@ watch(() => route.path, closeSidebar);
           <kbd>⌘K</kbd>
         </label>
 
-        <div class="dashboard-topbar__account">
-          <button class="dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">
+        <div class="mcrn-topbar__actions dashboard-topbar__account">
+          <button class="mcrn-icon-button dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">
             <svg aria-hidden="true" viewBox="0 0 24 24">
               <component
                 :is="path[0]"
@@ -193,7 +203,7 @@ watch(() => route.path, closeSidebar);
             </svg>
             <i>3</i>
           </button>
-          <button class="dashboard-icon-button" type="button" aria-label="Тема">
+          <button class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Переключить тему" @click="app.toggleTheme">
             <svg aria-hidden="true" viewBox="0 0 24 24">
               <component
                 :is="path[0]"
@@ -203,10 +213,12 @@ watch(() => route.path, closeSidebar);
               />
             </svg>
           </button>
-          <RouterLink class="dashboard-user-chip" to="/profile">
-            <span>{{ currentUser.initials }}</span>
-            <strong>{{ currentUser.name }}</strong>
-            <small>Mecorion ID: {{ currentUser.id }}</small>
+          <RouterLink class="mcrn-user-chip dashboard-user-chip" to="/profile">
+            <span class="mcrn-user-chip__avatar">{{ currentUser.initials }}</span>
+            <span>
+              <strong>{{ currentUser.name }}</strong>
+              <small>Mecorion ID: {{ currentUser.id }}</small>
+            </span>
           </RouterLink>
         </div>
       </header>

@@ -1,0 +1,55 @@
+@layer theme {
+  :root.dark,
+  .mcrn-theme-dark {
+    color-scheme: dark;
+
+    --mcrn-color-bg: #12101e;
+    --mcrn-color-bg-soft: #19162a;
+    --mcrn-color-surface: #1d1a30;
+    --mcrn-color-surface-muted: #24203a;
+    --mcrn-color-surface-hover: #2a2138;
+    --mcrn-color-sidebar: #171426;
+    --mcrn-color-border: rgba(255, 255, 255, .08);
+    --mcrn-color-border-strong: rgba(255, 255, 255, .16);
+
+    --mcrn-color-text: #f7f5ff;
+    --mcrn-color-text-soft: #d6d2ea;
+    --mcrn-color-text-muted: #9d98b6;
+    --mcrn-color-text-faint: #746f8d;
+    --mcrn-color-text-inverse: #17152b;
+
+    --mcrn-color-accent: #ff6f8f;
+    --mcrn-color-accent-strong: #ff86a3;
+    --mcrn-color-accent-soft: rgba(255, 111, 143, .16);
+    --mcrn-color-success: #68d49b;
+    --mcrn-color-warning: #f0bf6a;
+    --mcrn-color-danger: #ff5676;
+    --mcrn-color-info: #8f86ff;
+
+    --mcrn-shadow-soft: 0 18px 44px rgba(0, 0, 0, .22);
+    --mcrn-shadow-card: 0 18px 50px rgba(0, 0, 0, .24);
+    --mcrn-shadow-float: 0 28px 80px rgba(0, 0, 0, .48);
+
+    --mc-bg: var(--mcrn-color-bg);
+    --mc-sidebar: var(--mcrn-color-sidebar);
+    --mc-surface: var(--mcrn-color-surface);
+    --mc-surface-deep: var(--mcrn-color-bg-soft);
+    --mc-surface-raised: var(--mcrn-color-surface-muted);
+    --mc-surface-hover: var(--mcrn-color-surface-hover);
+    --mc-border-soft: var(--mcrn-color-border);
+    --mc-border-strong: var(--mcrn-color-border-strong);
+    --mc-text-primary: var(--mcrn-color-text);
+    --mc-text-secondary: var(--mcrn-color-text-soft);
+    --mc-text-muted: var(--mcrn-color-text-muted);
+    --mc-text-faint: var(--mcrn-color-text-faint);
+    --mc-accent: var(--mcrn-color-accent);
+    --mc-accent-strong: var(--mcrn-color-accent-strong);
+    --mc-accent-contrast: var(--mcrn-color-text-inverse);
+    --mc-success: var(--mcrn-color-success);
+    --mc-warning: var(--mcrn-color-warning);
+    --mc-danger: var(--mcrn-color-danger);
+    --mc-info: var(--mcrn-color-info);
+    --mc-shadow-soft: var(--mcrn-shadow-soft);
+    --mc-shadow-card: var(--mcrn-shadow-card);
+  }
+}
