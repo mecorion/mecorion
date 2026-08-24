@@ -259,6 +259,152 @@ Health route:
 
 Правило: packages не должны импортировать код из `apps`.
 
+## Текущий статус проекта
+
+Актуальный срез состояния:
+
+### Готово / близко к MVP
+
+- Монорепозиторий уже собран через npm workspaces.
+- `apps/web` запускается и собирается через Vite.
+- Есть базовая визуальная система Mecorion: токены, foundation, UI kit,
+  workspace layout, auth, dashboard, profile, spaces, music.
+- Есть landing, sign-in, sign-up, dashboard, profile, spaces, music, ui-kit.
+- Dashboard переведён на общий `WorkspaceLayout`.
+- Profile переведён на общий `WorkspaceLayout`, имеет mock API для ролей:
+  `user`, `agent`, `moderator`.
+- Spaces добавлен как корневой каталог контентных пространств. Сейчас это
+  frontend-прототип с mock-данными.
+- Mecorion Music имеет хороший frontend MVP:
+  - онлайн-каталог из локального `catalog.js`;
+  - поиск;
+  - фильтры;
+  - избранное;
+  - плейлисты;
+  - очередь;
+  - player bar;
+  - player mode;
+  - локальная музыка через выбор папки;
+  - playlist/finder режимы просмотра локальных файлов.
+- API имеет Fastify-каркас, health route, auth module и базовые music routes.
+- PostgreSQL 18 описан в Docker Compose.
+- Есть миграции `identity` и `music`.
+- Есть seed с dev-admin и несколькими тестовыми артистами/альбомами/треками.
+- `packages/storage` уже содержит интерфейс `StorageDriver`.
+
+### Частично сделано
+
+- Авторизация:
+  - backend auth routes реализованы;
+  - frontend sign-in/sign-up умеют обращаться к API;
+  - frontend session хранится в `localStorage`;
+  - route guard в `router/index.js` сейчас закомментирован для удобной
+    разработки. Это осознанное состояние, не включать без отдельной задачи.
+- Music backend:
+  - есть таблицы artists/albums/tracks/genres/playlists/likes/history/lyrics;
+  - есть `GET /api/v1/artists`, `GET /api/v1/albums`;
+  - есть `GET /api/v1/tracks`, `GET /api/v1/tracks/:id`, `POST /api/v1/tracks`;
+  - frontend Music пока не подключён к этим endpoints и продолжает жить на
+    локальном `apps/web/src/music/catalog.js`.
+- UI library:
+  - базовые стили есть;
+  - `UiKitView` есть;
+  - компоненты ещё не выделены в полноценный reusable component layer;
+  - `packages/ui` пока пустой/резервный.
+- Spaces:
+  - страница и визуальная модель есть;
+  - данные вынесены в `apps/web/src/spaces/spaces.mock.js`;
+  - нет API, таблиц и routes конкретных пространств.
+- Документация:
+  - есть `docs/docs.md`, `mecorion.md`, планы Music, draw.io диаграммы;
+  - часть документов может отставать от текущего кода, поэтому перед важными
+    решениями сверять с исходниками.
+
+### Каркас / не реализовано
+
+- `apps/media-worker` пока только выводит сообщение в консоль. Нет очередей,
+  ffmpeg, обработки метаданных, генерации preview и связи со storage.
+- `packages/contracts` содержит только версию, реальных контрактов API пока нет.
+- `packages/config` и `packages/ui` пока не несут прикладной нагрузки.
+- Нет полноценной админ-панели для управления артистами, треками, плейлистами,
+  пространствами и пользователями.
+- Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.
+- Нет настоящего S3/local-storage abstraction implementation, есть только
+  интерфейс.
+- Нет e2e/visual тестов адаптива. Проверки пока в основном через build.
+- Нет Playwright в зависимостях проекта.
+
+## Что следует реализовать дальше
+
+Рекомендуемый порядок работ:
+
+1. Стабилизировать основу frontend:
+   - довести адаптив dashboard/profile/spaces/music до 320px;
+   - убрать старые/лишние legacy-компоненты, если они больше не используются;
+   - привести все новые страницы к `WorkspaceLayout` или осознанно выделить
+     отдельный layout для сервисов.
+
+2. Вернуть контролируемую авторизацию:
+   - включить route guard только после проверки sign-in/sign-up с API;
+   - добавить понятные состояния ошибок API на формах;
+   - добавить logout в общий layout;
+   - решить, где хранить user-role и как обновлять профиль после `/auth/me`.
+
+3. Подключить Music frontend к API:
+   - заменить часть `catalog.js` на загрузку `/api/v1/tracks`;
+   - добавить loading/error states;
+   - сохранить локальную музыку отдельно от серверной;
+   - постепенно перенести liked tracks, history, playlists в backend.
+
+4. Сделать backend для админки Music:
+   - CRUD artists;
+   - CRUD albums;
+   - CRUD tracks;
+   - CRUD playlists;
+   - загрузка/привязка cover/audio source;
+   - управление lyrics.
+
+5. Спроектировать и реализовать Spaces backend:
+   - схема `spaces` или доменная схема по согласованному названию;
+   - таблицы пространств, категорий, подписок, публикаций;
+   - API для каталога `/spaces`;
+   - фильтры и сортировка;
+   - права доступа и роли внутри пространства.
+
+6. Реализовать media-worker:
+   - выбрать очередь задач;
+   - подключить ffmpeg;
+   - реализовать обработку audio/video;
+   - связать worker с `packages/storage`;
+   - хранить в БД не абсолютные пути, а storage keys.
+
+7. Развить packages:
+   - `contracts`: Zod-схемы и типы ответов API;
+   - `storage`: LocalStorageDriver для `data`;
+   - `ui`: выносить только реально переиспользуемые компоненты;
+   - `config`: общий TS/ESLint config, когда появится повторение.
+
+8. Добавить тестирование:
+   - unit/typecheck для API;
+   - frontend smoke build;
+   - позже Playwright для критичных экранов и адаптива.
+
+## Риски и технический долг
+
+- В репозитории есть следы старого frontend layout (`components/layout`,
+  `MainLayout`, старые video pages). Перед удалением проверить routes и imports.
+- В `apps/web/src/router/index.js` импортируются `fetchCurrentUser` и
+  `isAuthenticated`, но guard закомментирован. Это нормально сейчас, но
+  линтер позже может считать это неиспользуемым кодом.
+- Music frontend и Music API пока живут параллельно и не интегрированы.
+- Схемы миграций сейчас используют имена `music.artists`, `identity.users`,
+  а пользователь отдельно проговаривал правило будущего именования таблиц
+  `tUser`, `tPerson`. Перед новыми миграциями нужно решить, мигрируем ли старые
+  таблицы под этот стандарт или пока сохраняем текущую схему.
+- `.DS_Store` и backup-файлы draw.io могут появляться в `git status`; не
+  удалять и не откатывать без явной просьбы.
+- `data/**` намеренно игнорируется, реальные медиафайлы не коммитить.
+
 ## Git и рабочее дерево
 
 В проекте могут быть пользовательские незакоммиченные изменения. Не откатывать
