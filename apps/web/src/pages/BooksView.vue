@@ -1,6 +1,7 @@
 <script setup>
 import {computed, ref} from "vue";
 import {RouterLink} from "vue-router";
+import {useAppStore} from "@/stores/app.js";
 import {
   getBookServicePublications,
   getSpaceBreadcrumb,
@@ -12,12 +13,12 @@ const activeFilter = ref("Все");
 const activeLanguage = ref("Все языки");
 const searchQuery = ref("");
 const selectedBookId = ref(null);
+const app = useAppStore();
 
 const filters = ["Все", "Книги", "Сборники", "Продолжить", "Закладки"];
 const languages = ["Все языки", "Русский", "English", "Español"];
 const navigation = [
   {id: "home", icon: "⌂", title: "Главная", shortTitle: "Главная"},
-  {id: "search", icon: "⌕", title: "Поиск", shortTitle: "Поиск"},
   {id: "library", icon: "▤", title: "Библиотека", shortTitle: "Книги"},
   {id: "bookmarks", icon: "◇", title: "Закладки", shortTitle: "Закладки"},
   {id: "reader", icon: "▣", title: "Читалка", shortTitle: "Читать"},
@@ -93,29 +94,32 @@ function openReader(bookId) {
 
 <template>
   <div class="mebook-app">
-    <aside class="mebook-sidebar" aria-label="Навигация Book">
-      <RouterLink class="mebook-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
-        <span class="mebook-brand__mark">M</span>
+    <aside class="mcrn-service-sidebar mebook-sidebar" aria-label="Навигация Book">
+      <RouterLink class="mcrn-service-brand mebook-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
+        <span class="mcrn-service-brand__mark mebook-brand__mark">M</span>
         <span><strong>Mecorion</strong><small>Book</small></span>
       </RouterLink>
 
-      <nav class="mebook-navigation" aria-label="Разделы Book">
+      <nav class="mcrn-service-nav mebook-navigation" aria-label="Разделы Book">
         <button
           v-for="item in navigation"
           :key="item.id"
-          class="mebook-navigation__item"
-          :class="{'mebook-navigation__item--active': activeSection === item.id}"
+          class="mcrn-service-nav__item mebook-navigation__item"
+          :class="{
+            'mcrn-service-nav__item--active': activeSection === item.id,
+            'mebook-navigation__item--active': activeSection === item.id,
+          }"
           type="button"
           @click="navigate(item.id)"
         >
-          <span class="mebook-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
-          <span class="mebook-navigation__title">{{ item.title }}</span>
-          <span class="mebook-navigation__short-title">{{ item.shortTitle }}</span>
+          <span class="mcrn-service-nav__icon mebook-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
+          <span class="mcrn-service-nav__title mebook-navigation__title">{{ item.title }}</span>
+          <span class="mcrn-service-nav__short-title mebook-navigation__short-title">{{ item.shortTitle }}</span>
         </button>
       </nav>
 
-      <div class="mebook-sidebar__library">
-        <div class="mebook-sidebar__label"><span>Полки</span><button type="button" aria-label="Создать полку">＋</button></div>
+      <div class="mcrn-service-sidebar__section mebook-sidebar__library">
+        <div class="mcrn-service-sidebar__label mebook-sidebar__label"><span>Полки</span><button type="button" aria-label="Создать полку">＋</button></div>
         <button v-for="shelf in libraryShelves" :key="shelf.title" type="button" @click="activeSection = 'library'">
           <span aria-hidden="true">{{ shelf.icon }}</span>
           {{ shelf.title }}
@@ -123,7 +127,7 @@ function openReader(bookId) {
         </button>
       </div>
 
-      <RouterLink class="mebook-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
+      <RouterLink class="mcrn-service-sidebar__exit mebook-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
     </aside>
 
     <section class="mebook-workspace">
@@ -140,8 +144,35 @@ function openReader(bookId) {
         </label>
 
         <div class="mebook-header__actions">
-          <button class="mebook-icon-button" type="button" aria-label="Синхронизация">↻</button>
-          <button class="mebook-profile" type="button"><span>ИИ</span><strong>Иван</strong></button>
+          <button class="mcrn-header-icon mebook-icon-button" type="button" aria-label="Сменить тему" @click="app.toggleTheme()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg>
+          </button>
+          <button class="mcrn-header-icon mcrn-header-icon--notify mebook-icon-button" type="button" aria-label="Уведомления">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10.27 21a2 2 0 0 0 3.46 0" />
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+            </svg>
+            <i aria-hidden="true"></i>
+          </button>
+          <button class="mcrn-header-profile mebook-profile" type="button" aria-label="Открыть профиль">
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 21a8 8 0 0 0-16 0" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </span>
+            <strong>Иван</strong>
+          </button>
         </div>
       </header>
 

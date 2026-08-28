@@ -1,6 +1,7 @@
 <script setup>
 import {computed, ref} from "vue";
 import {RouterLink} from "vue-router";
+import {useAppStore} from "@/stores/app.js";
 import {
   getSpaceBreadcrumb,
   getVideoServicePublications,
@@ -15,10 +16,10 @@ const searchQuery = ref("");
 const selectedVideoId = ref(null);
 const selectedSeason = ref(1);
 const selectedEpisodeId = ref(null);
+const app = useAppStore();
 
 const navigation = [
   {id: "home", icon: "⌂", title: "Главная", shortTitle: "Главная"},
-  {id: "search", icon: "⌕", title: "Поиск", shortTitle: "Поиск"},
   {id: "library", icon: "▤", title: "Медиатека", shortTitle: "Видео"},
   {id: "watchLater", icon: "◇", title: "Смотреть позже", shortTitle: "Позже"},
   {id: "watch", icon: "▣", title: "Плеер", shortTitle: "Плеер"},
@@ -245,33 +246,37 @@ function chooseSeason(seasonNumber) {
 
 <template>
   <div class="mevideo-app">
-    <aside class="mevideo-sidebar" aria-label="Навигация Video">
-      <RouterLink class="mevideo-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
-        <span class="mevideo-brand__mark">M</span>
+    <aside class="mcrn-service-sidebar mevideo-sidebar" aria-label="Навигация Video">
+      <RouterLink class="mcrn-service-brand mevideo-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
+        <span class="mcrn-service-brand__mark mevideo-brand__mark">M</span>
         <span><strong>Mecorion</strong><small>Video</small></span>
       </RouterLink>
 
-      <nav class="mevideo-navigation" aria-label="Разделы Video">
-        <p class="mevideo-sidebar__group-title">Навигация</p>
+      <nav class="mcrn-service-nav mevideo-navigation" aria-label="Разделы Video">
+        <p class="mcrn-service-sidebar__label mevideo-sidebar__group-title">Навигация</p>
         <button
           v-for="item in navigation"
           :key="item.id"
-          class="mevideo-navigation__item"
-          :class="{'mevideo-navigation__item--active': activeSection === item.id}"
+          class="mcrn-service-nav__item mevideo-navigation__item"
+          :class="{
+            'mcrn-service-nav__item--active': activeSection === item.id,
+            'mevideo-navigation__item--active': activeSection === item.id,
+          }"
           type="button"
           @click="navigate(item.id)"
         >
-          <span class="mevideo-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
-          <span class="mevideo-navigation__title">{{ item.title }}</span>
-          <span class="mevideo-navigation__short-title">{{ item.shortTitle }}</span>
+          <span class="mcrn-service-nav__icon mevideo-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
+          <span class="mcrn-service-nav__title mevideo-navigation__title">{{ item.title }}</span>
+          <span class="mcrn-service-nav__short-title mevideo-navigation__short-title">{{ item.shortTitle }}</span>
         </button>
       </nav>
 
-      <nav class="mevideo-category-nav" aria-label="Категории Video">
-        <p class="mevideo-sidebar__group-title">Категории</p>
+      <nav class="mcrn-service-nav mcrn-service-nav--secondary mevideo-category-nav" aria-label="Категории Video">
+        <p class="mcrn-service-sidebar__label mevideo-sidebar__group-title">Категории</p>
         <button
           v-for="category in categories"
           :key="category"
+          class="mcrn-service-nav__item"
           :class="{'is-active': activeCategory === category}"
           type="button"
           @click="activeCategory = category; activeSection = 'library'"
@@ -281,8 +286,8 @@ function chooseSeason(seasonNumber) {
         </button>
       </nav>
 
-      <div class="mevideo-sidebar__library">
-        <div class="mevideo-sidebar__label"><span>Коллекции</span><button type="button" aria-label="Создать коллекцию">＋</button></div>
+      <div class="mcrn-service-sidebar__section mevideo-sidebar__library">
+        <div class="mcrn-service-sidebar__label mevideo-sidebar__label"><span>Коллекции</span><button type="button" aria-label="Создать коллекцию">＋</button></div>
         <button v-for="collection in collections" :key="collection.title" type="button" @click="activeSection = 'library'">
           <span aria-hidden="true">{{ collection.icon }}</span>
           {{ collection.title }}
@@ -290,7 +295,7 @@ function chooseSeason(seasonNumber) {
         </button>
       </div>
 
-      <RouterLink class="mevideo-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
+      <RouterLink class="mcrn-service-sidebar__exit mevideo-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
     </aside>
 
     <section class="mevideo-workspace">
@@ -312,9 +317,35 @@ function chooseSeason(seasonNumber) {
         </label>
 
         <div class="mevideo-header__actions">
-          <button class="mevideo-icon-button" type="button" aria-label="Фильтры">☰</button>
-          <button class="mevideo-icon-button" type="button" aria-label="Уведомления">◌</button>
-          <button class="mevideo-profile" type="button"><span>ИИ</span><strong>Иван</strong></button>
+          <button class="mcrn-header-icon mevideo-icon-button" type="button" aria-label="Сменить тему" @click="app.toggleTheme()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg>
+          </button>
+          <button class="mcrn-header-icon mcrn-header-icon--notify mevideo-icon-button mevideo-icon-button--notify" type="button" aria-label="Уведомления">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10.27 21a2 2 0 0 0 3.46 0" />
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+            </svg>
+            <i aria-hidden="true"></i>
+          </button>
+          <button class="mcrn-header-profile mevideo-profile" type="button" aria-label="Открыть профиль">
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 21a8 8 0 0 0-16 0" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </span>
+            <strong>Иван</strong>
+          </button>
         </div>
       </header>
 
