@@ -1,11 +1,19 @@
 @layer components {
   .mebook-app {
+    --mebook-accent: #f2b84b;
+    --mebook-accent-strong: #ffd36d;
+    --mebook-accent-deep: #8a5520;
+    --mc-accent: var(--mebook-accent);
+    --mc-accent-strong: var(--mebook-accent-strong);
+    --mc-accent-contrast: #1c1307;
+
     display: grid;
     min-height: 100dvh;
     grid-template-columns: 250px minmax(0, 1fr);
     background:
-      radial-gradient(circle at 84% 10%, color-mix(in srgb, var(--mc-accent) 14%, transparent), transparent 28%),
-      linear-gradient(135deg, var(--mc-bg), color-mix(in srgb, var(--mc-bg) 82%, #21172e));
+      radial-gradient(circle at 82% 8%, color-mix(in srgb, var(--mebook-accent) 16%, transparent), transparent 29%),
+      radial-gradient(circle at 14% 88%, color-mix(in srgb, var(--mebook-accent-deep) 18%, transparent), transparent 28%),
+      linear-gradient(135deg, var(--mc-bg), color-mix(in srgb, var(--mc-bg) 84%, #2c2114));
     color: var(--mc-text-primary);
   }
 
@@ -16,7 +24,9 @@
     flex-direction: column;
     border-right: 1px solid var(--mc-border-soft);
     padding: 24px 18px;
-    background: color-mix(in srgb, var(--mc-sidebar) 94%, transparent);
+    background:
+      radial-gradient(circle at 30% 0, color-mix(in srgb, var(--mebook-accent) 11%, transparent), transparent 32%),
+      color-mix(in srgb, var(--mc-sidebar) 94%, transparent);
   }
 
   .mebook-brand,
@@ -272,7 +282,8 @@
     min-width: 0;
     padding: clamp(24px, 4vw, 44px);
     background:
-      radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--mc-accent) 16%, transparent), transparent 32%),
+      radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--mebook-accent) 18%, transparent), transparent 32%),
+      radial-gradient(circle at 18% 86%, color-mix(in srgb, var(--mebook-accent-deep) 12%, transparent), transparent 28%),
       var(--mc-surface);
   }
 

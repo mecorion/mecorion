@@ -510,6 +510,19 @@
     font-weight: 900;
   }
 
+  .dashboard-service-tile--amber:hover {
+    border-color: color-mix(in srgb, #f2b84b 70%, var(--mc-border-strong));
+  }
+
+  .dashboard-service-tile--amber .dashboard-service-tile__icon {
+    background: color-mix(in srgb, #f2b84b 18%, var(--mc-surface-deep));
+    color: #f2b84b;
+  }
+
+  .dashboard-service-tile--amber img {
+    filter: sepia(.35) saturate(1.15) hue-rotate(350deg);
+  }
+
   .dashboard-service-tile strong {
     position: relative;
     z-index: 1;

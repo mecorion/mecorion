@@ -34,10 +34,11 @@ const dashboardByRole = {
     services: [
       {id: "music", title: "Music", description: "Музыка без ограничений", icon: "♫", route: "/music", art: musicArt, tone: "rose"},
       {id: "video", title: "Video", description: "Фильмы, шоу и трансляции", icon: "▷", route: "/video", art: videoArt, tone: "cyan"},
-      {id: "books", title: "Books", description: "Книги и аудио в одном месте", icon: "▥", route: null, art: booksArt, tone: "violet"},
+      {id: "books", title: "Books", description: "Книги и аудио в одном месте", icon: "▥", route: "/books", art: booksArt, tone: "amber"},
+      {id: "course", title: "Course", description: "Курсы и практика", icon: "△", route: "/course", art: booksArt, tone: "green"},
       {id: "drive", title: "Drive", description: "Ваши файлы в безопасности", icon: "☁", route: null, art: cloudArt, tone: "blue"},
       {id: "vpn", title: "VPN", description: "Приватность без границ", icon: "◇", route: null, art: sentinelArt, tone: "green"},
-      {id: "spaces", title: "Spaces", description: "Создавайте пространства", icon: "⬡", route: null, art: sentinelArt, tone: "rose"},
+      {id: "spaces", title: "Spaces", description: "Создавайте пространства", icon: "⬡", route: "/spaces", art: sentinelArt, tone: "rose"},
     ],
     steps: [
       {id: "email", number: 1, title: "Подтвердить email", text: "Подтвердите почту, чтобы защитить аккаунт.", action: "Подтвердить", icon: "✉"},
