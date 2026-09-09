@@ -5,6 +5,7 @@ import PlayerPage from "@/pages/PlayerPage.vue";
 import UiKitView from "@/pages/UiKitView.vue";
 import DashboardView from "@/pages/DashboardView.vue";
 import LandingView from "@/pages/LandingView.vue";
+import LandingMaterialView from "@/pages/LandingMaterialView.vue";
 import SignInView from "@/pages/SignInView.vue";
 import SignUpView from "@/pages/SignUpView.vue";
 import ProfileView from "@/pages/ProfileView.vue";
@@ -22,6 +23,7 @@ const MusicView = () => import("@/pages/MusicView.vue");
 
 const routes = [
     {path: "/", component: LandingView, meta: {standalone: true}},
+    {path: "/landing-material", component: LandingMaterialView, meta: {standalone: true}},
     {path: "/sign-in", component: SignInView, meta: {standalone: true, guestOnly: true}},
     {path: "/sign-up", component: SignUpView, meta: {standalone: true, guestOnly: true}},
     {path: "/dashboard", component: DashboardView, meta: {workspace: true, requiresAuth: true}},
