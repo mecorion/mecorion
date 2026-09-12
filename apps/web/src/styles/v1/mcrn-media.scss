@@ -2081,6 +2081,7 @@
   .mecourse-course-banner { padding: var(--mc-space-3); }
   .mecourse-header__actions { flex-wrap: wrap; }
   .uikit-hero { grid-template-columns: minmax(0, 1fr); padding: var(--mc-space-3); }
+  .uikit-hero__controls, .mcrn-settings__panel-actions { flex-wrap: wrap; justify-content: flex-start; }
   .uikit-icon-preview__header { flex-wrap: wrap; padding: var(--mc-space-3); }
   .uikit-icon-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 80px), 1fr)); }
   .mc-media-card { grid-template-columns: minmax(0, 1fr); }

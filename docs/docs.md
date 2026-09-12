@@ -311,7 +311,7 @@ router, Pinia и глобальные стили.
 - dashboard;
 - Music;
 - Video;
-- UiKit;
+- UI Kit (`/ui-kit`);
 - старые страницы просмотра видео.
 
 При добавлении нового сервиса, например Course, frontend-маршруты нужно
@@ -326,7 +326,7 @@ router, Pinia и глобальные стили.
 - `DashboardView.vue` — главный dashboard экосистемы;
 - `MusicView.vue` — музыкальное приложение;
 - `VideoPage.vue` — текущая video-страница;
-- `UiKitView.vue` — страница UI kit;
+- `UiKitView.vue` — каталог UI-компонентов на `/ui-kit`;
 - `HomePage.vue`, `PlayerPage.vue` — старые/переходные страницы видеосервиса.
 
 Страница должна описывать экран или крупный сценарий, а не маленькую кнопку или

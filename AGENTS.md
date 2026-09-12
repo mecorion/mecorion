@@ -108,7 +108,7 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
 - `/profile` — профиль пользователя с mock API ролей;
 - `/spaces` — корневое пространство/каталог контента;
 - `/music` — Mecorion Music MVP;
-- `/ui-kit` — страница UI kit.
+- `/ui-kit` — каталог UI-компонентов с переключением библиотек v1/v2;
 
 Общий layout для dashboard/profile/spaces:
 
@@ -275,7 +275,7 @@ Health route:
 - `apps/web` запускается и собирается через Vite.
 - Есть базовая визуальная система Mecorion: токены, foundation, UI kit,
   workspace layout, auth, dashboard, profile, spaces, music.
-- Есть landing, sign-in, sign-up, dashboard, profile, spaces, music, ui-kit.
+- Есть landing, sign-in, sign-up, dashboard, profile, spaces, music и UI-каталог.
 - Dashboard переведён на общий `WorkspaceLayout`.
 - Profile переведён на общий `WorkspaceLayout`, имеет mock API для ролей:
   `user`, `agent`, `moderator`.
@@ -314,7 +314,7 @@ Health route:
     локальном `apps/web/src/music/catalog.js`.
 - UI library:
   - базовые стили есть;
-  - `UiKitView` есть;
+  - `UiKitView` доступен на `/ui-kit`;
   - компоненты ещё не выделены в полноценный reusable component layer;
   - `packages/ui` пока пустой/резервный.
 - Spaces:

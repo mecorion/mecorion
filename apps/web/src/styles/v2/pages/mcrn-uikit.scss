@@ -14,6 +14,38 @@
     border-radius: var(--mc-radius-xl);
     background: var(--mcrn-uikit-hero-background);
   }
+  .uikit-hero__aside {
+    display: grid;
+    gap: var(--mc-space-4);
+  }
+  .uikit-hero__controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--mc-space-3);
+  }
+  .uikit-version-switch {
+    display: inline-flex;
+    padding: var(--mc-space-1);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    background: var(--mc-surface-deep);
+  }
+  .uikit-version-switch__button {
+    min-width: var(--mcrn-size-56px);
+    min-height: var(--mcrn-touch-size);
+    border: 0;
+    border-radius: var(--mc-radius-sm);
+    background: transparent;
+    color: var(--mc-text-secondary);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .uikit-version-switch__button--active {
+    background: var(--mc-accent);
+    color: var(--mc-button-primary-text, #fff);
+  }
   .uikit-type-scale,
   .uikit-icon-preview {
     display: grid;

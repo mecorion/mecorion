@@ -13,6 +13,7 @@
 .mcrn-settings__panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--mc-space-5); margin-bottom: var(--mc-space-6); }
 .mcrn-settings__panel h2 { font-size: var(--mc-font-title-2); }
 .mcrn-settings__current { flex: 0 0 auto; padding: var(--mc-space-1) var(--mc-space-2); border: 1px solid var(--mc-border); border-radius: var(--mc-radius-sm); color: var(--mc-text-secondary); font-size: var(--mc-font-sm); }
+.mcrn-settings__panel-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--mc-space-2); }
 .mcrn-settings__versions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mc-space-4); }
 .mcrn-settings-option { position: relative; display: grid; grid-template-columns: 88px minmax(0, 1fr) 24px; align-items: center; gap: var(--mc-space-4); min-width: 0; padding: var(--mc-space-4); border: 1px solid var(--mc-border); border-radius: var(--mc-radius-md); background: var(--mc-bg); cursor: pointer; transition: border-color .2s ease, background-color .2s ease; }
 .mcrn-settings-option:hover, .mcrn-settings-option--active { border-color: var(--mc-accent); }

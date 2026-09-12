@@ -35,7 +35,10 @@ const versions = [
             <p class="mcrn-settings__eyebrow">Интерфейс</p>
             <h2 id="interface-version-title">Версия оформления</h2>
           </div>
-          <span class="mcrn-settings__current">Выбрана {{ app.uiVersion }}</span>
+          <div class="mcrn-settings__panel-actions">
+            <span class="mcrn-settings__current">Выбрана {{ app.uiVersion }}</span>
+            <RouterLink class="mc-button mc-button--soft mc-button--sm" to="/ui-kit">Открыть UI Kit</RouterLink>
+          </div>
         </div>
 
         <div class="mcrn-settings__versions" role="radiogroup" aria-label="Версия интерфейса">

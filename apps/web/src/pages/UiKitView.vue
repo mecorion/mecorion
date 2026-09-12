@@ -1,4 +1,9 @@
 <script setup>
+import {useAppStore} from "@/stores/app.js";
+
+const app = useAppStore();
+const uiVersions = ["v1", "v2"];
+
 const buttons = [
   {label: 'Primary', className: 'mc-button mc-button--primary'},
   {label: 'Soft', className: 'mc-button mc-button--soft'},
@@ -78,10 +83,28 @@ const iconSections = iconStyleOrder
           <p class="mc-caption mc-accent">Mecorion Design System</p>
           <h1 class="mc-title-display">UI Kit</h1>
         </div>
-        <p class="mc-text-lg">
-          Базовый слой компонентов для будущей экосистемы: тёмная поверхность,
-          спокойная фиолетовая глубина, розовый акцент и плотные карточки.
-        </p>
+        <div class="uikit-hero__aside">
+          <p class="mc-text-lg">
+            Все имеющиеся базовые компоненты Mecorion: типографика, кнопки,
+            карточки, иконки и элементы форм.
+          </p>
+          <div class="uikit-hero__controls">
+            <RouterLink class="mc-button mc-button--ghost mc-button--sm" to="/settings">Настройки</RouterLink>
+            <div class="uikit-version-switch" role="group" aria-label="Версия интерфейса">
+              <button
+                v-for="version in uiVersions"
+                :key="version"
+                class="uikit-version-switch__button"
+                :class="{'uikit-version-switch__button--active': app.uiVersion === version}"
+                type="button"
+                :aria-pressed="app.uiVersion === version"
+                @click="app.setUiVersion(version)"
+              >
+                {{ version }}
+              </button>
+            </div>
+          </div>
+        </div>
       </header>
 
       <section class="mc-section">
@@ -163,6 +186,30 @@ const iconSections = iconStyleOrder
               <h3 class="mc-title-3">{{ product.title }}</h3>
               <p class="mc-text-sm">{{ product.text }}</p>
               <button class="mc-button mc-button--soft mc-button--sm" type="button">Explore</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="mc-grid mc-grid--3">
+          <article class="mc-card">
+            <div class="mc-card__body">
+              <p class="mc-caption">Default</p>
+              <h3 class="mc-title-3">Обычная карточка</h3>
+              <p class="mc-text-sm">Базовая поверхность для контента и настроек.</p>
+            </div>
+          </article>
+          <article class="mc-card mc-card--flat">
+            <div class="mc-card__body">
+              <p class="mc-caption">Flat</p>
+              <h3 class="mc-title-3">Плоская карточка</h3>
+              <p class="mc-text-sm">Спокойный контейнер без дополнительного объёма.</p>
+            </div>
+          </article>
+          <article class="mc-card mc-card--raised">
+            <div class="mc-card__body">
+              <p class="mc-caption">Raised</p>
+              <h3 class="mc-title-3">Поднятая карточка</h3>
+              <p class="mc-text-sm">Выделенная поверхность для важных блоков.</p>
             </div>
           </article>
         </div>
