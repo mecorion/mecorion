@@ -1,0 +1,39 @@
+@layer components {
+  .mc-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-2);
+  }
+  .mc-field__label {
+    color: var(--mc-text-secondary);
+    font-size: var(--mc-font-sm);
+    font-weight: 650;
+    line-height: var(--mc-line-title) !important;
+  }
+  .mc-field__control {
+    width: 100%;
+    min-height: var(--mcrn-size-52px);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    padding: 0 var(--mc-space-4);
+    background: var(--mc-surface-deep);
+    color: var(--mc-text-primary);
+    font-size: var(--mc-font-md);
+    line-height: var(--mc-line-title) !important;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+  .mc-field__control::placeholder {
+    color: var(--mc-text-faint);
+  }
+  .mc-field__control:hover,
+  .mc-field__control:focus {
+    border-color: var(--mc-border-strong);
+    background: var(--mc-surface);
+  }
+  textarea.mc-field__control {
+    min-height: var(--mcrn-size-120px);
+    padding-top: var(--mc-space-4);
+    resize: vertical;
+    line-height: var(--mc-line-body) !important;
+  }
+}

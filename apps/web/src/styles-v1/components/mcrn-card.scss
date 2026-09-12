@@ -1,0 +1,53 @@
+@layer components {
+  .mc-card {
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-lg);
+    background: var(--mc-surface);
+    box-shadow: var(--mc-shadow-soft);
+    color: var(--mc-text-primary);
+  }
+  .mc-card--flat {
+    box-shadow: none;
+  }
+  .mc-card--raised {
+    background: var(--mc-surface-raised);
+  }
+  .mc-card--interactive {
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+  }
+  .mc-card--interactive:hover {
+    border-color: var(--mcrn-card--interactive-border-color);
+    background: var(--mc-surface-hover);
+    transform: translateY(-2px);
+  }
+  .mc-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+    padding: var(--mc-space-5);
+  }
+  .mc-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mc-space-3);
+    border-top: 1px solid var(--mc-border-soft);
+    padding: var(--mc-space-4) var(--mc-space-5);
+  }
+  .mc-card-logo {
+    display: grid;
+    place-items: center;
+    width: var(--mcrn-size-76px);
+    height: var(--mcrn-size-76px);
+    border-radius: var(--mc-radius-md);
+    background: var(--mcrn-card-logo-background);
+    color: var(--mc-text-primary);
+    font-size: var(--mc-font-title-3);
+    font-weight: 800;
+    line-height: 1 !important;
+  }
+  .uikit-product-card .mc-card-logo {
+    margin-bottom: auto;
+  }
+}

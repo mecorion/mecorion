@@ -125,32 +125,37 @@ Route guard в `apps/web/src/router/index.js` сейчас закомменти�
 
 ## Стили Mecorion
 
-Стили собраны в `apps/web/src/styles`.
+Стили разделены на две самостоятельные библиотеки:
 
-Главный вход:
+- `apps/web/src/styles-v1` — основной строгий интерфейс для запуска;
+- `apps/web/src/styles-v2` — мягкий интерфейс со скруглениями и тенями.
+
+Главный вход для совместимости:
 
 ```text
 apps/web/src/styles/main.scss
 ```
 
-Важные файлы:
+Версия выбирается переменной `UI_STYLE_VERSION=v1|v2`; по умолчанию — `v1`.
+Полная архитектура, правила расширения и команды проверки описаны в
+`docs/ui-libraries.md`.
 
-- `var.scss` — CSS-переменные, темы, токены Mecorion и Element Plus;
-- `mecorion-foundation.scss` — базовый слой: типографика, focus states,
-  scrollbar, utility-классы;
-- `mecorion-ui.scss` — UI kit: кнопки, карточки, поля, типографика;
-- `mecorion-workspaces.scss` — dashboard/workspace layout;
-- `mecorion-auth.scss` — landing/sign-in/sign-up;
-- `mecorion-profile.scss` — профиль;
-- `mecorion-spaces.scss` — корневое пространство;
-- `mecorion-music.scss` — Mecorion Music.
+В каждой версии обязательны:
+
+- `mcrn-root.scss` — размеры, токены и публичные переменные;
+- `mcrn-light-theme.scss`, `mcrn-dark-theme.scss` — полные палитры;
+- `mcrn-media.scss` — весь адаптив;
+- `components/*` — переиспользуемые UI-компоненты;
+- `style/{music,video,book,course}/mcrn-init.scss` — сервисные стили.
 
 Правила стиля:
 
 - держать визуальный стиль тёмным, мягким, с акцентом `--mc-accent`;
 - новые размеры, радиусы, отступы брать из `--mc-*` токенов;
 - не возвращать глобальный `line-height: 1 !important`;
-- на мобильных проверять ширины вплоть до 320px;
+- проверять диапазон ширин от 180px до wide screen;
+- сохранять одинаковые селекторы и публичные переменные в v1 и v2;
+- не импортировать одну UI-библиотеку из другой;
 - избегать переполнений через `min-width: 0` внутри grid/flex;
 - cards radius держать умеренным: обычно `var(--mc-radius-md)`;
 - новые страницы лучше подключать отдельным `mecorion-*.scss` через

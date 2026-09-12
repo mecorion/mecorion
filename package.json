@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "npm --workspace @mecorion/web run dev --",
     "build": "npm --workspace @mecorion/web run build",
+    "ui:check": "npm --workspace @mecorion/web run ui:check",
     "preview": "npm --workspace @mecorion/web run preview",
     "api:dev": "npm --workspace @mecorion/api run dev",
     "api:build": "npm --workspace @mecorion/api run build",
