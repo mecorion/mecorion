@@ -10,8 +10,10 @@ import 'element-plus/dist/index.css'
 // инициализация Видеоплеера Plyr
 import VuePlyr from 'vue-plyr'
 import 'vue-plyr/dist/vue-plyr.css'
-// Vendor defaults first; the selected Mecorion library owns theme tokens.
-import '@mecorion-ui'
+import {initializeUiVersion} from '@/styles/uiVersion.js'
+
+// Vendor defaults load first; the active Mecorion library owns theme tokens.
+await initializeUiVersion()
 
 // инициализация Pinia
 const pinia = createPinia()

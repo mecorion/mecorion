@@ -39,7 +39,7 @@ const communityNavigation = [
 
 const accountNavigation = [
   {title: "Профиль", icon: "user", route: "/profile"},
-  {title: "Настройки", icon: "settings"},
+  {title: "Настройки", icon: "settings", route: "/settings"},
 ];
 
 const navigationGroups = computed(() => [

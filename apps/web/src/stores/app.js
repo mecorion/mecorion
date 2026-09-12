@@ -1,12 +1,14 @@
 import {defineStore} from "pinia";
 import {getTheme, setTheme} from "@/utils/cookies/JsCookies.js";
 import {ElMessage} from "element-plus";
+import {applyUiVersion, getStoredUiVersion} from "@/styles/uiVersion.js";
 
 
 export const useAppStore = defineStore('app', {
     state: () => ({
         mode: 'dark',
         themeIcon: 'moon',
+        uiVersion: getStoredUiVersion(),
     }),
     actions: {
         async initializeTheme() {
@@ -43,6 +45,10 @@ export const useAppStore = defineStore('app', {
 
             // Сохраняем в cookies
             await setTheme(newMode);
+        },
+
+        async setUiVersion(version) {
+            this.uiVersion = await applyUiVersion(version);
         },
 
         async methodLogout() {
