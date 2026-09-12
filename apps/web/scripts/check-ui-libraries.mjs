@@ -12,7 +12,7 @@ const sorted = values => [...new Set(values)].sort();
 const results = [];
 
 for (const version of ['v1', 'v2']) {
-  const dir = path.join(src, `styles-${version}`);
+  const dir = path.join(src, 'styles', version);
   const files = list(dir);
   for (const file of files) {
     const text = fs.readFileSync(path.join(dir, file), 'utf8');

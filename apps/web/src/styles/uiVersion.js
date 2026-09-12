@@ -3,8 +3,8 @@ export const UI_VERSIONS = ["v1", "v2"];
 const STORAGE_KEY = "mecorion-ui-version";
 const STYLE_ELEMENT_ID = "mecorion-ui-library";
 const libraryLoaders = {
-    v1: () => import("../styles-v1/main.scss?inline"),
-    v2: () => import("../styles-v2/main.scss?inline"),
+    v1: () => import("./v1/main.scss?inline"),
+    v2: () => import("./v2/main.scss?inline"),
 };
 
 function normalizeUiVersion(version) {

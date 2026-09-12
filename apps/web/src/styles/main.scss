@@ -1,2 +1,2 @@
-// Switch only this import to ../styles-v2/main to use v2.
-@use '../styles-v1/main';
+// Compatibility entry point for code that expects the default v1 library.
+@use 'v1/main';
