@@ -21,6 +21,12 @@ psql -v ON_ERROR_STOP=1 -d mecorion -f install.sql
 psql -v ON_ERROR_STOP=1 -d mecorion -f tests/test_all.sql
 ```
 
+Откат установленной схемы:
+
+```bash
+psql -v ON_ERROR_STOP=1 -d mecorion -f rollback.sql
+```
+
 ## Порядок миграций
 
 1. `000_bootstrap.sql` — расширения и схемы.
