@@ -120,6 +120,10 @@ apps/web/src/components/workspace/WorkspaceLayout.vue
 Страницы не должны оборачивать себя в `WorkspaceLayout`. Активный пункт sidebar
 определяется через `vue-router` по текущему `route.path`.
 
+На страницах Music, Video, Books и Course содержимое общего sidebar заменяется
+контекстным меню сервиса через `src/navigation/contextNavigation.js`. Не
+добавлять внутрь сервисных страниц второй sidebar или отдельный верхний header.
+
 Route guard в `apps/web/src/router/index.js` сейчас закомментирован. Не
 включать его обратно без отдельной задачи, потому что пользователь ранее
 отключал проверку авторизации для удобной разработки.

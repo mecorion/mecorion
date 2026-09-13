@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
-import {RouterLink} from "vue-router";
+import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
   coursePractice,
   courseResultTypes,
@@ -94,6 +94,20 @@ function startPractice(lessonId = selectedLessonId.value) {
   activeSection.value = "practice";
 }
 
+useContextNavigation({
+  title: "Mecorion",
+  subtitle: "Course",
+  activeId: activeSection,
+  groups: computed(() => [
+    {label: null, navLabel: "Разделы Course", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},
+    {label: "Практика", items: practiceModes.map((mode) => ({
+      title: mode.title,
+      symbol: mode.id === "lesson" ? "01" : mode.id === "topic" ? "◎" : mode.id === "mistakes" ? "◇" : "∞",
+      action: () => mode.id === "mistakes" ? navigate("mistakes") : startPractice(),
+    }))},
+  ]),
+});
+
 function submitPracticeAnswer() {
   if (!practiceAnswer.value.trim()) {
     return;
@@ -127,40 +141,6 @@ function finishPractice() {
 
 <template>
   <div class="mecourse-app">
-    <aside class="mcrn-service-sidebar mecourse-sidebar" aria-label="Навигация Course">
-      <RouterLink class="mcrn-service-brand mecourse-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
-        <span class="mcrn-service-brand__mark mecourse-brand__mark">M</span>
-        <span><strong>Mecorion</strong><small>Course</small></span>
-      </RouterLink>
-
-      <nav class="mcrn-service-nav mecourse-navigation" aria-label="Разделы Course">
-        <button
-          v-for="item in navigation"
-          :key="item.id"
-          class="mcrn-service-nav__item mecourse-navigation__item"
-          :class="{
-            'mcrn-service-nav__item--active': activeSection === item.id,
-            'mecourse-navigation__item--active': activeSection === item.id,
-          }"
-          type="button"
-          @click="navigate(item.id)"
-        >
-          <span class="mcrn-service-nav__icon mecourse-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
-          <span class="mcrn-service-nav__title mecourse-navigation__title">{{ item.title }}</span>
-          <span class="mcrn-service-nav__short-title mecourse-navigation__short-title">{{ item.shortTitle }}</span>
-        </button>
-      </nav>
-
-      <div class="mcrn-service-sidebar__section mecourse-sidebar__library">
-        <div class="mcrn-service-sidebar__label mecourse-sidebar__label"><span>Практика</span></div>
-        <button v-for="mode in practiceModes" :key="mode.id" type="button" @click="mode.id === 'mistakes' ? navigate('mistakes') : startPractice()">
-          <span aria-hidden="true">{{ mode.id === 'lesson' ? '01' : mode.id === 'topic' ? '◎' : mode.id === 'mistakes' ? '◇' : '∞' }}</span>
-          {{ mode.title }}
-        </button>
-      </div>
-
-      <RouterLink class="mcrn-service-sidebar__exit mecourse-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
-    </aside>
 
     <section class="mecourse-workspace">
 

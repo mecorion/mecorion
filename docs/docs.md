@@ -306,6 +306,10 @@ router, Pinia и глобальные стили.
 Только маршруты авторизации с `meta.authLayout` отображаются без общего header
 и sidebar.
 
+Сервисные страницы регистрируют свои пункты через
+`src/navigation/contextNavigation.js`. Поэтому Music, Video, Books и Course
+меняют содержимое единого sidebar, не создавая второй layout.
+
 ### `apps/web/src/router`
 
 Маршрутизация frontend. Здесь описываются URL-адреса страниц:

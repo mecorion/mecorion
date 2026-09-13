@@ -366,9 +366,35 @@
 
   .dashboard-board > :is(.memusic-app, .mebook-app, .mevideo-app, .mecourse-app) {
     min-height: calc(100dvh - var(--mc-topbar-height));
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .dashboard-board > .memusic-app {
     height: calc(100dvh - var(--mc-topbar-height));
+  }
+
+  .dashboard-board > .memusic-app > .memusic-workspace {
+    grid-column: 1;
+  }
+
+  .mcrn-brand__copy {
+    display: grid;
+    min-width: 0;
+  }
+
+  .mcrn-brand__copy small {
+    color: var(--mc-accent);
+    font-size: var(--mc-font-xs);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .dashboard-nav__symbol {
+    display: grid;
+    width: var(--mcrn-size-24px);
+    flex: 0 0 var(--mcrn-size-24px);
+    place-items: center;
+    color: currentColor;
+    font-size: var(--mc-font-sm);
   }
 }

@@ -5,13 +5,13 @@ import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
 import MusicPlayerMode from "@/components/music/MusicPlayerMode.vue";
 import MusicQueuePanel from "@/components/music/MusicQueuePanel.vue";
-import MusicSidebar from "@/components/music/MusicSidebar.vue";
 import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
 import LocalMusicView from "@/components/music/LocalMusicView.vue";
 import {getTracksByIds, musicGenres, musicPlaylists, musicTracks} from "@/music/catalog.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
+import {useContextNavigation} from "@/navigation/contextNavigation.js";
 
 const player = useMusicPlayerStore();
 const activeSection = ref("home");
@@ -55,6 +55,26 @@ function openPlaylist(playlistId) {
   activeSection.value = "library";
 }
 
+useContextNavigation({
+  title: "Mecorion",
+  subtitle: "Music",
+  activeId: activeSection,
+  groups: computed(() => [
+    {label: null, navLabel: "Разделы Music", items: [
+      {id: "home", title: "Главная", symbol: "⌂", action: () => navigate("home")},
+      {id: "library", title: "Моя музыка", symbol: "▤", action: () => navigate("library")},
+      {id: "local", title: "Локальная музыка", symbol: "▰", action: () => navigate("local")},
+    ]},
+    {label: "Плейлисты", items: musicPlaylists.map((playlist) => ({
+      id: `playlist-${playlist.id}`,
+      title: playlist.title,
+      symbol: "♫",
+      active: selectedPlaylistId.value === playlist.id,
+      action: () => openPlaylist(playlist.id),
+    }))},
+  ]),
+});
+
 watch(selectedPlaylistId, () => {
   libraryFilters.value = {sort: "title"};
 });
@@ -62,8 +82,6 @@ watch(selectedPlaylistId, () => {
 
 <template>
   <div class="memusic-app" :class="{'memusic-app--queue-open': player.isQueueOpen}">
-    <MusicSidebar :inert="player.isPlayerModeOpen" :active-section="activeSection" @navigate="navigate" @open-playlist="openPlaylist" />
-
     <section class="memusic-workspace" :inert="player.isPlayerModeOpen">
       <main class="memusic-content">
         <template v-if="activeSection === 'home'">

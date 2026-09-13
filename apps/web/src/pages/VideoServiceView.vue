@@ -1,6 +1,7 @@
 <script setup>
 import {computed, ref} from "vue";
 import {RouterLink} from "vue-router";
+import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
   getSpaceBreadcrumb,
   getVideoServicePublications,
@@ -201,6 +202,26 @@ function navigate(section) {
   }
 }
 
+useContextNavigation({
+  title: "Mecorion",
+  subtitle: "Video",
+  activeId: activeSection,
+  groups: computed(() => [
+    {label: null, navLabel: "Разделы Video", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},
+    {label: "Категории", items: categories.map((category) => ({
+      title: category,
+      symbol: category === "Все" ? "▦" : "▶",
+      active: activeSection.value === "library" && activeCategory.value === category,
+      action: () => { activeCategory.value = category; navigate("library"); },
+    }))},
+    {label: "Коллекции", items: collections.value.map((collection) => ({
+      title: `${collection.title} · ${collection.count}`,
+      symbol: collection.icon,
+      action: () => navigate("library"),
+    }))},
+  ]),
+});
+
 function openWatch(videoId) {
   selectedVideoId.value = videoId;
   selectedSeason.value = 1;
@@ -244,57 +265,6 @@ function chooseSeason(seasonNumber) {
 
 <template>
   <div class="mevideo-app">
-    <aside class="mcrn-service-sidebar mevideo-sidebar" aria-label="Навигация Video">
-      <RouterLink class="mcrn-service-brand mevideo-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
-        <span class="mcrn-service-brand__mark mevideo-brand__mark">M</span>
-        <span><strong>Mecorion</strong><small>Video</small></span>
-      </RouterLink>
-
-      <nav class="mcrn-service-nav mevideo-navigation" aria-label="Разделы Video">
-        <p class="mcrn-service-sidebar__label mevideo-sidebar__group-title">Навигация</p>
-        <button
-          v-for="item in navigation"
-          :key="item.id"
-          class="mcrn-service-nav__item mevideo-navigation__item"
-          :class="{
-            'mcrn-service-nav__item--active': activeSection === item.id,
-            'mevideo-navigation__item--active': activeSection === item.id,
-          }"
-          type="button"
-          @click="navigate(item.id)"
-        >
-          <span class="mcrn-service-nav__icon mevideo-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
-          <span class="mcrn-service-nav__title mevideo-navigation__title">{{ item.title }}</span>
-          <span class="mcrn-service-nav__short-title mevideo-navigation__short-title">{{ item.shortTitle }}</span>
-        </button>
-      </nav>
-
-      <nav class="mcrn-service-nav mcrn-service-nav--secondary mevideo-category-nav" aria-label="Категории Video">
-        <p class="mcrn-service-sidebar__label mevideo-sidebar__group-title">Категории</p>
-        <button
-          v-for="category in categories"
-          :key="category"
-          class="mcrn-service-nav__item"
-          :class="{'is-active': activeCategory === category}"
-          type="button"
-          @click="activeCategory = category; activeSection = 'library'"
-        >
-          <span aria-hidden="true">{{ category === 'Все' ? '▦' : category === 'Фильмы' ? '▶' : category === 'Сериалы' ? '▤' : category === 'Дорамы' ? '◇' : category === 'Документальное' ? '□' : category === 'Мультфильмы' ? '✹' : '◎' }}</span>
-          {{ category }}
-        </button>
-      </nav>
-
-      <div class="mcrn-service-sidebar__section mevideo-sidebar__library">
-        <div class="mcrn-service-sidebar__label mevideo-sidebar__label"><span>Коллекции</span><button type="button" aria-label="Создать коллекцию">＋</button></div>
-        <button v-for="collection in collections" :key="collection.title" type="button" @click="activeSection = 'library'">
-          <span aria-hidden="true">{{ collection.icon }}</span>
-          {{ collection.title }}
-          <small>{{ collection.count }}</small>
-        </button>
-      </div>
-
-      <RouterLink class="mcrn-service-sidebar__exit mevideo-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
-    </aside>
 
     <section class="mevideo-workspace">
 

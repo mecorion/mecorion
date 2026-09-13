@@ -1,6 +1,7 @@
 <script setup>
 import {computed, ref} from "vue";
 import {RouterLink} from "vue-router";
+import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
   getBookServicePublications,
   getSpaceBreadcrumb,
@@ -88,45 +89,24 @@ function openReader(bookId) {
   selectedBookId.value = bookId;
   activeSection.value = "reader";
 }
+
+useContextNavigation({
+  title: "Mecorion",
+  subtitle: "Books",
+  activeId: activeSection,
+  groups: computed(() => [
+    {label: null, navLabel: "Разделы Books", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},
+    {label: "Полки", items: libraryShelves.value.map((shelf) => ({
+      title: `${shelf.title} · ${shelf.count}`,
+      symbol: shelf.icon,
+      action: () => navigate("library"),
+    }))},
+  ]),
+});
 </script>
 
 <template>
   <div class="mebook-app">
-    <aside class="mcrn-service-sidebar mebook-sidebar" aria-label="Навигация Book">
-      <RouterLink class="mcrn-service-brand mebook-brand" to="/dashboard" aria-label="Вернуться в Mecorion">
-        <span class="mcrn-service-brand__mark mebook-brand__mark">M</span>
-        <span><strong>Mecorion</strong><small>Book</small></span>
-      </RouterLink>
-
-      <nav class="mcrn-service-nav mebook-navigation" aria-label="Разделы Book">
-        <button
-          v-for="item in navigation"
-          :key="item.id"
-          class="mcrn-service-nav__item mebook-navigation__item"
-          :class="{
-            'mcrn-service-nav__item--active': activeSection === item.id,
-            'mebook-navigation__item--active': activeSection === item.id,
-          }"
-          type="button"
-          @click="navigate(item.id)"
-        >
-          <span class="mcrn-service-nav__icon mebook-navigation__icon" aria-hidden="true">{{ item.icon }}</span>
-          <span class="mcrn-service-nav__title mebook-navigation__title">{{ item.title }}</span>
-          <span class="mcrn-service-nav__short-title mebook-navigation__short-title">{{ item.shortTitle }}</span>
-        </button>
-      </nav>
-
-      <div class="mcrn-service-sidebar__section mebook-sidebar__library">
-        <div class="mcrn-service-sidebar__label mebook-sidebar__label"><span>Полки</span><button type="button" aria-label="Создать полку">＋</button></div>
-        <button v-for="shelf in libraryShelves" :key="shelf.title" type="button" @click="activeSection = 'library'">
-          <span aria-hidden="true">{{ shelf.icon }}</span>
-          {{ shelf.title }}
-          <small>{{ shelf.count }}</small>
-        </button>
-      </div>
-
-      <RouterLink class="mcrn-service-sidebar__exit mebook-sidebar__exit" to="/dashboard"><span aria-hidden="true">←</span> Все сервисы</RouterLink>
-    </aside>
 
     <section class="mebook-workspace">
 

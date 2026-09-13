@@ -1,7 +1,8 @@
 <script setup>
-import {computed, onBeforeUnmount, ref, watch} from "vue";
+import {computed, onBeforeUnmount, ref, unref, watch} from "vue";
 import {RouterLink, useRoute} from "vue-router";
 import {useAppStore} from "@/stores/app.js";
+import {contextNavigation} from "@/navigation/contextNavigation.js";
 
 const route = useRoute();
 const app = useAppStore();
@@ -42,14 +43,28 @@ const accountNavigation = [
   {title: "Настройки", icon: "settings", route: "/settings"},
 ];
 
-const navigationGroups = computed(() => [
+const platformNavigationGroups = [
   {label: null, items: primaryNavigation, navLabel: "Основное меню"},
   {label: "Сервисы", items: serviceNavigation},
   {label: "Сообщество", items: communityNavigation},
   {label: "Аккаунт", items: accountNavigation},
-]);
+];
+
+const navigationGroups = computed(() => contextNavigation.value
+  ? unref(contextNavigation.value.groups)
+  : platformNavigationGroups);
+
+const sidebarTitle = computed(() => contextNavigation.value?.title ?? "Mecorion");
+const sidebarSubtitle = computed(() => contextNavigation.value?.subtitle ?? null);
 
 function isRouteActive(item) {
+  if (item.active !== undefined) {
+    return unref(item.active);
+  }
+
+  if (item.id && contextNavigation.value) {
+    return unref(contextNavigation.value.activeId) === item.id;
+  }
   if (!item.route) {
     return false;
   }
@@ -63,6 +78,10 @@ function isRouteActive(item) {
   }
 
   return route.path === item.route;
+}
+
+function activateNavigationItem(item) {
+  item.action?.();
 }
 
 // Небольшой локальный набор outline-иконок в духе Lucide. Его легко заменить
@@ -119,7 +138,10 @@ onBeforeUnmount(() => {
     <aside class="mcrn-sidebar dashboard-sidebar" :class="{'mcrn-sidebar--open dashboard-sidebar--open': isSidebarOpen}" aria-label="Навигация Mecorion">
       <RouterLink class="mcrn-brand workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
         <span class="mcrn-brand__mark workspace-brand__mark">M</span>
-        <span>Mecorion</span>
+        <span class="mcrn-brand__copy">
+          <strong>{{ sidebarTitle }}</strong>
+          <small v-if="sidebarSubtitle">{{ sidebarSubtitle }}</small>
+        </span>
       </RouterLink>
 
       <template v-for="group in navigationGroups" :key="group.label ?? 'primary'">
@@ -132,8 +154,10 @@ onBeforeUnmount(() => {
             type="button"
             class="sidebar-link dashboard-nav__item"
             :class="{'active sidebar-link--active dashboard-nav__item--active': isRouteActive(item)}"
+            @click="activateNavigationItem(item)"
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24">
+            <span v-if="item.symbol" class="dashboard-nav__symbol" aria-hidden="true">{{ item.symbol }}</span>
+            <svg v-else aria-hidden="true" viewBox="0 0 24 24">
               <component
                 :is="path[0]"
                 v-for="(path, index) in iconPaths[item.icon]"
@@ -155,8 +179,10 @@ onBeforeUnmount(() => {
             type="button"
             class="sidebar-link dashboard-nav__item"
             :class="{'active sidebar-link--active dashboard-nav__item--active': isRouteActive(item)}"
+            @click="activateNavigationItem(item)"
           >
-            <svg aria-hidden="true" viewBox="0 0 24 24">
+            <span v-if="item.symbol" class="dashboard-nav__symbol" aria-hidden="true">{{ item.symbol }}</span>
+            <svg v-else aria-hidden="true" viewBox="0 0 24 24">
               <component
                 :is="path[0]"
                 v-for="(path, index) in iconPaths[item.icon]"
@@ -169,7 +195,11 @@ onBeforeUnmount(() => {
         </div>
       </template>
 
-      <button class="sidebar-link dashboard-sidebar__support" type="button">
+      <RouterLink v-if="contextNavigation" class="sidebar-link dashboard-sidebar__support" to="/dashboard">
+        <span aria-hidden="true">←</span>
+        Все сервисы
+      </RouterLink>
+      <button v-else class="sidebar-link dashboard-sidebar__support" type="button">
         <span aria-hidden="true">?</span>
         Помощь и поддержка
       </button>
