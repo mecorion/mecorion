@@ -369,6 +369,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .dashboard-board > main,
+  .dashboard-board > .memusic-app > .memusic-workspace > .memusic-content,
+  .dashboard-board > .mebook-app > .mebook-workspace > .mebook-content,
+  .dashboard-board > .mevideo-app > .mevideo-workspace > .mevideo-content,
+  .dashboard-board > .mecourse-app > .mecourse-workspace > .mecourse-content {
+    padding-inline: var(--mcrn-layout-inline-padding);
+  }
+
   .dashboard-board > .memusic-app {
     height: calc(100dvh - var(--mc-topbar-height));
   }
