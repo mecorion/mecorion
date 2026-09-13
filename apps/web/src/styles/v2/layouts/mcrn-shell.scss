@@ -63,6 +63,12 @@
     background: var(--mcrn-shell-background);
     color: var(--mcrn-color-text);
   }
+  .dashboard-shell--sidebar-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-shell--sidebar-collapsed > .dashboard-sidebar {
+    display: none;
+  }
   .mcrn-sidebar, .dashboard-sidebar {
     position: sticky;
     top: 0;

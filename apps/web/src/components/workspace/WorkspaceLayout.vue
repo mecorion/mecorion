@@ -7,6 +7,7 @@ import {contextNavigation} from "@/navigation/contextNavigation.js";
 const route = useRoute();
 const app = useAppStore();
 const isSidebarOpen = ref(false);
+const isSidebarCollapsed = ref(false);
 
 const currentUser = {
   name: "Иван",
@@ -127,6 +128,15 @@ function closeSidebar() {
   isSidebarOpen.value = false;
 }
 
+function toggleSidebar() {
+  if (window.matchMedia('(max-width: 860px)').matches) {
+    isSidebarOpen.value = !isSidebarOpen.value;
+    return;
+  }
+
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+}
+
 watch(() => route.path, closeSidebar);
 
 watch(isSidebarOpen, (isOpen) => {
@@ -139,7 +149,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="mecorion-workspace mcrn-shell dashboard-shell" :style="workspaceAccentStyle">
+  <div
+    class="mecorion-workspace mcrn-shell dashboard-shell"
+    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed}"
+    :style="workspaceAccentStyle"
+  >
     <button
       v-if="isSidebarOpen"
       class="mcrn-sidebar-scrim dashboard-sidebar-scrim"
@@ -220,7 +234,7 @@ onBeforeUnmount(() => {
 
     <section class="dashboard-board">
       <header class="mcrn-topbar dashboard-topbar">
-        <button class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Открыть меню" @click="isSidebarOpen = true">
+        <button class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Переключить меню" @click="toggleSidebar">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <component
               :is="path[0]"

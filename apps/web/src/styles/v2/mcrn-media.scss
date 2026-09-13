@@ -1761,6 +1761,9 @@
       transform: translateX(-105%);
       transition: transform 0.2s ease;
     }
+    .dashboard-shell--sidebar-collapsed > .dashboard-sidebar {
+      display: flex;
+    }
     .mcrn-sidebar--open,
     .dashboard-sidebar--open {
       transform: translateX(0);
