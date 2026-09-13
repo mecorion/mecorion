@@ -3,6 +3,7 @@ import router from "./router"
 import App from './App.vue'
 import { createPinia } from 'pinia'
 import 'virtual:svg-icons-register'
+import '@/styles/fonts.scss'
 
 // инициализация Видеоплеера Plyr
 import VuePlyr from 'vue-plyr'
