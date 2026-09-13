@@ -2054,6 +2054,12 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; animation-duration: 0s !important; }
 }
+
+*, *::before, *::after {
+  scroll-behavior: auto !important;
+  transition: none !important;
+  animation: none !important;
+}
 @media (max-width: #{root.$mcrn-breakpoint-860}) {
   .mevideo-cinema-hero { margin-inline: 0; }
   .memusic-sidebar, .mebook-sidebar, .mevideo-sidebar, .mecourse-sidebar { flex-wrap: wrap; }

@@ -381,8 +381,8 @@
     text-decoration: none;
     cursor: pointer;
   }
-  .dashboard-nav__item span,
-  .dashboard-sidebar__support span {
+  .dashboard-nav__symbol,
+  .dashboard-sidebar__support > span[aria-hidden] {
     display: grid;
     width: var(--mcrn-size-18px);
     place-items: center;

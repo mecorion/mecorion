@@ -180,6 +180,7 @@ onBeforeUnmount(() => {
             :to="item.route"
             type="button"
             class="sidebar-link dashboard-nav__item"
+            :data-tooltip="item.title"
             :class="{'active sidebar-link--active dashboard-nav__item--active': isRouteActive(item)}"
             @click="activateNavigationItem(item)"
           >
@@ -192,7 +193,7 @@ onBeforeUnmount(() => {
                 v-bind="path[1]"
               />
             </svg>
-            {{ item.title }}
+            <span class="dashboard-nav__label">{{ item.title }}</span>
           </component>
         </nav>
 
@@ -205,6 +206,7 @@ onBeforeUnmount(() => {
             :to="item.route"
             type="button"
             class="sidebar-link dashboard-nav__item"
+            :data-tooltip="item.title"
             :class="{'active sidebar-link--active dashboard-nav__item--active': isRouteActive(item)}"
             @click="activateNavigationItem(item)"
           >
@@ -217,18 +219,18 @@ onBeforeUnmount(() => {
                 v-bind="path[1]"
               />
             </svg>
-            {{ item.title }}
+            <span class="dashboard-nav__label">{{ item.title }}</span>
           </component>
         </div>
       </template>
 
-      <RouterLink v-if="contextNavigation" class="sidebar-link dashboard-sidebar__support" to="/dashboard">
+      <RouterLink v-if="contextNavigation" class="sidebar-link dashboard-sidebar__support" to="/dashboard" data-tooltip="Все сервисы">
         <span aria-hidden="true">←</span>
-        Все сервисы
+        <span class="dashboard-nav__label">Все сервисы</span>
       </RouterLink>
-      <button v-else class="sidebar-link dashboard-sidebar__support" type="button">
+      <button v-else class="sidebar-link dashboard-sidebar__support" type="button" data-tooltip="Помощь и поддержка">
         <span aria-hidden="true">?</span>
-        Помощь и поддержка
+        <span class="dashboard-nav__label">Помощь и поддержка</span>
       </button>
     </aside>
 
