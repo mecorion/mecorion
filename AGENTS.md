@@ -397,8 +397,6 @@ Health route:
 
 ## Риски и технический долг
 
-- В репозитории есть следы старого frontend layout (`components/layout`,
-  `MainLayout`, старые video pages). Перед удалением проверить routes и imports.
 - В `apps/web/src/router/index.js` импортируются `fetchCurrentUser` и
   `isAuthenticated`, но guard закомментирован. Это нормально сейчас, но
   линтер позже может считать это неиспользуемым кодом.

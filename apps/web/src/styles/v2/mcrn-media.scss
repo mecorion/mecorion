@@ -1917,50 +1917,6 @@
     }
   }
 }
-@media (max-width: #{root.$mcrn-breakpoint-1350}) {
-  .video-page {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-@media (max-width: #{root.$mcrn-breakpoint-1170}) {
-  .player-page main {
-    display: flex;
-    flex-direction: column;
-  }
-}
-@media (max-width: #{root.$mcrn-breakpoint-1024}) {
-  .video-page {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-@media (max-width: #{root.$mcrn-breakpoint-768}) {
-  .main-layout {
-    padding: var(--mcrn-space-0_625rem);
-  }
-  .main-header {
-    gap: var(--mcrn-space-0_625rem);
-  }
-  .video-page {
-    gap: var(--mcrn-space-0_625rem);
-  }
-  .video-card {
-    min-height: var(--mcrn-responsive-min-height-200px);
-  }
-  .sidebar {
-    display: none;
-  }
-}
-@media (max-width: #{root.$mcrn-breakpoint-575}) {
-  .video-page {
-    grid-template-columns: repeat(1, 1fr) !important;
-    gap: var(--mcrn-space-0_625rem);
-  }
-  .main-header {
-    display: grid;
-    grid-template-columns: 1fr 2.5rem;
-  }
-}
-
 // Narrow layouts keep actions accessible instead of clipping their containers.
 @media (max-width: #{root.$mcrn-breakpoint-860}) {
   .memusic-app, .mebook-app, .mevideo-app {
@@ -2085,9 +2041,6 @@
   .uikit-icon-preview__header { flex-wrap: wrap; padding: var(--mc-space-3); }
   .uikit-icon-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 80px), 1fr)); }
   .mc-media-card { grid-template-columns: minmax(0, 1fr); }
-  .main-layout { padding: var(--mc-space-2); }
-  .main-header { display: flex; flex-wrap: wrap; }
-  .video-card { min-width: 0; }
   .mcrn-settings { padding: var(--mc-space-3); }
   .mcrn-settings__panel { padding: var(--mc-space-3); }
   .mcrn-settings__panel-heading { flex-direction: column; }

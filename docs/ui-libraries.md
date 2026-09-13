@@ -46,7 +46,6 @@ styles/vN/
 ├── layouts/
 │   ├── mcrn-shell.scss
 │   ├── mcrn-workspace.scss
-│   └── mcrn-legacy.scss
 ├── pages/
 │   ├── mcrn-auth.scss
 │   ├── mcrn-profile.scss
@@ -65,11 +64,6 @@ styles/vN/
 полные цветовые палитры для `light` и `dark`. Все media queries находятся в
 `mcrn-media.scss`. Сервисные акценты и правила расположены в соответствующих
 `style/<service>/mcrn-init.scss`.
-
-`layouts/mcrn-legacy.scss` временно сохраняет правила старых Video pages и
-`MainLayout`. Его можно удалить после удаления соответствующих routes и Vue-
-компонентов. Он является частью каждой библиотеки и не зависит от старого
-каталога `styles`.
 
 ## Темы
 
@@ -114,7 +108,7 @@ npm run ui:check
 В ходе рефакторинга страницы были просмотрены в v1/v2 и light/dark на ширинах
 180, 240, 320, 375, 768, 1024, 1440 и 1920px. Проверены landing, auth,
 dashboard, роли профиля, Spaces, публикации, UI kit, Music, Video, Book, Course
-и старые Video pages. Автоматизированные браузерные тесты в проект не добавлены.
+и актуальный Video. Автоматизированные браузерные тесты в проект не добавлены.
 
 ## Выполненные исправления
 
