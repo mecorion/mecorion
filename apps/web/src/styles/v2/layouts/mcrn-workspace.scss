@@ -1469,7 +1469,6 @@
   .dashboard-content {
     grid-template-columns: minmax(0, 1fr) minmax(280px, 330px);
     gap: var(--mcrn-dashboard-content-gap);
-    width: var(--mcrn-dashboard-content-width);
     margin: 0 auto;
     padding: var(--mcrn-dashboard-content-padding);
   }
