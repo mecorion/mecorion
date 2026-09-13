@@ -1,4 +1,5 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {

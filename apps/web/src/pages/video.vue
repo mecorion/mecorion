@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
-import {RouterLink} from "vue-router";
+
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
   getSpaceBreadcrumb,
@@ -379,7 +380,7 @@ function chooseSeason(seasonNumber) {
                 <small>{{ video.state.quality }} · {{ video.state.subtitles }}</small>
                 <button type="button" @click="openWatch(video.id)">Смотреть</button>
               </footer>
-              <RouterLink :to="`/space/${video.spaceId}/publication/${video.id}`">{{ getSpaceBreadcrumb(video) || "Каталог Video" }}</RouterLink>
+              <NuxtLink :to="`/space/${video.spaceId}/publication/${video.id}`">{{ getSpaceBreadcrumb(video) || "Каталог Video" }}</NuxtLink>
             </article>
           </section>
         </template>
@@ -451,7 +452,7 @@ function chooseSeason(seasonNumber) {
                   <option v-for="voice in selectedVideo.video?.voice" :key="voice">{{ voice }}</option>
                 </select>
               </label>
-              <RouterLink :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">Открыть публикацию</RouterLink>
+              <NuxtLink :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">Открыть публикацию</NuxtLink>
             </aside>
           </section>
         </template>

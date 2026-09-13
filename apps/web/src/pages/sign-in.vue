@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({layout: 'auth', authLayout: true, guestOnly: true});
 import {reactive, ref} from "vue";
-import {RouterLink, useRoute, useRouter} from "vue-router";
+import {useRoute, useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signIn} from "@/auth/session.js";
 
@@ -36,10 +37,10 @@ async function submit() {
 <template>
   <main class="auth-page auth-page--signin">
     <section class="auth-form-side">
-      <RouterLink class="auth-logo" to="/" aria-label="Mecorion">
+      <NuxtLink class="auth-logo" to="/" aria-label="Mecorion">
         <span class="workspace-brand__mark">M</span>
         <strong>Mecorion</strong>
-      </RouterLink>
+      </NuxtLink>
 
       <form class="auth-card" @submit.prevent="submit">
         <div class="auth-card__heading">
@@ -91,7 +92,7 @@ async function submit() {
           <button type="button" aria-label="Yandex">Я</button>
         </div>
 
-        <p class="auth-switch">Нет аккаунта? <RouterLink to="/sign-up">Зарегистрироваться</RouterLink></p>
+        <p class="auth-switch">Нет аккаунта? <NuxtLink to="/sign-up">Зарегистрироваться</NuxtLink></p>
       </form>
     </section>
 

@@ -1,4 +1,5 @@
 <script setup>
+definePageMeta({});
 import {useAppStore} from "@/stores/app.js";
 
 const app = useAppStore();
@@ -89,7 +90,7 @@ const iconSections = iconStyleOrder
             карточки, иконки и элементы форм.
           </p>
           <div class="uikit-hero__controls">
-            <RouterLink class="mc-button mc-button--ghost mc-button--sm" to="/settings">Настройки</RouterLink>
+            <NuxtLink class="mc-button mc-button--ghost mc-button--sm" to="/settings">Настройки</NuxtLink>
             <div class="uikit-version-switch" role="group" aria-label="Версия интерфейса">
               <button
                 v-for="version in uiVersions"

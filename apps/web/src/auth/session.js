@@ -1,5 +1,10 @@
 const SESSION_KEY = "mecorion.auth.session";
-const API_BASE_URL = import.meta.env.VITE_MECORION_API_URL ?? "http://127.0.0.1:4000";
+let apiBaseUrl = "http://127.0.0.1:4000";
+
+// Configured by the Nuxt client plugin before any page can send a request.
+export function configureAuthApi(baseUrl) {
+  apiBaseUrl = baseUrl.replace(/\/+$/, "");
+}
 
 export function readAuthSession() {
   try {
@@ -32,7 +37,7 @@ function authHeaders() {
 }
 
 async function requestAuth(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",

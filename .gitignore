@@ -52,3 +52,9 @@ data/**
 !data/README.md
 !data/**/
 !data/**/.gitkeep
+
+# Nuxt / Nitro
+.nuxt/
+.output/
+playwright-report/
+test-results/

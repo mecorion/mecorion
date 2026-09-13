@@ -1,4 +1,5 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref, watch} from "vue";
 import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";

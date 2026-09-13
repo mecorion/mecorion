@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
-import {RouterLink, useRoute} from "vue-router";
+import {useRoute} from "#imports";
 import {
   getPublicationsBySpace,
   getPublicationsBySubspace,
@@ -26,12 +27,12 @@ const publications = computed(() => {
 <template>
     <main v-if="space" class="space-detail-page">
       <nav class="mcrn-route-path" aria-label="Путь">
-        <RouterLink to="/spaces">/</RouterLink>
+        <NuxtLink to="/spaces">/</NuxtLink>
         <span aria-current="page">{{ space.title }}</span>
       </nav>
 
       <section class="space-detail-hero" :class="`spaces-card--${space.tone}`">
-        <RouterLink class="space-back-link" to="/spaces">← Все пространства</RouterLink>
+        <NuxtLink class="space-back-link" to="/spaces">← Все пространства</NuxtLink>
         <div class="space-detail-hero__content">
           <span class="spaces-card__icon">{{ space.icon }}</span>
           <p class="workspace-eyebrow">{{ space.category }}</p>
@@ -90,7 +91,7 @@ const publications = computed(() => {
         </div>
 
         <div class="space-publication-grid">
-          <RouterLink
+          <NuxtLink
             v-for="publication in publications"
             :key="publication.id"
             class="space-publication-card"
@@ -104,7 +105,7 @@ const publications = computed(() => {
               <small>{{ publication.author }}</small>
               <small>{{ publication.duration }}</small>
             </footer>
-          </RouterLink>
+          </NuxtLink>
         </div>
       </section>
     </main>
@@ -112,7 +113,7 @@ const publications = computed(() => {
     <main v-else class="space-detail-page">
       <section class="space-empty-state">
         <h1>Пространство не найдено</h1>
-        <RouterLink to="/spaces">Вернуться в каталог</RouterLink>
+        <NuxtLink to="/spaces">Вернуться в каталог</NuxtLink>
       </section>
     </main>
 </template>

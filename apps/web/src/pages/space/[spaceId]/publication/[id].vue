@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
-import {RouterLink, useRoute} from "vue-router";
+import {useRoute} from "#imports";
 import {
   getPublicationById,
   getSpaceBreadcrumb,
@@ -21,12 +22,12 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
 <template>
     <main v-if="publication && space" class="publication-page">
       <nav class="mcrn-route-path" aria-label="Путь">
-        <RouterLink to="/spaces">/</RouterLink>
-        <RouterLink :to="`/space/${space.id}`">{{ space.title }}</RouterLink>
+        <NuxtLink to="/spaces">/</NuxtLink>
+        <NuxtLink :to="`/space/${space.id}`">{{ space.title }}</NuxtLink>
         <span aria-current="page">{{ publication.title }}</span>
       </nav>
 
-      <RouterLink class="space-back-link" :to="`/space/${space.id}`">← {{ space.title }}</RouterLink>
+      <NuxtLink class="space-back-link" :to="`/space/${space.id}`">← {{ space.title }}</NuxtLink>
 
       <section class="publication-hero">
         <article class="publication-cover" :class="`space-publication-card--${publication.coverTone}`">
@@ -123,7 +124,7 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
     <main v-else class="publication-page">
       <section class="space-empty-state">
         <h1>Публикация не найдена</h1>
-        <RouterLink to="/spaces">Вернуться в пространства</RouterLink>
+        <NuxtLink to="/spaces">Вернуться в пространства</NuxtLink>
       </section>
     </main>
 </template>

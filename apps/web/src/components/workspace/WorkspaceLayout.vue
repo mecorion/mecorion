@@ -1,6 +1,7 @@
 <script setup>
 import {computed, onBeforeUnmount, ref, unref, watch} from "vue";
-import {RouterLink, useRoute} from "vue-router";
+import {useRoute} from "#imports";
+import {NuxtLink} from "#components";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
 
@@ -163,18 +164,18 @@ onBeforeUnmount(() => {
     ></button>
 
     <aside class="mcrn-sidebar dashboard-sidebar" :class="{'mcrn-sidebar--open dashboard-sidebar--open': isSidebarOpen}" aria-label="Навигация Mecorion">
-      <RouterLink class="mcrn-brand workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
+      <NuxtLink class="mcrn-brand workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
         <span class="mcrn-brand__mark workspace-brand__mark">M</span>
         <span class="mcrn-brand__copy">
           <strong>{{ sidebarTitle }}</strong>
           <small v-if="sidebarSubtitle">{{ sidebarSubtitle }}</small>
         </span>
-      </RouterLink>
+      </NuxtLink>
 
       <template v-for="group in navigationGroups" :key="group.label ?? 'primary'">
         <nav v-if="!group.label" class="mcrn-nav dashboard-nav" :aria-label="group.navLabel">
           <component
-            :is="item.route ? RouterLink : 'button'"
+            :is="item.route ? NuxtLink : 'button'"
             v-for="item in group.items"
             :key="item.title"
             :to="item.route"
@@ -200,7 +201,7 @@ onBeforeUnmount(() => {
         <div v-else class="mcrn-nav-group dashboard-nav-group">
           <p class="mcrn-nav-group__label">{{ group.label }}</p>
           <component
-            :is="item.route ? RouterLink : 'button'"
+            :is="item.route ? NuxtLink : 'button'"
             v-for="item in group.items"
             :key="item.title"
             :to="item.route"
@@ -224,10 +225,10 @@ onBeforeUnmount(() => {
         </div>
       </template>
 
-      <RouterLink v-if="contextNavigation" class="sidebar-link dashboard-sidebar__support" to="/dashboard" data-tooltip="Все сервисы">
+      <NuxtLink v-if="contextNavigation" class="sidebar-link dashboard-sidebar__support" to="/dashboard" data-tooltip="Все сервисы">
         <span aria-hidden="true">←</span>
         <span class="dashboard-nav__label">Все сервисы</span>
-      </RouterLink>
+      </NuxtLink>
       <button v-else class="sidebar-link dashboard-sidebar__support" type="button" data-tooltip="Помощь и поддержка">
         <span aria-hidden="true">?</span>
         <span class="dashboard-nav__label">Помощь и поддержка</span>
@@ -282,13 +283,13 @@ onBeforeUnmount(() => {
               />
             </svg>
           </button>
-          <RouterLink class="mcrn-user-chip dashboard-user-chip" to="/profile">
+          <NuxtLink class="mcrn-user-chip dashboard-user-chip" to="/profile">
             <span class="mcrn-user-chip__avatar">{{ currentUser.initials }}</span>
             <span class="mcrn-user-chip__content">
               <strong>{{ currentUser.name }}</strong>
               <small>Mecorion ID: {{ currentUser.id }}</small>
             </span>
-          </RouterLink>
+          </NuxtLink>
         </div>
       </header>
 

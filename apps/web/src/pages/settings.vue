@@ -1,4 +1,5 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {useAppStore} from "@/stores/app.js";
 
 const app = useAppStore();
@@ -35,7 +36,7 @@ const versions = [
           </div>
           <div class="mcrn-settings__panel-actions">
             <span class="mcrn-settings__current">Выбрана {{ app.uiVersion }}</span>
-            <RouterLink class="mc-button mc-button--soft mc-button--sm" to="/ui-kit">Открыть UI Kit</RouterLink>
+            <NuxtLink class="mc-button mc-button--soft mc-button--sm" to="/ui-kit">Открыть UI Kit</NuxtLink>
           </div>
         </div>
 

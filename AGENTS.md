@@ -114,15 +114,15 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
 - `/music` — Mecorion Music MVP;
 - `/ui-kit` — каталог UI-компонентов с переключением библиотек v1/v2;
 
-Единый layout всех страниц, кроме sign-in/sign-up:
+Единый layout всех страниц, кроме главной `/` и sign-in/sign-up:
 
 ```text
 apps/web/src/components/workspace/WorkspaceLayout.vue
 ```
 
-Он подключается один раз в `App.vue` и содержит общий header и sidebar.
+Он подключается один раз в Nuxt layout `src/layouts/default.vue` и содержит общий header и sidebar.
 Страницы не должны оборачивать себя в `WorkspaceLayout`. Активный пункт sidebar
-определяется через `vue-router` по текущему `route.path`.
+определяется через Nuxt `useRoute()` по текущему `route.path`.
 
 На страницах Music, Video, Books и Course содержимое общего sidebar заменяется
 контекстным меню сервиса через `src/navigation/contextNavigation.js`. Не
@@ -130,9 +130,9 @@ apps/web/src/components/workspace/WorkspaceLayout.vue
 Контекст сервиса также передаёт его `accent`, `accentStrong` и при необходимости
 `accentContrast`, чтобы общий layout сохранял фирменный primary-цвет сервиса.
 
-Route guard в `apps/web/src/router/index.js` сейчас закомментирован. Не
-включать его обратно без отдельной задачи, потому что пользователь ранее
-отключал проверку авторизации для удобной разработки.
+Проверка авторизации при навигации отключена для удобной разработки.
+Метаданные `requiresAuth` / `guestOnly` сохранены в `definePageMeta`, но
+middleware их не применяет. Не включать проверку без отдельной задачи.
 
 ## Стили Mecorion
 
@@ -181,7 +181,7 @@ apps/web/src/styles/main.scss
 
 Текущая реализация:
 
-- view: `apps/web/src/pages/SpacesView.vue`;
+- view: `apps/web/src/pages/spaces.vue`;
 - mock-данные: `apps/web/src/spaces/spaces.mock.js`;
 - стили: `apps/web/src/styles/mecorion-spaces.scss`;
 - пункт sidebar добавлен в `WorkspaceLayout.vue`.
@@ -207,7 +207,7 @@ Music сейчас считается достаточным MVP для даль
 
 Важные файлы:
 
-- `apps/web/src/pages/MusicView.vue`;
+- `apps/web/src/pages/music.vue`;
 - `apps/web/src/components/music/*`;
 - `apps/web/src/stores/musicPlayer.js`;
 - `apps/web/src/music/catalog.js`;
@@ -285,7 +285,11 @@ Health route:
 ### Готово / близко к MVP
 
 - Монорепозиторий уже собран через npm workspaces.
-- `apps/web` запускается и собирается через Vite.
+- `apps/web` запускается и собирается через Nuxt 4 (SPA, `ssr: false`).
+- Файловые маршруты: `src/pages`, layouts: `src/layouts`, вход: `src/app.vue`.
+- `src/plugins/mecorion.client.js` подключает Plyr, SVG, темы и API config.
+- API URL: `NUXT_PUBLIC_MECORION_API_URL`; dev-порт остаётся 5173.
+- Сборка: `apps/web/.output`, статический экспорт: `npm run generate`.
 - Есть базовая визуальная система Mecorion: токены, foundation, UI kit,
   workspace layout, auth, dashboard, profile, spaces, music.
 - Есть landing, sign-in, sign-up, dashboard, profile, spaces, music и UI-каталог.
@@ -317,8 +321,8 @@ Health route:
   - backend auth routes реализованы;
   - frontend sign-in/sign-up умеют обращаться к API;
   - frontend session хранится в `localStorage`;
-  - route guard в `router/index.js` сейчас закомментирован для удобной
-    разработки. Это осознанное состояние, не включать без отдельной задачи.
+  - auth middleware отключено для удобной разработки. Это осознанное
+    состояние, не включать без отдельной задачи.
 - Music backend:
   - есть таблицы artists/albums/tracks/genres/playlists/likes/history/lyrics;
   - есть `GET /api/v1/artists`, `GET /api/v1/albums`;
@@ -350,8 +354,8 @@ Health route:
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.
 - Нет настоящего S3/local-storage abstraction implementation, есть только
   интерфейс.
-- Нет e2e/visual тестов адаптива. Проверки пока в основном через build.
-- Нет Playwright в зависимостях проекта.
+- Есть Playwright smoke-тесты миграции Nuxt: `npm run web:test:smoke` после
+  `npm run build`. Полноценные visual-тесты адаптива ещё не добавлены.
 
 ## Что следует реализовать дальше
 
@@ -410,9 +414,8 @@ Health route:
 
 ## Риски и технический долг
 
-- В `apps/web/src/router/index.js` импортируются `fetchCurrentUser` и
-  `isAuthenticated`, но guard закомментирован. Это нормально сейчас, но
-  линтер позже может считать это неиспользуемым кодом.
+- Nuxt работает в SPA-режиме. Перед включением SSR адаптировать браузерное
+  состояние (темы, сессия, локальная музыка и плеер).
 - Music frontend и Music API пока живут параллельно и не интегрированы.
 - Схемы миграций сейчас используют имена `music.artists`, `identity.users`,
   а пользователь отдельно проговаривал правило будущего именования таблиц

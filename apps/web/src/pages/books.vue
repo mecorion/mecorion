@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
-import {RouterLink} from "vue-router";
+
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
   getBookServicePublications,
@@ -206,7 +207,7 @@ useContextNavigation({
                 <small>{{ book.reader.language }} · {{ book.reader.format }}</small>
                 <button type="button" @click="openReader(book.id)">Читать</button>
               </footer>
-              <RouterLink :to="`/space/${book.spaceId}/publication/${book.id}`">{{ getSpaceBreadcrumb(book) }}</RouterLink>
+              <NuxtLink :to="`/space/${book.spaceId}/publication/${book.id}`">{{ getSpaceBreadcrumb(book) }}</NuxtLink>
             </article>
           </section>
         </template>
@@ -219,7 +220,7 @@ useContextNavigation({
                 <strong>{{ selectedBook.title }}</strong>
               </div>
               <button type="button">Добавить закладку</button>
-              <RouterLink :to="`/space/${selectedBook.spaceId}/publication/${selectedBook.id}`">Открыть публикацию</RouterLink>
+              <NuxtLink :to="`/space/${selectedBook.spaceId}/publication/${selectedBook.id}`">Открыть публикацию</NuxtLink>
             </aside>
 
             <article class="mebook-reader__page">

@@ -1,6 +1,8 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
+import {NuxtLink} from "#components";
 import {computed} from "vue";
-import {RouterLink} from "vue-router";
+
 import musicArt from "@/assets/illustrations/dashboard/music-bars.svg";
 import videoArt from "@/assets/illustrations/dashboard/video-wave.svg";
 import booksArt from "@/assets/illustrations/dashboard/books.svg";
@@ -88,7 +90,7 @@ const activity = [
             <h2>Быстрый доступ к сервисам</h2>
             <div class="dashboard-service-grid">
               <component
-                :is="service.route ? RouterLink : 'article'"
+                :is="service.route ? NuxtLink : 'article'"
                 v-for="service in dashboard.services"
                 :key="service.id"
                 :to="service.route"

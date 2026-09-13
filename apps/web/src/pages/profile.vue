@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({workspace: true, requiresAuth: true});
 import {computed, onMounted, ref, watch} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute, useRouter} from "#imports";
 import ProfileSection from "@/components/profile/ProfileSection.vue";
 import {fetchMockProfile, profileRoles} from "@/profile/profile.mock.js";
 

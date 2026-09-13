@@ -1,5 +1,5 @@
 <script setup>
-import {RouterLink} from "vue-router";
+definePageMeta({layout: 'auth', standalone: true});
 
 const services = [
   {title: "Music", text: "Локальные треки, плейлисты и единый плеер.", icon: "♪"},
@@ -18,8 +18,8 @@ const services = [
         <h1>Mecorion собирает ваши сервисы в одном личном пространстве.</h1>
         <p>Музыка, видео, книги, облако и будущие инструменты работают отдельно, но остаются в одном аккаунте и интерфейсе.</p>
         <div class="landing-hero__actions">
-          <RouterLink class="mc-button mc-button--primary mc-button--lg" to="/sign-up">Создать аккаунт</RouterLink>
-          <RouterLink class="mc-button mc-button--ghost mc-button--lg" to="/sign-in">У меня уже есть аккаунт</RouterLink>
+          <NuxtLink class="mc-button mc-button--primary mc-button--lg" to="/sign-up">Создать аккаунт</NuxtLink>
+          <NuxtLink class="mc-button mc-button--ghost mc-button--lg" to="/sign-in">У меня уже есть аккаунт</NuxtLink>
         </div>
       </div>
 

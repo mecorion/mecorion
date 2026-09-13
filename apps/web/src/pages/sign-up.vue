@@ -1,6 +1,7 @@
 <script setup>
+definePageMeta({layout: 'auth', authLayout: true, guestOnly: true});
 import {reactive, ref} from "vue";
-import {RouterLink, useRouter} from "vue-router";
+import {useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signUp} from "@/auth/session.js";
 
@@ -48,10 +49,10 @@ async function submit() {
     />
 
     <section class="auth-form-side">
-      <RouterLink class="auth-logo" to="/" aria-label="Mecorion">
+      <NuxtLink class="auth-logo" to="/" aria-label="Mecorion">
         <span class="workspace-brand__mark">M</span>
         <strong>Mecorion</strong>
-      </RouterLink>
+      </NuxtLink>
 
       <form class="auth-card" @submit.prevent="submit">
         <div class="auth-card__heading">
@@ -98,7 +99,7 @@ async function submit() {
           {{ isSubmitting ? 'Создаем...' : 'Создать аккаунт' }}
         </button>
 
-        <p class="auth-switch">Уже есть аккаунт? <RouterLink to="/sign-in">Войти</RouterLink></p>
+        <p class="auth-switch">Уже есть аккаунт? <NuxtLink to="/sign-in">Войти</NuxtLink></p>
       </form>
     </section>
   </main>

@@ -1,12 +1,13 @@
 <script setup>
-import {RouterLink} from "vue-router";
+definePageMeta({workspace: true, requiresAuth: true});
+
 import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.js";
 </script>
 
 <template>
     <main class="spaces-page">
       <nav class="mcrn-route-path" aria-label="Путь">
-        <RouterLink to="/dashboard">/</RouterLink>
+        <NuxtLink to="/dashboard">/</NuxtLink>
         <span aria-current="page">Пространства</span>
       </nav>
 
@@ -39,7 +40,7 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
       </section>
 
       <section class="spaces-featured-rail" aria-label="Рекомендуемые пространства">
-        <RouterLink
+        <NuxtLink
           v-for="space in featuredSpaces"
           :key="space.id"
           class="spaces-card"
@@ -58,11 +59,11 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
           </dl>
 
           <span class="spaces-card__open" :aria-label="`Открыть ${space.title}`">→</span>
-        </RouterLink>
+        </NuxtLink>
       </section>
 
       <section class="spaces-compact-grid" aria-label="Другие пространства">
-        <RouterLink
+        <NuxtLink
           v-for="space in compactSpaces"
           :key="space.id"
           class="spaces-mini-card"
@@ -76,7 +77,7 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
             <small>{{ space.posts }} публикаций · {{ space.members }} участников</small>
           </div>
           <span class="spaces-mini-card__open" :aria-label="`Открыть ${space.title}`">→</span>
-        </RouterLink>
+        </NuxtLink>
       </section>
 
       <section class="spaces-callout">
