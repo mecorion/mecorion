@@ -53,6 +53,7 @@ INSERT INTO account."tAccountStatus" ("code", "name", "isLoginAllowed") VALUES
     ('PENDING', 'Ожидает подтверждения', FALSE),
     ('ACTIVE', 'Активен', TRUE),
     ('FROZEN', 'Заморожен', FALSE),
+    ('BANNED', 'Заблокирован', FALSE),
     ('DELETION_PENDING', 'Ожидает удаления', FALSE),
     ('ANONYMIZED', 'Анонимизирован', FALSE),
     ('CLOSED', 'Закрыт', FALSE)
