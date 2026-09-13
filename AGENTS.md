@@ -36,6 +36,10 @@ npm run dev
 npm run build
 ```
 
+Локальные SVG-иконки собираются в спрайт через `vite-plugin-svg-icons` из
+`apps/web/src/assets/icons`. Для вывода использовать `components/SvgIcon.vue`
+и имя символа в формате `<dir>-<name>`, например `mc-vpn-outline-shield`.
+
 API:
 
 ```bash

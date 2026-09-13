@@ -340,6 +340,10 @@ router, Pinia и глобальные стили.
 
 Переиспользуемые Vue-компоненты.
 
+`SvgIcon.vue` выводит локальные иконки из SVG-спрайта. Спрайт генерируется
+`vite-plugin-svg-icons` из `src/assets/icons`; идентификатор формируется как
+`icon-<dir>-<name>`.
+
 Текущие группы:
 
 - `components/workspace` — общий layout платформы;
