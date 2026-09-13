@@ -1,33 +1,44 @@
-import {randomBytes, scrypt as scryptCallback, timingSafeEqual, createHash} from "node:crypto";
-import {promisify} from "node:util";
+import {createHash, randomBytes, timingSafeEqual} from "node:crypto";
+import {generateMnemonic, validateMnemonic, wordlists} from "bip39";
 
-const scrypt = promisify(scryptCallback);
-const PASSWORD_KEY_LENGTH = 64;
-
-export function createSessionToken() {
-  return randomBytes(32).toString("base64url");
+export function createOpaqueToken(byteLength = 32) {
+  return randomBytes(byteLength).toString("base64url");
 }
 
-export function hashSessionToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
+export function createEmailCode() {
+  return String(randomBytes(4).readUInt32BE() % 1_000_000).padStart(6, "0");
 }
 
-export async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("base64url");
-  const hash = await scrypt(password, salt, PASSWORD_KEY_LENGTH);
-
-  return {
-    salt,
-    hash: Buffer.from(hash as Buffer).toString("base64url"),
-  };
+export function sha256Buffer(value: string) {
+  return createHash("sha256").update(value).digest();
 }
 
-export async function verifyPassword(password: string, salt: string, expectedHash: string) {
-  const actualHash = await scrypt(password, salt, PASSWORD_KEY_LENGTH);
-  const expectedBuffer = Buffer.from(expectedHash, "base64url");
-  const actualBuffer = Buffer.from(actualHash as Buffer);
+export function sha256Hex(value: string) {
+  return createHash("sha256").update(value).digest("hex");
+}
 
-  // timingSafeEqual защищает от утечки информации через время сравнения.
-  // Перед сравнением обязательно проверяем длину, иначе Node выбросит ошибку.
-  return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
+export function hashSecret(value: string) {
+  return sha256Buffer(value.trim());
+}
+
+export function verifySecret(value: string, expectedHash: Buffer) {
+  const actualHash = hashSecret(value);
+  return actualHash.length === expectedHash.length && timingSafeEqual(actualHash, expectedHash);
+}
+
+export function createRecoverySeed(wordCount: 12 | 24 = 12) {
+  return generateMnemonic(wordCount === 24 ? 256 : 128, undefined, wordlists.english);
+}
+
+export function normalizeRecoverySeed(seedPhrase: string) {
+  return seedPhrase.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+export function assertValidRecoverySeed(seedPhrase: string) {
+  const normalized = normalizeRecoverySeed(seedPhrase);
+  if (!validateMnemonic(normalized, wordlists.english)) {
+    throw new Error("Некорректная BIP-39 seed phrase");
+  }
+
+  return normalized;
 }
