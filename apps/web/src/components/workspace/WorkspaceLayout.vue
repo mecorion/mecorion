@@ -56,6 +56,19 @@ const navigationGroups = computed(() => contextNavigation.value
 
 const sidebarTitle = computed(() => contextNavigation.value?.title ?? "Mecorion");
 const sidebarSubtitle = computed(() => contextNavigation.value?.subtitle ?? null);
+const workspaceAccentStyle = computed(() => {
+  const accent = contextNavigation.value?.accent;
+
+  if (!accent) {
+    return undefined;
+  }
+
+  return {
+    "--mc-accent": accent,
+    "--mc-accent-strong": contextNavigation.value.accentStrong ?? accent,
+    "--mc-accent-contrast": contextNavigation.value.accentContrast ?? "#17152b",
+  };
+});
 
 function isRouteActive(item) {
   if (item.active !== undefined) {
@@ -126,7 +139,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="mecorion-workspace mcrn-shell dashboard-shell">
+  <div class="mecorion-workspace mcrn-shell dashboard-shell" :style="workspaceAccentStyle">
     <button
       v-if="isSidebarOpen"
       class="mcrn-sidebar-scrim dashboard-sidebar-scrim"

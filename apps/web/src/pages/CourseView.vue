@@ -97,6 +97,8 @@ function startPractice(lessonId = selectedLessonId.value) {
 useContextNavigation({
   title: "Mecorion",
   subtitle: "Course",
+  accent: "#56d7a3",
+  accentStrong: "#76e8ba",
   activeId: activeSection,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Course", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},

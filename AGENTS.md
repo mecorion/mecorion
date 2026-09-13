@@ -123,6 +123,8 @@ apps/web/src/components/workspace/WorkspaceLayout.vue
 На страницах Music, Video, Books и Course содержимое общего sidebar заменяется
 контекстным меню сервиса через `src/navigation/contextNavigation.js`. Не
 добавлять внутрь сервисных страниц второй sidebar или отдельный верхний header.
+Контекст сервиса также передаёт его `accent`, `accentStrong` и при необходимости
+`accentContrast`, чтобы общий layout сохранял фирменный primary-цвет сервиса.
 
 Route guard в `apps/web/src/router/index.js` сейчас закомментирован. Не
 включать его обратно без отдельной задачи, потому что пользователь ранее

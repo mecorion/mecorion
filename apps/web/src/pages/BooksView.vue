@@ -93,6 +93,8 @@ function openReader(bookId) {
 useContextNavigation({
   title: "Mecorion",
   subtitle: "Books",
+  accent: "#f2b84b",
+  accentStrong: "#ffd36d",
   activeId: activeSection,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Books", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},

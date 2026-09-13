@@ -29,14 +29,14 @@
     gap: var(--mcrn-space-0_5rem);
     border-radius: var(--mcrn-radius-0_625rem);
     padding: var(--mcrn-button-padding);
-    background: var(--mcrn-color-accent);
+    background: var(--mc-accent);
     color: var(--mcrn-color-text-inverse);
     font-weight: 650;
     text-decoration: none;
     cursor: pointer;
   }
   .mcrn-button:hover {
-    background: var(--mcrn-color-accent-strong);
+    background: var(--mc-accent-strong);
     transform: translateY(-1px);
   }
   .mcrn-icon-button, .dashboard-menu-button,
@@ -54,7 +54,7 @@
   .mcrn-icon-button:hover, .dashboard-menu-button:hover,
   .dashboard-icon-button:hover {
     border-color: var(--mcrn-icon-button-border-color);
-    color: var(--mcrn-color-accent);
+    color: var(--mc-accent);
   }
   .mcrn-shell, .dashboard-shell {
     display: grid;
@@ -170,8 +170,8 @@
   .active.dashboard-nav__item,
   .sidebar-link--active,
   .dashboard-nav__item--active {
-    background: var(--mcrn-sidebar-link-background);
-    color: var(--mcrn-color-accent);
+    background: color-mix(in srgb, var(--mc-accent) 13%, var(--mc-surface));
+    color: var(--mc-accent);
     font-weight: 300;
   }
   .mcrn-topbar, .dashboard-topbar {
@@ -322,7 +322,7 @@
     font-weight: 500;
   }
   .spaces-filter-list .spaces-filter--active {
-    background: var(--mcrn-color-accent);
+    background: var(--mc-accent);
     color: var(--mcrn-color-text-inverse);
   }
   .spaces-card {
@@ -360,7 +360,7 @@
   }
   .spaces-card:hover .spaces-card__open,
   .spaces-mini-card:hover button {
-    background: var(--mcrn-color-accent);
+    background: var(--mc-accent);
     color: var(--mcrn-color-text-inverse);
   }
 

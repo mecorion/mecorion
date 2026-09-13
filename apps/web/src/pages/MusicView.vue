@@ -58,6 +58,8 @@ function openPlaylist(playlistId) {
 useContextNavigation({
   title: "Mecorion",
   subtitle: "Music",
+  accent: "#ff6f8f",
+  accentStrong: "#ff86a3",
   activeId: activeSection,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Music", items: [

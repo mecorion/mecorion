@@ -205,6 +205,9 @@ function navigate(section) {
 useContextNavigation({
   title: "Mecorion",
   subtitle: "Video",
+  accent: "#8f86ff",
+  accentStrong: "#aaa4ff",
+  accentContrast: "#ffffff",
   activeId: activeSection,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Video", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},
