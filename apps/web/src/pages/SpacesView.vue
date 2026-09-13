@@ -1,11 +1,9 @@
 <script setup>
 import {RouterLink} from "vue-router";
-import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.js";
 </script>
 
 <template>
-  <WorkspaceLayout>
     <main class="spaces-page">
       <nav class="mcrn-route-path" aria-label="Путь">
         <RouterLink to="/dashboard">/</RouterLink>
@@ -90,5 +88,4 @@ import {compactSpaces, featuredSpaces, spaceFilters} from "@/spaces/spaces.mock.
         <button type="button">Создать пространство</button>
       </section>
     </main>
-  </WorkspaceLayout>
 </template>

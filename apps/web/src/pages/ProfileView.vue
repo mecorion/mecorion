@@ -2,7 +2,6 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import ProfileSection from "@/components/profile/ProfileSection.vue";
-import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {fetchMockProfile, profileRoles} from "@/profile/profile.mock.js";
 
 const route = useRoute();
@@ -48,7 +47,6 @@ watch(
 </script>
 
 <template>
-  <WorkspaceLayout>
     <main class="profile-page">
       <section class="profile-role-switch" aria-label="Mock роли пользователя">
         <span>Mock API роль:</span>
@@ -159,5 +157,4 @@ watch(
         <span>◎ Русский⌄</span>
       </footer>
     </main>
-  </WorkspaceLayout>
 </template>

@@ -11,16 +11,6 @@ const services = [
 
 <template>
   <main class="landing-page">
-    <header class="landing-header">
-      <RouterLink class="workspace-brand" to="/" aria-label="Mecorion">
-        <span class="workspace-brand__mark">M</span>
-        <span>Mecorion</span>
-      </RouterLink>
-      <nav class="landing-header__nav" aria-label="Публичная навигация">
-        <RouterLink to="/sign-in">Войти</RouterLink>
-        <RouterLink class="mc-button mc-button--primary mc-button--sm" to="/sign-up">Регистрация</RouterLink>
-      </nav>
-    </header>
 
     <section class="landing-hero">
       <div class="landing-hero__copy">

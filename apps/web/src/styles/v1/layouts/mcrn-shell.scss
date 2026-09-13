@@ -363,4 +363,12 @@
     background: var(--mcrn-color-accent);
     color: var(--mcrn-color-text-inverse);
   }
+
+  .dashboard-board > :is(.memusic-app, .mebook-app, .mevideo-app, .mecourse-app) {
+    min-height: calc(100dvh - var(--mc-topbar-height));
+  }
+
+  .dashboard-board > .memusic-app {
+    height: calc(100dvh - var(--mc-topbar-height));
+  }
 }

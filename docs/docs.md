@@ -302,7 +302,9 @@ router, Pinia и глобальные стили.
 
 ### `apps/web/src/App.vue`
 
-Корневой Vue-компонент.
+Корневой Vue-компонент подключает единый `WorkspaceLayout` для всех страниц.
+Только маршруты авторизации с `meta.authLayout` отображаются без общего header
+и sidebar.
 
 ### `apps/web/src/router`
 

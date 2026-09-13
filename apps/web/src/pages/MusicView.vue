@@ -1,7 +1,6 @@
 <script setup>
 import {computed, ref, watch} from "vue";
 import MusicFilters from "@/components/music/MusicFilters.vue";
-import MusicHeader from "@/components/music/MusicHeader.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
 import MusicPlayerMode from "@/components/music/MusicPlayerMode.vue";
@@ -66,8 +65,6 @@ watch(selectedPlaylistId, () => {
     <MusicSidebar :inert="player.isPlayerModeOpen" :active-section="activeSection" @navigate="navigate" @open-playlist="openPlaylist" />
 
     <section class="memusic-workspace" :inert="player.isPlayerModeOpen">
-      <MusicHeader v-model:query="query" @focus-search="activeSection = 'search'" />
-
       <main class="memusic-content">
         <template v-if="activeSection === 'home'">
           <section class="memusic-welcome">

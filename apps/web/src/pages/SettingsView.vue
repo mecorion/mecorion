@@ -1,5 +1,4 @@
 <script setup>
-import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {useAppStore} from "@/stores/app.js";
 
 const app = useAppStore();
@@ -21,7 +20,6 @@ const versions = [
 </script>
 
 <template>
-  <WorkspaceLayout>
     <main class="mcrn-settings">
       <header class="mcrn-settings__header">
         <p class="mcrn-settings__eyebrow">Аккаунт</p>
@@ -70,5 +68,4 @@ const versions = [
         <p class="mcrn-settings__hint">Выбор применяется сразу и сохранится для следующих посещений.</p>
       </section>
     </main>
-  </WorkspaceLayout>
 </template>

@@ -1,7 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
 import {RouterLink, useRoute} from "vue-router";
-import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {
   getPublicationById,
   getSpaceBreadcrumb,
@@ -20,7 +19,6 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
 </script>
 
 <template>
-  <WorkspaceLayout>
     <main v-if="publication && space" class="publication-page">
       <nav class="mcrn-route-path" aria-label="Путь">
         <RouterLink to="/spaces">/</RouterLink>
@@ -128,5 +126,4 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
         <RouterLink to="/spaces">Вернуться в пространства</RouterLink>
       </section>
     </main>
-  </WorkspaceLayout>
 </template>

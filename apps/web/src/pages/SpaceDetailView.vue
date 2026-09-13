@@ -1,7 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
 import {RouterLink, useRoute} from "vue-router";
-import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import {
   getPublicationsBySpace,
   getPublicationsBySubspace,
@@ -25,7 +24,6 @@ const publications = computed(() => {
 </script>
 
 <template>
-  <WorkspaceLayout>
     <main v-if="space" class="space-detail-page">
       <nav class="mcrn-route-path" aria-label="Путь">
         <RouterLink to="/spaces">/</RouterLink>
@@ -117,5 +115,4 @@ const publications = computed(() => {
         <RouterLink to="/spaces">Вернуться в каталог</RouterLink>
       </section>
     </main>
-  </WorkspaceLayout>
 </template>

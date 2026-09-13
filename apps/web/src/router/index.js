@@ -20,8 +20,8 @@ const MusicView = () => import("@/pages/MusicView.vue");
 
 const routes = [
     {path: "/", component: LandingView, meta: {standalone: true}},
-    {path: "/sign-in", component: SignInView, meta: {standalone: true, guestOnly: true}},
-    {path: "/sign-up", component: SignUpView, meta: {standalone: true, guestOnly: true}},
+    {path: "/sign-in", component: SignInView, meta: {authLayout: true, guestOnly: true}},
+    {path: "/sign-up", component: SignUpView, meta: {authLayout: true, guestOnly: true}},
     {path: "/dashboard", component: DashboardView, meta: {workspace: true, requiresAuth: true}},
     {path: "/spaces", component: SpacesView, meta: {workspace: true, requiresAuth: true}},
     {path: "/space/:id", component: SpaceDetailView, meta: {workspace: true, requiresAuth: true}},

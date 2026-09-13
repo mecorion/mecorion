@@ -110,14 +110,15 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
 - `/music` — Mecorion Music MVP;
 - `/ui-kit` — каталог UI-компонентов с переключением библиотек v1/v2;
 
-Общий layout для dashboard/profile/spaces:
+Единый layout всех страниц, кроме sign-in/sign-up:
 
 ```text
 apps/web/src/components/workspace/WorkspaceLayout.vue
 ```
 
-Он содержит общий header и sidebar. Активный пункт sidebar определяется через
-`vue-router` по текущему `route.path`.
+Он подключается один раз в `App.vue` и содержит общий header и sidebar.
+Страницы не должны оборачивать себя в `WorkspaceLayout`. Активный пункт sidebar
+определяется через `vue-router` по текущему `route.path`.
 
 Route guard в `apps/web/src/router/index.js` сейчас закомментирован. Не
 включать его обратно без отдельной задачи, потому что пользователь ранее

@@ -1,7 +1,6 @@
 <script setup>
 import {computed} from "vue";
 import {RouterLink} from "vue-router";
-import WorkspaceLayout from "@/components/workspace/WorkspaceLayout.vue";
 import musicArt from "@/assets/illustrations/dashboard/music-bars.svg";
 import videoArt from "@/assets/illustrations/dashboard/video-wave.svg";
 import booksArt from "@/assets/illustrations/dashboard/books.svg";
@@ -67,7 +66,6 @@ const activity = [
 </script>
 
 <template>
-  <WorkspaceLayout>
       <main class="dashboard-content">
         <section class="dashboard-main-column">
           <article class="dashboard-hero">
@@ -189,5 +187,4 @@ const activity = [
           </section>
         </aside>
       </main>
-  </WorkspaceLayout>
 </template>
