@@ -1,5 +1,5 @@
 <script setup>
-import {nextTick, onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {useRequestsStore} from "@/stores/requests.js";
 import {dateConverting} from "../utils/converting.js";
@@ -12,11 +12,6 @@ const requests = useRequestsStore();
 
 const currentVideo = ref(null);
 const isLoading = ref(true);
-
-const activeNames = ref(['1'])
-const handleChange = (val) => {
-  console.log(val)
-}
 
 watch(currentVideo, (newVideo) => {
   if (!newVideo || !requests.content?.length) return;
@@ -69,36 +64,16 @@ onMounted(async () => {
           <h2>Эпизоды</h2>
         </header>
         <main>
-          <el-collapse v-model="activeNames" @change="handleChange">
-            <el-collapse-item title="1 сезон" name="1">
+          <div class="legacy-collapse">
+            <details v-for="season in 4" :key="season" class="legacy-collapse__item" :open="season === 1">
+              <summary>{{ season }} сезон</summary>
               <div class="serials__list">
-                <el-button v-for="item in 4">
-                  Серия
-                </el-button>
+                <button v-for="episode in 4" :key="episode" class="legacy-button" type="button">
+                  Серия {{ episode }}
+                </button>
               </div>
-            </el-collapse-item>
-            <el-collapse-item title="2 сезон" name="2">
-              <div class="serials__list">
-                <el-button v-for="item in 4">
-                  Серия
-                </el-button>
-              </div>
-            </el-collapse-item>
-            <el-collapse-item title="3 сезон" name="3">
-              <div class="serials__list">
-                <el-button v-for="item in 4">
-                  Серия
-                </el-button>
-              </div>
-            </el-collapse-item>
-            <el-collapse-item title="4 сезон" name="4">
-              <div class="serials__list">
-                <el-button v-for="item in 4">
-                  Серия
-                </el-button>
-              </div>
-            </el-collapse-item>
-          </el-collapse>
+            </details>
+          </div>
         </main>
       </div>
     </main>

@@ -28,8 +28,8 @@ for (const version of ['v1', 'v2']) {
     if (decl.prop.startsWith('--')) properties.push(decl.prop);
     for (const [, name] of decl.value.matchAll(/var\((--[\w-]+)/g)) used.push(name);
   });
-  // Element Plus owns its remaining --el-* defaults; profile progress is runtime data.
-  const missing = sorted(used).filter(name => !properties.includes(name) && !name.startsWith('--el-') && name !== '--profile-progress');
+  // Profile progress is supplied by the component at runtime.
+  const missing = sorted(used).filter(name => !properties.includes(name) && name !== '--profile-progress');
   assert.deepEqual(missing, [], `${version}: unresolved CSS variables`);
   const themeProperties = theme => {
     const names = [];

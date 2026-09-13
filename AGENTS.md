@@ -146,7 +146,7 @@ apps/web/src/styles/main.scss
 - `mcrn-root.scss` — размеры, токены и публичные переменные;
 - `mcrn-light-theme.scss`, `mcrn-dark-theme.scss` — полные палитры;
 - `mcrn-media.scss` — весь адаптив;
-- `components/*` — переиспользуемые UI-компоненты;
+- `components/*` — переиспользуемые UI-компоненты без внешней UI-библиотеки;
 - `style/{music,video,book,course}/mcrn-init.scss` — сервисные стили.
 
 Правила стиля:

@@ -43,7 +43,6 @@ styles/vN/
 │   ├── mcrn-input.scss
 │   ├── mcrn-layout.scss
 │   ├── mcrn-service.scss
-│   └── mcrn-element-plus.scss
 ├── layouts/
 │   ├── mcrn-shell.scss
 │   ├── mcrn-workspace.scss

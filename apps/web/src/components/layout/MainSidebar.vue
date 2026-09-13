@@ -1,6 +1,6 @@
 <script setup>
 import {RouterLink, useRoute} from "vue-router";
-import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref} from "vue";
 import BurgerMenu from '../../assets/icons/burger-menu.svg'
 import HomeIcon from '../../assets/icons/home.svg'
 import VideosIcon from '../../assets/icons/sidebar/videos.svg'
@@ -10,7 +10,6 @@ import MultserialsIcon from '../../assets/icons/sidebar/multserials.svg'
 import MultfilmsIcon from '../../assets/icons/sidebar/multfilms.svg'
 import SerialsIcon from '../../assets/icons/sidebar/serials.svg'
 import router from "@/router/index.js";
-import {ElMessage} from "element-plus";
 
 const route = useRoute()
 const width = ref(window.innerWidth);
@@ -30,11 +29,6 @@ const toggleHideSidebar = () => {
 
 const pushToMainPage = async () => {
   if (route.path === '/' || route.path === '/home') {
-    ElMessage({
-      message: 'Вы уже на главной странице!',
-      type: 'primary',
-      duration: 2000
-    })
     return
   }
 
@@ -55,9 +49,9 @@ onBeforeUnmount(() => {
   <aside class="sidebar" :class="sidebarVisible ? '' : 'collapsed'">
     <div class="sidebar__inner">
       <header>
-        <el-button @click="toggleHideSidebar">
+        <button class="legacy-button" type="button" aria-label="Переключить боковое меню" @click="toggleHideSidebar">
           <BurgerMenu class="svg-icon"/>
-        </el-button>
+        </button>
         <div :class="route.path === '/' || route.path === '/home' ? '' : 'back'" @click.prevent="pushToMainPage" v-if="sidebarVisible">
           <h3 class="text-2xl uppercase">Mecorion</h3>
           <small class="text-sm font-light">Видео</small>
@@ -65,72 +59,72 @@ onBeforeUnmount(() => {
       </header>
 
       <nav class="sidebar-nav">
-        <el-menu>
+        <ul class="legacy-menu">
 
           <!-- Главная -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/home" class="nav-link__item">
               <HomeIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Рекомендации</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- Видео -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/videos/videos" class="nav-link__item">
               <VideosIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Видео</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- Аниме -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/videos/animes" class="nav-link__item">
               <AnimeIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Аниме</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- Фильмы -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/videos/movies" class="nav-link__item">
               <FilmsIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Фильмы</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- Сериалы -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/videos/serials" class="nav-link__item">
               <SerialsIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Сериалы</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- Мультфильмы -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/videos/cartoons" class="nav-link__item">
               <MultfilmsIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Мультфильмы</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- Мультсериалы -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/videos/cartoonserials" class="nav-link__item">
               <MultserialsIcon class="svg-icon"/>
               <span v-if="sidebarVisible">Мультсериалы</span>
             </RouterLink>
-          </el-menu-item>
+          </li>
 
           <!-- UI Kit -->
-          <el-menu-item class="nav-link">
+          <li class="nav-link">
             <RouterLink to="/ui-kit" class="nav-link__item">
               <HomeIcon class="svg-icon"/>
               <span v-if="sidebarVisible">UI Kit</span>
             </RouterLink>
-          </el-menu-item>
-        </el-menu>
+          </li>
+        </ul>
       </nav>
     </div>
   </aside>

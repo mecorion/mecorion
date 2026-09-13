@@ -42,7 +42,7 @@ const filteredVideos = computed(() => {
   <div>
     <h1 class="section__title">{{ categoryName }}</h1>
 
-    <el-empty v-if="filteredVideos.length === 0" description="Здесь пусто" />
+    <div v-if="filteredVideos.length === 0" class="legacy-empty" role="status">Здесь пусто</div>
     <div v-else class="video-page">
       <VideoCard
           v-for="item in filteredVideos"

@@ -12,7 +12,6 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.13.2",
-    "element-plus": "^2.11.7",
     "js-cookie": "^3.0.5",
     "pinia": "^3.0.4",
     "plyr": "^3.8.3",

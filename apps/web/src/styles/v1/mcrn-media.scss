@@ -2093,7 +2093,6 @@
   .mcrn-settings__panel-heading { flex-direction: column; }
   .mcrn-settings__versions { grid-template-columns: minmax(0, 1fr); }
   .mcrn-settings-option { grid-template-columns: 72px minmax(0, 1fr) 22px; }
-  .el-dialog, .el-message-box, .el-popover { min-width: 0 !important; max-width: calc(100vw - 16px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

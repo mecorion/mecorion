@@ -2,7 +2,6 @@
 import UserProfile from "../UserProfile.vue";
 import {onBeforeUnmount, onMounted, ref} from "vue";
 import SearchIcon from '../../assets/icons/searchGlass.svg'
-import {ElMessage} from "element-plus";
 import ExitIcon from '../../assets/icons/exit.svg'
 import {useAppStore} from "@/stores/app.js";
 import SunIcon from '../../assets/icons/sun.svg'
@@ -41,16 +40,10 @@ onBeforeUnmount(() => {
   <header class="main-header">
     <!-- Search -->
     <search class="h-full">
-      <el-input
-          size="large"
-          placeholder="Поиск..."
-          v-model="searchQuery"
-          clearable
-          class="h-full">
-        <template #prefix>
-          <SearchIcon class="svg-icon"/>
-        </template>
-      </el-input>
+      <label class="legacy-search">
+        <SearchIcon class="svg-icon"/>
+        <input v-model="searchQuery" type="search" placeholder="Поиск..." aria-label="Поиск" />
+      </label>
     </search>
 
     <img
@@ -62,23 +55,21 @@ onBeforeUnmount(() => {
     />
 
     <!-- User Profile -->
-    <el-dropdown v-else trigger="click" class="h-full">
-      <UserProfile/>
-      <template #dropdown>
-        <el-dropdown-menu class="header-menu">
-          <el-dropdown-item @click="app.toggleTheme()" class="header-menu__item">
+    <details v-else class="legacy-dropdown h-full">
+      <summary><UserProfile/></summary>
+      <div class="header-menu">
+          <button type="button" @click="app.toggleTheme()" class="header-menu__item">
             <MoonIcon class="svg-icon" v-if="app.themeIcon === 'moon'" />
             <SunIcon class="svg-icon" v-else />
             <span>Сменить тему</span>
-          </el-dropdown-item>
+          </button>
 
-          <el-dropdown-item @click="app.methodLogout" class="header-menu__item">
+          <button type="button" @click="app.methodLogout" class="header-menu__item">
             <ExitIcon class="svg-icon"/>
             <span>Выйти</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+          </button>
+      </div>
+    </details>
   </header>
 
   <MobileOverlay

@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import {getTheme, setTheme} from "@/utils/cookies/JsCookies.js";
-import {ElMessage} from "element-plus";
 import {applyUiVersion, getStoredUiVersion} from "@/styles/uiVersion.js";
 
 
@@ -52,14 +51,7 @@ export const useAppStore = defineStore('app', {
         },
 
         async methodLogout() {
-            try {
-                ElMessage({
-                    message: 'Вы успешно вышли из аккаунта!',
-                    type: 'success'
-                })
-            } catch (e) {
-                console.error('Не удалось выйти из аккаунта')
-            }
+            console.info('Вы успешно вышли из аккаунта!');
         }
     }
 })
