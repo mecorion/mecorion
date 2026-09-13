@@ -7,12 +7,12 @@ const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error("DATABASE_URL не задан");
 
 const pool = new Pool({connectionString: databaseUrl});
-const migrationsDirectory = fileURLToPath(new URL("../database/migrations", import.meta.url));
+const migrationsDirectory = fileURLToPath(new URL("../../../database/migrations", import.meta.url));
 const client = await pool.connect();
 
 try {
   await client.query(`
-    CREATE TABLE IF NOT EXISTS public.music_api_migrations (
+    CREATE TABLE IF NOT EXISTS public.mecorion_api_migrations (
       name text PRIMARY KEY,
       applied_at timestamptz NOT NULL DEFAULT now()
     )
@@ -24,24 +24,16 @@ try {
   const files = (await readdir(migrationsDirectory)).filter((file) => file.endsWith(".sql")).sort();
 
   for (const file of files) {
-    const applied = await client.query("SELECT 1 FROM public.music_api_migrations WHERE name = $1", [file]);
+    const applied = await client.query("SELECT 1 FROM public.mecorion_api_migrations WHERE name = $1", [file]);
     if (applied.rowCount) continue;
 
-    const sql = await readFile(new URL(`../database/migrations/${file}`, import.meta.url), "utf8");
-    await client.query("BEGIN");
-    try {
-      await client.query(sql);
-      await client.query("INSERT INTO public.music_api_migrations (name) VALUES ($1)", [file]);
-      await client.query("COMMIT");
-      console.log(`Применена миграция: ${file}`);
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    }
+    const sql = await readFile(new URL(`../../../database/migrations/${file}`, import.meta.url), "utf8");
+    await client.query(sql);
+    await client.query("INSERT INTO public.mecorion_api_migrations (name) VALUES ($1)", [file]);
+    console.log(`Применена миграция: ${file}`);
   }
 } finally {
   await client.query("SELECT pg_advisory_unlock(734221)").catch(() => undefined);
   client.release();
   await pool.end();
 }
-
