@@ -1,3 +1,19 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dns Protection Solid">
-  <circle fill="currentColor" cx="10" cy="10.2" r="6.7"/><path stroke="var(--mc-icon-cutout, #ffffff)" stroke-width="1.25" stroke-linecap="round" d="M3.3 10.2h13.4M5.4 6h9.2M5.4 14.4h5.8"/><path fill="var(--mc-icon-cutout, #ffffff)" d="M4.8 8.75h10.4v3.85H4.8z"/><text x="5.45" y="11.7" font-size="3.4" font-family="Arial, sans-serif" font-weight="700" fill="currentColor">DNS</text><path fill="currentColor" d="M17.2 11.15 13.65 12.7v2.45c0 2.17 1.4 4.08 3.55 4.8 2.15-.72 3.55-2.63 3.55-4.8V12.7l-3.55-1.55Z"/><path fill="none" stroke="var(--mc-icon-cutout, #ffffff)" stroke-width="1.25" d="M17.2 12.8v5.05"/>
+<!-- @license lucide-static v1.46.0 - ISC -->
+<svg
+  class="lucide lucide-network"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <rect x="16" y="16" width="6" height="6" rx="1" />
+  <rect x="2" y="16" width="6" height="6" rx="1" />
+  <rect x="9" y="2" width="6" height="6" rx="1" />
+  <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
+  <path d="M12 12V8" />
 </svg>
