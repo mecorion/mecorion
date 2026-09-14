@@ -2081,3 +2081,25 @@
   .profile-interest-panel > div { display: flex; justify-content: center; padding: var(--mc-space-2); }
   .profile-interest-panel span { position: static; width: min(58px, 100%); max-width: 100%; white-space: normal; }
 }
+@layer components {
+  @media (max-width: 860px) {
+    .uikit-view {
+      padding-right: 0.875rem;
+      padding-left: 0.875rem;
+    }
+    .uikit-catalog { grid-template-columns: 1fr; }
+    .uikit-catalog__sidebar { position: static; }
+    .ui-tabs--vertical { flex-direction: row; overflow-x: auto; padding-bottom: var(--mc-space-1); }
+    .ui-tabs--vertical .ui-tabs__trigger { flex: 0 0 auto; }
+  }
+  @media (max-width: 560px) {
+    .uikit-demo-grid--cards { grid-template-columns: 1fr; }
+    .uikit-section-heading { align-items: flex-start; flex-direction: column; }
+  }
+  @media (max-width: 360px) {
+    .uikit-view {
+      padding-right: 0.625rem;
+      padding-left: 0.625rem;
+    }
+  }
+}

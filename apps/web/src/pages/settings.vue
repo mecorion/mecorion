@@ -36,7 +36,7 @@ const versions = [
           </div>
           <div class="mcrn-settings__panel-actions">
             <span class="mcrn-settings__current">Выбрана {{ app.uiVersion }}</span>
-            <NuxtLink class="mc-button mc-button--soft mc-button--sm" to="/ui-kit">Открыть UI Kit</NuxtLink>
+            <NuxtLink class="mc-button mc-button--sm" to="/ui-kit">Открыть UI Kit</NuxtLink>
           </div>
         </div>
 

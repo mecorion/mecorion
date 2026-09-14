@@ -98,6 +98,11 @@
   --mcrn-card--interactive-border-color: color-mix(in srgb, var(--mc-accent) 58%, transparent);
   --mcrn-card-logo-background: linear-gradient(135deg, #ff2f68 0%, #7c5cff 48%, #00d2ff 100%);
   --mcrn-button-outline: 3px solid color-mix(in srgb, var(--mc-accent) 40%, transparent);
+  --mcrn-button--default-background: var(--mcrn-color-surface-muted);
+  --mcrn-button--success-background: color-mix(in srgb, #00c853 18%, var(--mc-surface));
+  --mcrn-button--success-color: #00c853;
+  --mcrn-button--warning-background: color-mix(in srgb, #ff9800 18%, var(--mc-surface));
+  --mcrn-button--warning-color: #ff9800;
   --mcrn-button--soft-background: color-mix(in srgb, var(--mc-accent) 16%, var(--mc-surface));
   --mcrn-button--danger-background: color-mix(in srgb, var(--mc-danger) 18%, var(--mc-surface));
   --mcrn-workspace-brand__mark-border: 1px solid color-mix(in srgb, var(--mc-accent) 70%, var(--mc-border-strong));

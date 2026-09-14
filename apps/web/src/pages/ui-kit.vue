@@ -1,334 +1,66 @@
 <script setup>
-definePageMeta({});
+import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
+import SvgIcon from "@/components/SvgIcon.vue";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiSelect, UiTabs, UiTextarea} from "@/components/ui/index.js";
 
+definePageMeta({});
 const app = useAppStore();
-const uiVersions = ["v1", "v2"];
-
-const buttons = [
-  {label: 'Primary', className: 'mc-button mc-button--primary'},
-  {label: 'Soft', className: 'mc-button mc-button--soft'},
-  {label: 'Ghost', className: 'mc-button mc-button--ghost'},
-  {label: 'Danger', className: 'mc-button mc-button--danger'},
-  {label: 'Default', className: 'mc-button'},
+const activeCategory = ref("buttons");
+const inputValue = ref("");
+const textareaValue = ref("");
+const selectValue = ref("music");
+const scrollableSelectValue = ref("service-1");
+const checkboxValue = ref(true);
+const categories = [
+  {value: "buttons", label: "Button", count: 6}, {value: "inputs", label: "Input", count: 9},
+  {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
+  {value: "checkbox", label: "Checkbox", count: 2}, {value: "cards", label: "Card", count: 3},
+  {value: "alerts", label: "Alert", count: 4}, {value: "badges", label: "Badge", count: 5},
+  {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
-
-const products = [
-  {logo: 'Me', title: 'Mecorion Media', text: 'Единый каталог цифрового контента'},
-  {logo: 'Vi', title: 'Mecorion Video', text: 'Видео, сериалы и история просмотра'},
-  {logo: 'Li', title: 'Mecorion Life', text: 'Задачи, цели, финансы и заметки'},
-];
-
-const mediaCards = [
-  {logo: 'BK', title: 'Books', text: 'PDF, EPUB, закладки и прогресс чтения'},
-  {logo: 'MU', title: 'Music', text: 'Альбомы, плейлисты и синхронизация'},
-  {logo: 'AI', title: 'AI Tools', text: 'Помощники и интеллектуальные сценарии'},
-];
-
-const iconModules = import.meta.glob('../assets/icons/mc/vpn/**/*.svg', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-});
-
-const iconStyleOrder = ['outline', 'solid', 'duotone'];
-
-const iconStyleLabels = {
-  outline: 'Outline',
-  solid: 'Solid',
-  duotone: 'Duotone',
-};
-
-const formatIconName = (name) => name
-  .split('-')
-  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-  .join(' ');
-
-const iconGroups = Object.entries(iconModules)
-  .reduce((groups, [filePath, url]) => {
-    const match = filePath.match(/\/vpn\/([^/]+)\/([^/]+)\.svg$/);
-
-    if (!match) {
-      return groups;
-    }
-
-    const [, style, name] = match;
-
-    if (!groups[style]) {
-      groups[style] = [];
-    }
-
-    groups[style].push({
-      name,
-      label: formatIconName(name),
-      svg: url,
-    });
-
-    return groups;
-  }, {});
-
-const iconSections = iconStyleOrder
-  .filter((style) => iconGroups[style]?.length)
-  .map((style) => ({
-    style,
-    label: iconStyleLabels[style],
-    icons: iconGroups[style].sort((a, b) => a.label.localeCompare(b.label)),
-  }));
+const activeMeta = computed(() => categories.find((item) => item.value === activeCategory.value));
+const menuIcons = ["home", "search", "boxes", "grid", "star", "download", "music", "play", "book", "graduation-cap", "cloud", "shield", "users", "badge-check", "git-pull-request", "user", "settings", "menu", "bell", "moon", "sun"];
+const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Сервис ${index + 1}`, value: `service-${index + 1}`}));
 </script>
 
 <template>
-  <div class="mc-page uikit-view">
-    <div class="mc-shell">
-      <header class="uikit-hero">
-        <div>
-          <p class="mc-caption mc-accent">Mecorion Design System</p>
-          <h1 class="mc-title-display">UI Kit</h1>
-        </div>
-        <div class="uikit-hero__aside">
-          <p class="mc-text-lg">
-            Все имеющиеся базовые компоненты Mecorion: типографика, кнопки,
-            карточки, иконки и элементы форм.
-          </p>
-          <div class="uikit-hero__controls">
-            <NuxtLink class="mc-button mc-button--ghost mc-button--sm" to="/settings">Настройки</NuxtLink>
-            <div class="uikit-version-switch" role="group" aria-label="Версия интерфейса">
-              <button
-                v-for="version in uiVersions"
-                :key="version"
-                class="uikit-version-switch__button"
-                :class="{'uikit-version-switch__button--active': app.uiVersion === version}"
-                type="button"
-                :aria-pressed="app.uiVersion === version"
-                @click="app.setUiVersion(version)"
-              >
-                {{ version }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+  <div class="uikit-view"><div class="mc-shell">
+    <header class="uikit-hero">
+      <div><p class="mc-caption mc-accent">Mecorion Design System</p><h1 class="mc-title-display">UI Library</h1></div>
+      <div class="uikit-hero__aside"><p class="mc-text-lg">Переиспользуемые Vue-компоненты, токены и состояния интерфейса.</p><div class="uikit-hero__controls"><code>@/components/ui</code><div class="uikit-version-switch" role="group" aria-label="Версия интерфейса"><button v-for="version in ['v1', 'v2']" :key="version" class="uikit-version-switch__button" :class="{'uikit-version-switch__button--active': app.uiVersion === version}" type="button" @click="app.setUiVersion(version)">{{ version }}</button></div></div></div>
+    </header>
 
-      <section class="mc-section">
-        <div class="mc-section__header">
-          <h2 class="mc-title-2">Типографика</h2>
-          <p class="mc-text">Текстовые стили используют Rubik, без отрицательного letter-spacing.</p>
-        </div>
+    <div class="uikit-catalog">
+      <aside class="uikit-catalog__sidebar"><p class="mc-caption">Компоненты</p><UiTabs v-model="activeCategory" :items="categories" orientation="vertical" /></aside>
+      <main class="uikit-catalog__content">
+        <header class="uikit-section-heading"><div><p class="mc-caption">Component</p><h2 class="mc-title-1">{{ activeMeta.label }}</h2></div><UiBadge variant="soft">{{ activeMeta.count }} вариантов</UiBadge></header>
 
-        <div class="mc-card">
-          <div class="mc-card__body uikit-type-scale">
-            <div>
-              <p class="mc-caption">Display</p>
-              <h3 class="mc-title-display">Mecorion</h3>
-            </div>
-            <div>
-              <p class="mc-caption">Title 1</p>
-              <h3 class="mc-title-1">Цифровая экосистема</h3>
-            </div>
-            <div>
-              <p class="mc-caption">Title 2</p>
-              <h3 class="mc-title-2">Каталог и сервисы</h3>
-            </div>
-            <div>
-              <p class="mc-caption">Title 3</p>
-              <h3 class="mc-title-3">Карточка продукта</h3>
-            </div>
-            <p class="mc-text-lg">Крупный текст для вводных блоков и описаний разделов.</p>
-            <p class="mc-text">Базовый текст для интерфейса, описаний, настроек и карточек.</p>
-            <p class="mc-text-sm">Вторичный текст для метаданных, статусов и пояснений.</p>
-            <p class="mc-caption">Caption / 12px / medium</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="mc-section">
-        <div class="mc-section__header">
-          <h2 class="mc-title-2">Кнопки</h2>
-          <p class="mc-text">Основные размеры и варианты для действий в каталоге, профиле и формах.</p>
-        </div>
-
-        <div class="mc-card">
-          <div class="mc-card__body mc-stack">
-            <div class="mc-row">
-              <button
-                v-for="button in buttons"
-                :key="button.label"
-                :class="button.className"
-                type="button"
-              >
-                {{ button.label }}
-              </button>
-            </div>
-
-            <div class="mc-row">
-              <button class="mc-button mc-button--primary mc-button--lg" type="button">Большая кнопка</button>
-              <button class="mc-button mc-button--soft" type="button">Обычная кнопка</button>
-              <button class="mc-button mc-button--ghost mc-button--sm" type="button">Малая</button>
-              <button class="mc-button mc-button--icon" type="button" aria-label="Назад">‹</button>
-              <button class="mc-button mc-button--icon mc-button--primary" type="button" aria-label="Добавить">+</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="mc-section">
-        <div class="mc-section__header">
-          <h2 class="mc-title-2">Карточки</h2>
-          <p class="mc-text">Форматы для продуктов, контента и компактных списков.</p>
-        </div>
-
-        <div class="mc-grid mc-grid--3">
-          <article
-            v-for="product in products"
-            :key="product.title"
-            class="mc-card mc-card--interactive"
-          >
-            <div class="mc-card__body uikit-product-card">
-              <div class="mc-card-logo">{{ product.logo }}</div>
-              <h3 class="mc-title-3">{{ product.title }}</h3>
-              <p class="mc-text-sm">{{ product.text }}</p>
-              <button class="mc-button mc-button--soft mc-button--sm" type="button">Explore</button>
-            </div>
-          </article>
-        </div>
-
-        <div class="mc-grid mc-grid--3">
-          <article class="mc-card">
-            <div class="mc-card__body">
-              <p class="mc-caption">Default</p>
-              <h3 class="mc-title-3">Обычная карточка</h3>
-              <p class="mc-text-sm">Базовая поверхность для контента и настроек.</p>
-            </div>
-          </article>
-          <article class="mc-card mc-card--flat">
-            <div class="mc-card__body">
-              <p class="mc-caption">Flat</p>
-              <h3 class="mc-title-3">Плоская карточка</h3>
-              <p class="mc-text-sm">Спокойный контейнер без дополнительного объёма.</p>
-            </div>
-          </article>
-          <article class="mc-card mc-card--raised">
-            <div class="mc-card__body">
-              <p class="mc-caption">Raised</p>
-              <h3 class="mc-title-3">Поднятая карточка</h3>
-              <p class="mc-text-sm">Выделенная поверхность для важных блоков.</p>
-            </div>
-          </article>
-        </div>
-
-        <div class="mc-grid mc-grid--3">
-          <article
-            v-for="item in mediaCards"
-            :key="item.title"
-            class="mc-card mc-card--interactive mc-media-card"
-          >
-            <div class="mc-card-logo">{{ item.logo }}</div>
-            <div>
-              <h3 class="mc-title-3">{{ item.title }}</h3>
-              <p class="mc-text-sm">{{ item.text }}</p>
-            </div>
-            <button class="mc-button mc-button--icon mc-button--ghost" type="button" aria-label="Открыть">›</button>
-          </article>
-        </div>
-      </section>
-
-      <section class="mc-section">
-        <div class="mc-section__header">
-          <h2 class="mc-title-2">Иконки</h2>
-          <p class="mc-text">Mecorion VPN Icons: 24×24, stroke 1.75, три вариации для продуктовых экранов.</p>
-        </div>
-
-        <div class="uikit-icon-preview">
-          <article
-            v-for="section in iconSections"
-            :key="section.style"
-            class="mc-card uikit-icon-preview__group"
-          >
-            <header class="uikit-icon-preview__header">
-              <div>
-                <p class="mc-caption">apps/web/src/assets/icons/mc/vpn/{{ section.style }}</p>
-                <h3 class="mc-title-3">{{ section.label }}</h3>
-              </div>
-              <span class="uikit-icon-preview__count">{{ section.icons.length }}</span>
-            </header>
-
-            <div class="uikit-icon-grid">
-              <article
-                v-for="icon in section.icons"
-                :key="`${section.style}-${icon.name}`"
-                class="uikit-icon-tile"
-              >
-                <div class="uikit-icon-tile__sizes" :class="`uikit-icon-tile__sizes--${section.style}`">
-                  <span
-                    class="uikit-icon-tile__icon uikit-icon-tile__icon--sm"
-                    :aria-label="`${icon.label} 16px`"
-                    role="img"
-                    v-html="icon.svg"
-                  />
-                  <span
-                    class="uikit-icon-tile__icon uikit-icon-tile__icon--md"
-                    :aria-label="`${icon.label} 24px`"
-                    role="img"
-                    v-html="icon.svg"
-                  />
-                  <span
-                    class="uikit-icon-tile__icon uikit-icon-tile__icon--lg"
-                    :aria-label="`${icon.label} 32px`"
-                    role="img"
-                    v-html="icon.svg"
-                  />
-                </div>
-                <div class="uikit-icon-tile__meta">
-                  <strong>{{ icon.label }}</strong>
-                  <span>{{ icon.name }}.svg</span>
-                </div>
-              </article>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="mc-section">
-        <div class="mc-section__header">
-          <h2 class="mc-title-2">Формы</h2>
-          <p class="mc-text">Поля рассчитаны на тёмный интерфейс и читаемые состояния фокуса.</p>
-        </div>
-
-        <form class="mc-card" @submit.prevent>
-          <div class="mc-card__body">
-            <div class="mc-form-grid">
-              <label class="mc-field">
-                <span class="mc-field__label">Название</span>
-                <input class="mc-field__control" placeholder="Mecorion Media" />
-              </label>
-
-              <label class="mc-field">
-                <span class="mc-field__label">Тип сервиса</span>
-                <select class="mc-field__control">
-                  <option>Каталог</option>
-                  <option>Медиа</option>
-                  <option>Персональный инструмент</option>
-                </select>
-              </label>
-            </div>
-
-            <label class="mc-field">
-              <span class="mc-field__label">Описание</span>
-              <textarea class="mc-field__control" placeholder="Короткое описание будущего модуля"></textarea>
-            </label>
-
-            <label class="mc-checkbox">
-              <input type="checkbox" checked />
-              <span>✓</span>
-              Использовать стиль Mecorion
-            </label>
-          </div>
-
-          <footer class="mc-card__footer">
-            <p class="mc-text-sm">Компоненты можно переносить в отдельные Vue-компоненты по мере стабилизации.</p>
-            <button class="mc-button mc-button--primary" type="submit">Сохранить</button>
-          </footer>
-        </form>
-      </section>
+        <section v-if="activeCategory === 'buttons'" class="uikit-demo-grid">
+          <UiCard><template #header><h3 class="mc-title-3">Варианты</h3></template><div class="mc-row"><UiButton variant="primary">Primary</UiButton><UiButton>Default</UiButton><UiButton variant="ghost">Ghost</UiButton><UiButton variant="danger">Danger</UiButton><UiButton variant="success">Success</UiButton><UiButton variant="warning">Warning</UiButton></div></UiCard>
+          <UiCard><template #header><h3 class="mc-title-3">Размеры и состояния</h3></template><div class="mc-row"><UiButton size="lg">Large</UiButton><UiButton>Medium</UiButton><UiButton size="sm">Small</UiButton><UiButton loading>Загрузка</UiButton><UiButton disabled>Disabled</UiButton></div></UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'inputs'" class="uikit-demo-grid">
+          <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiInput v-model="inputValue" label="Название проекта" placeholder="Mecorion Cloud" hint="До 80 символов" /><UiInput label="Email" type="email" model-value="mail@mecorion.dev" /><UiInput label="С ошибкой" error="Введите корректный адрес" placeholder="name@example.com" /><UiInput label="Успешная проверка" success="Название доступно" model-value="mecorion-cloud" /></UiCard>
+          <UiCard><template #header><h3 class="mc-title-3">Размеры</h3></template><UiInput size="lg" label="Большой" placeholder="Large input" /><UiInput size="md" label="Средний" placeholder="Medium input" /><UiInput size="sm" label="Маленький" placeholder="Small input" /></UiCard>
+          <UiCard><template #header><h3 class="mc-title-3">Дополнительный контент</h3></template><UiInput label="Поиск" placeholder="Найти компонент"><template #prefix><SvgIcon name="search" /></template></UiInput><UiInput label="Адрес пространства" model-value="design-system"><template #suffix>.mecorion</template></UiInput></UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'textarea'" class="uikit-demo-grid">
+          <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiTextarea v-model="textareaValue" label="Описание" placeholder="Расскажите о пространстве" hint="Поддерживает многострочный текст" /><UiTextarea label="Успешная проверка" success="Описание заполнено корректно" model-value="Готовое описание пространства." /><UiTextarea label="Ошибка" danger="Описание должно содержать не менее 20 символов" model-value="Коротко" /></UiCard>
+          <UiCard><UiTextarea label="Только чтение" model-value="Компонент принимает стандартные HTML-атрибуты." readonly /></UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'select'" class="uikit-demo-grid"><UiCard><template #header><h3 class="mc-title-3">Основной</h3></template><UiSelect v-model="selectValue" label="Сервис" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" /></UiCard><UiCard><template #header><h3 class="mc-title-3">Scrollable</h3></template><UiSelect v-model="scrollableSelectValue" label="Большой список" :options="manySelectOptions" scrollable /></UiCard><UiCard><template #header><h3 class="mc-title-3">Invalid</h3></template><UiSelect label="Обязательное поле" placeholder="Выберите сервис" invalid="Выберите один из доступных сервисов" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}]" /></UiCard></section>
+        <section v-else-if="activeCategory === 'checkbox'" class="uikit-demo-grid"><UiCard><UiCheckbox v-model="checkboxValue" label="Получать уведомления" description="Сообщим о важных событиях аккаунта" /><UiCheckbox label="Автоматическое сохранение" /></UiCard></section>
+        <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">
+          <UiCard><template #header><h3 class="mc-title-3">Default</h3></template><p class="mc-text">Базовая поверхность для контента.</p><template #footer><UiButton size="sm">Действие</UiButton></template></UiCard>
+          <UiCard variant="flat"><h3 class="mc-title-3">Flat</h3><p class="mc-text-sm">Спокойный контейнер второго уровня.</p></UiCard>
+          <UiCard variant="raised" interactive><h3 class="mc-title-3">Interactive</h3><p class="mc-text-sm">Карточка с интерактивным состоянием.</p></UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'alerts'" class="uikit-demo-grid"><UiAlert title="Информация">Настройки синхронизированы.</UiAlert><UiAlert variant="success" title="Готово">Изменения успешно сохранены.</UiAlert><UiAlert variant="warning" title="Внимание">Проверьте доступное место.</UiAlert><UiAlert variant="danger" title="Ошибка">Не удалось подключиться к API.</UiAlert></section>
+        <section v-else-if="activeCategory === 'badges'" class="uikit-demo-grid"><UiCard><div class="mc-row"><UiBadge>Default</UiBadge><UiBadge variant="soft">Soft</UiBadge><UiBadge variant="success">Active</UiBadge><UiBadge variant="warning">Pending</UiBadge><UiBadge variant="danger">Blocked</UiBadge></div></UiCard></section>
+        <section v-else-if="activeCategory === 'icons'" class="uikit-icon-grid"><article v-for="icon in menuIcons" :key="icon" class="uikit-icon-tile"><SvgIcon :name="icon" /><div class="uikit-icon-tile__meta"><strong>{{ icon }}</strong><span>&lt;SvgIcon name="{{ icon }}" /&gt;</span></div></article></section>
+        <section v-else class="uikit-demo-grid"><UiCard><p class="mc-caption">Display</p><h3 class="mc-title-display">Mecorion</h3><p class="mc-caption">Title 1</p><h3 class="mc-title-1">Цифровая экосистема</h3><p class="mc-caption">Title 2</p><h3 class="mc-title-2">Каталог компонентов</h3></UiCard><UiCard><p class="mc-text-lg">Крупный текст для вводных блоков.</p><p class="mc-text">Основной интерфейсный текст.</p><p class="mc-text-sm">Вторичный текст и метаданные.</p></UiCard></section>
+      </main>
     </div>
-  </div>
+  </div></div>
 </template>

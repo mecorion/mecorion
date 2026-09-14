@@ -8,7 +8,7 @@
     border: 1px solid transparent;
     border-radius: var(--mc-radius-md);
     padding: 0 var(--mc-space-5);
-    background: var(--mc-surface-raised);
+    background: var(--mcrn-button--default-background);
     color: var(--mc-text-primary);
     font-size: var(--mc-font-md);
     font-weight: 650;
@@ -37,18 +37,37 @@
     background: var(--mc-accent-strong);
     border-color: transparent;
   }
-  .mc-button--soft {
-    background: var(--mcrn-button--soft-background);
-    color: var(--mc-accent);
-  }
   .mc-button--ghost {
     background: transparent;
-    border-color: var(--mc-border-soft);
+    border-color: transparent;
     color: var(--mc-text-secondary);
+  }
+  .mc-button--ghost:hover {
+    border-color: transparent;
   }
   .mc-button--danger {
     background: var(--mcrn-button--danger-background);
     color: var(--mc-danger);
+  }
+  .mc-button--danger:hover {
+    background: var(--mcrn-button--danger-background);
+    border-color: color-mix(in srgb, var(--mc-danger) 35%, transparent);
+  }
+  .mc-button--success {
+    background: var(--mcrn-button--success-background);
+    color: var(--mcrn-button--success-color);
+  }
+  .mc-button--success:hover {
+    background: color-mix(in srgb, var(--mcrn-button--success-color) 26%, var(--mc-surface));
+    border-color: color-mix(in srgb, var(--mcrn-button--success-color) 35%, transparent);
+  }
+  .mc-button--warning {
+    background: var(--mcrn-button--warning-background);
+    color: var(--mcrn-button--warning-color);
+  }
+  .mc-button--warning:hover {
+    background: color-mix(in srgb, var(--mcrn-button--warning-color) 26%, var(--mc-surface));
+    border-color: color-mix(in srgb, var(--mcrn-button--warning-color) 35%, transparent);
   }
   .mc-button--icon {
     width: var(--mcrn-size-44px);
