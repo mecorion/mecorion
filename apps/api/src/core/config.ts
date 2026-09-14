@@ -45,6 +45,10 @@ if (result.data.NODE_ENV === "production" && result.data.JWT_MODE === "secret") 
   process.exit(1);
 }
 
+if (result.data.NODE_ENV !== "production" && result.data.JWT_MODE === "secret" && !result.data.JWT_SECRET) {
+  result.data.JWT_SECRET = "dev-local-secret";
+}
+
 if (result.data.JWT_MODE === "secret" && !result.data.JWT_SECRET) {
   console.error("Для JWT_MODE=secret нужен JWT_SECRET.");
   process.exit(1);
