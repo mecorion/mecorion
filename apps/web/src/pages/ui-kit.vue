@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiRadioGroup, UiSelect, UiSlider, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -24,6 +24,7 @@ const sliderRange = ref([25, 75]);
 const sliderMultiple = ref([20, 50, 80]);
 const sliderVertical = ref([25, 70]);
 const sliderTemperature = ref([0.3, 0.7]);
+const progressValue = ref(56);
 const densityOptions = [
   {label: "Default", value: "default"},
   {label: "Comfortable", value: "comfortable"},
@@ -58,6 +59,7 @@ const categories = [
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
   {value: "toggle", label: "Toggle", count: 9},
   {value: "slider", label: "Slider", count: 6},
+  {value: "progress", label: "Progress", count: 7},
   {value: "cards", label: "Card", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
@@ -227,6 +229,38 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard>
             <template #header><h3 class="mc-title-3">Disabled</h3></template>
             <UiSlider :model-value="[30, 65]" disabled label="Недоступный диапазон" />
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'progress'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiProgress :value="33" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Label and value</h3></template>
+            <UiProgress :value="56" label="Загрузка файлов" show-value />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Composition</h3></template>
+            <UiProgress :value="72">
+              <template #label>Хранилище</template>
+              <template #value="{value}">{{ value }} из 100 ГБ</template>
+            </UiProgress>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Controlled</h3></template>
+            <div class="ui-progress-demo-stack">
+              <UiProgress :value="progressValue" label="Выполнение" show-value />
+              <UiSlider v-model="progressValue" label="Изменить прогресс" />
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Размеры</h3></template>
+            <div class="ui-progress-demo-stack">
+              <UiProgress size="sm" :value="42" label="Small" show-value />
+              <UiProgress :value="58" label="Default" show-value />
+              <UiProgress size="lg" :value="74" label="Large" show-value />
+            </div>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">

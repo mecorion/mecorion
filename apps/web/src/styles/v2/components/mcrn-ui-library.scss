@@ -135,6 +135,15 @@
   .ui-toggle--lg { min-width: var(--mcrn-size-48px); min-height: var(--mcrn-size-48px); padding-inline: var(--mc-space-4); font-size: var(--mc-font-lg); }
   .ui-toggle .svg-icon { width: var(--mcrn-size-16px); height: var(--mcrn-size-16px); }
   .ui-toggle:disabled { opacity: .5; cursor: not-allowed; }
+  .ui-progress { display: grid; width: 100%; min-width: 0; gap: var(--mc-space-2); }
+  .ui-progress__meta { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--mc-space-3); color: var(--mc-text-secondary); font-size: var(--mc-font-sm); }
+  .ui-progress__label { min-width: 0; }
+  .ui-progress__value { flex: 0 0 auto; color: var(--mc-text-primary); }
+  .ui-progress__track { position: relative; width: 100%; height: var(--mcrn-size-12px); overflow: hidden; border-radius: var(--mc-radius-pill); background: var(--mcrn-button--default-background); }
+  .ui-progress__indicator { display: block; height: 100%; border-radius: inherit; background: var(--mc-accent); }
+  .ui-progress--sm .ui-progress__track { height: var(--mcrn-size-8px); }
+  .ui-progress--lg .ui-progress__track { height: var(--mcrn-size-16px); }
+  .ui-progress-demo-stack { display: grid; gap: var(--mc-space-5); }
   .ui-slider { position: relative; width: 100%; height: var(--mcrn-size-20px); touch-action: none; user-select: none; }
   .ui-slider__track { position: absolute; top: 50%; right: 0; left: 0; height: var(--mcrn-size-6px); overflow: hidden; border-radius: var(--mc-radius-pill); background: var(--mcrn-button--default-background); transform: translateY(-50%); }
   .ui-slider__range { position: absolute; top: 0; bottom: 0; left: var(--ui-slider-start); width: calc(var(--ui-slider-end) - var(--ui-slider-start)); border-radius: inherit; background: var(--mc-accent); }
