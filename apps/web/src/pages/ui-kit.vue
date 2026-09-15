@@ -28,7 +28,7 @@ const categories = [
   {value: "buttons", label: "Button", count: 6}, {value: "inputs", label: "Input", count: 9},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "cards", label: "Card", count: 8},
-  {value: "alerts", label: "Alert", count: 4}, {value: "badges", label: "Badge", count: 5},
+  {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 5},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
 const activeMeta = computed(() => categories.find((item) => item.value === activeCategory.value));
@@ -124,7 +124,25 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
             <template #footer><UiButton size="sm">Подробнее</UiButton></template>
           </UiCard>
         </section>
-        <section v-else-if="activeCategory === 'alerts'" class="uikit-demo-grid"><UiAlert title="Информация">Настройки синхронизированы.</UiAlert><UiAlert variant="success" title="Готово">Изменения успешно сохранены.</UiAlert><UiAlert variant="warning" title="Внимание">Проверьте доступное место.</UiAlert><UiAlert variant="danger" title="Ошибка">Не удалось подключиться к API.</UiAlert></section>
+        <section v-else-if="activeCategory === 'alerts'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Иконка</h3></template>
+            <UiAlert title="С иконкой">Настройки синхронизированы.</UiAlert>
+            <UiAlert :icon="false" title="Без иконки">Настройки синхронизированы.</UiAlert>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Состояния</h3></template>
+            <UiAlert title="Информация">Доступно новое обновление системы.</UiAlert>
+            <UiAlert variant="success" title="Готово">Изменения успешно сохранены.</UiAlert>
+            <UiAlert variant="warning" title="Внимание">Проверьте доступное место.</UiAlert>
+            <UiAlert variant="danger" title="Ошибка">Не удалось подключиться к API.</UiAlert>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Действия</h3></template>
+            <UiAlert title="Действие справа">Для аккаунта доступно обновление.<template #action><UiButton size="sm">Обновить</UiButton></template></UiAlert>
+            <UiAlert action-position="bottom" title="Действие снизу">Сессия скоро завершится.<template #action><UiButton size="sm">Продолжить</UiButton></template></UiAlert>
+          </UiCard>
+        </section>
         <section v-else-if="activeCategory === 'badges'" class="uikit-demo-grid"><UiCard><div class="mc-row"><UiBadge>Default</UiBadge><UiBadge variant="soft">Soft</UiBadge><UiBadge variant="success">Active</UiBadge><UiBadge variant="warning">Pending</UiBadge><UiBadge variant="danger">Blocked</UiBadge></div></UiCard></section>
         <section v-else-if="activeCategory === 'icons'" class="uikit-icon-grid"><article v-for="icon in menuIcons" :key="icon" class="uikit-icon-tile"><SvgIcon :name="icon" /><div class="uikit-icon-tile__meta"><strong>{{ icon }}</strong><span>&lt;SvgIcon name="{{ icon }}" /&gt;</span></div></article></section>
         <section v-else class="uikit-demo-grid"><UiCard><p class="mc-caption">Display</p><h3 class="mc-title-display">Mecorion</h3><p class="mc-caption">Title 1</p><h3 class="mc-title-1">Цифровая экосистема</h3><p class="mc-caption">Title 2</p><h3 class="mc-title-2">Каталог компонентов</h3></UiCard><UiCard><p class="mc-text-lg">Крупный текст для вводных блоков.</p><p class="mc-text">Основной интерфейсный текст.</p><p class="mc-text-sm">Вторичный текст и метаданные.</p></UiCard></section>
