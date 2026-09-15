@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiRadioGroup, UiSelect, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiRadioGroup, UiSelect, UiSlider, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -19,6 +19,11 @@ const invalidRadio = ref("");
 const toggleBookmark = ref(true);
 const toggleBold = ref(false);
 const toggleItalic = ref(true);
+const sliderValue = ref(33);
+const sliderRange = ref([25, 75]);
+const sliderMultiple = ref([20, 50, 80]);
+const sliderVertical = ref([25, 70]);
+const sliderTemperature = ref([0.3, 0.7]);
 const densityOptions = [
   {label: "Default", value: "default"},
   {label: "Comfortable", value: "comfortable"},
@@ -52,6 +57,7 @@ const categories = [
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
   {value: "toggle", label: "Toggle", count: 9},
+  {value: "slider", label: "Slider", count: 6},
   {value: "cards", label: "Card", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
@@ -194,6 +200,33 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard>
             <template #header><h3 class="mc-title-3">Disabled</h3></template>
             <div class="mc-row"><UiToggle disabled>Disabled</UiToggle><UiToggle disabled model-value variant="outline">Disabled active</UiToggle></div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'slider'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiSlider v-model="sliderValue" label="Громкость" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Range</h3></template>
+            <UiSlider v-model="sliderRange" label="Диапазон цены" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Multiple Thumbs</h3></template>
+            <UiSlider v-model="sliderMultiple" label="Контрольные точки" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Vertical</h3></template>
+            <div class="ui-slider-demo-vertical"><UiSlider v-model="sliderVertical" orientation="vertical" label="Вертикальный диапазон" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Controlled</h3></template>
+            <div class="ui-slider-demo__heading"><span>Temperature</span><strong>{{ sliderTemperature.join(', ') }}</strong></div>
+            <UiSlider v-model="sliderTemperature" :min="0" :max="1" :step="0.1" label="Temperature" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled</h3></template>
+            <UiSlider :model-value="[30, 65]" disabled label="Недоступный диапазон" />
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">
