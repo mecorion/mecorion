@@ -152,6 +152,14 @@
   .ui-toggle--lg { min-width: var(--mcrn-size-48px); min-height: var(--mcrn-size-48px); padding-inline: var(--mc-space-4); font-size: var(--mc-font-lg); }
   .ui-toggle .svg-icon { width: var(--mcrn-size-16px); height: var(--mcrn-size-16px); }
   .ui-toggle:disabled { opacity: .5; cursor: not-allowed; }
+  .ui-tooltip__trigger { display: inline-flex; min-width: 0; }
+  .ui-tooltip__content { position: fixed; z-index: 1200; display: flex; width: max-content; max-width: min(320px, calc(100vw - 16px)); align-items: center; gap: var(--mc-space-3); border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-sm); padding: var(--mc-space-2) var(--mc-space-3); background: var(--mc-text-primary); color: var(--mc-surface); box-shadow: var(--mcrn-shadow-float); font-size: var(--mc-font-xs); line-height: 1.35; pointer-events: auto; animation: ui-tooltip-reveal .14s ease-out; }
+  .ui-tooltip__content::after { position: absolute; width: var(--mcrn-size-8px); height: var(--mcrn-size-8px); background: inherit; content: ""; transform: rotate(45deg); }
+  .ui-tooltip__content--top::after { right: calc(50% - 4px); bottom: -4px; }
+  .ui-tooltip__content--bottom::after { top: -4px; right: calc(50% - 4px); }
+  .ui-tooltip__content--left::after { top: calc(50% - 4px); right: -4px; }
+  .ui-tooltip__content--right::after { top: calc(50% - 4px); left: -4px; }
+  .ui-tooltip__shortcut { border: 0; border-radius: var(--mc-radius-xs); padding: 2px var(--mc-space-1); background: color-mix(in srgb, var(--mc-surface) 16%, transparent); color: inherit; font: inherit; white-space: nowrap; }
   .ui-field { display: grid; min-width: 0; gap: var(--mc-space-2); }
   .ui-field__content { display: grid; min-width: 0; gap: var(--mc-space-2); }
   .ui-field__label, .ui-fieldset__legend { color: var(--mc-text-primary); font-size: var(--mc-font-sm); font-weight: 700; }
@@ -210,6 +218,11 @@
 
 @keyframes ui-spinner-rotate {
   to { transform: rotate(360deg); }
+}
+
+@keyframes ui-tooltip-reveal {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes ui-select-menu-reveal {

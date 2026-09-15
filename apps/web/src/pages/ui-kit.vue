@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiButton, UiCard, UiCheckbox, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiButton, UiCard, UiCheckbox, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -58,6 +58,7 @@ const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !al
 const categories = [
   {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
   {value: "avatar", label: "Avatar", count: 9},
+  {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
@@ -143,6 +144,40 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard>
             <template #header><h3 class="mc-title-3">Dropdown trigger</h3></template>
             <div class="mc-row"><UiAvatar interactive src="https://github.com/shadcn.png" alt="Открыть меню профиля" fallback="CN" /></div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <div class="mc-row"><UiTooltip content="Добавить в библиотеку"><UiButton>Наведи на меня</UiButton></UiTooltip></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Side</h3></template>
+            <div class="mc-row">
+              <UiTooltip side="left" content="Слева"><UiButton variant="outline">Left</UiButton></UiTooltip>
+              <UiTooltip side="top" content="Сверху"><UiButton variant="outline">Top</UiButton></UiTooltip>
+              <UiTooltip side="bottom" content="Снизу"><UiButton variant="outline">Bottom</UiButton></UiTooltip>
+              <UiTooltip side="right" content="Справа"><UiButton variant="outline">Right</UiButton></UiTooltip>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Keyboard shortcut</h3></template>
+            <div class="mc-row">
+              <UiTooltip content="Сохранить изменения"><template #shortcut>⌘S</template><UiButton>Сохранить</UiButton></UiTooltip>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled Button</h3></template>
+            <div class="mc-row"><UiTooltip content="Действие сейчас недоступно" tabindex="0"><UiButton disabled>Disabled</UiButton></UiTooltip></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Custom content</h3></template>
+            <div class="mc-row">
+              <UiTooltip :delay="0">
+                <UiButton icon variant="ghost" aria-label="Информация">?</UiButton>
+                <template #content><strong>Без задержки</strong> — подходит для компактных подсказок.</template>
+              </UiTooltip>
+            </div>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'inputs'" class="uikit-demo-grid">

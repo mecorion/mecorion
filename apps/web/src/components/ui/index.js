@@ -19,3 +19,4 @@ export {default as UiSpinner} from "./UiSpinner.vue";
 export {default as UiTabs} from "./UiTabs.vue";
 export {default as UiTextarea} from "./UiTextarea.vue";
 export {default as UiToggle} from "./UiToggle.vue";
+export {default as UiTooltip} from "./UiTooltip.vue";
