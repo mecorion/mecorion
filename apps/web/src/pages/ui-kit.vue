@@ -28,7 +28,7 @@ const categories = [
   {value: "buttons", label: "Button", count: 6}, {value: "inputs", label: "Input", count: 9},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "cards", label: "Card", count: 8},
-  {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 5},
+  {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
 const activeMeta = computed(() => categories.find((item) => item.value === activeCategory.value));
@@ -143,7 +143,16 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
             <UiAlert action-position="bottom" title="Действие снизу">Сессия скоро завершится.<template #action><UiButton size="sm">Продолжить</UiButton></template></UiAlert>
           </UiCard>
         </section>
-        <section v-else-if="activeCategory === 'badges'" class="uikit-demo-grid"><UiCard><div class="mc-row"><UiBadge>Default</UiBadge><UiBadge variant="soft">Soft</UiBadge><UiBadge variant="success">Active</UiBadge><UiBadge variant="warning">Pending</UiBadge><UiBadge variant="danger">Blocked</UiBadge></div></UiCard></section>
+        <section v-else-if="activeCategory === 'badges'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Состояния</h3></template>
+            <div class="mc-row"><UiBadge>Default</UiBadge><UiBadge variant="soft">Soft</UiBadge><UiBadge variant="success">Active</UiBadge><UiBadge variant="warning">Pending</UiBadge><UiBadge variant="danger">Blocked</UiBadge></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Интерактивные</h3></template>
+            <div class="mc-row"><UiBadge to="/ui-kit">Badge-ссылка</UiBadge><UiBadge loading>Загрузка</UiBadge></div>
+          </UiCard>
+        </section>
         <section v-else-if="activeCategory === 'icons'" class="uikit-icon-grid"><article v-for="icon in menuIcons" :key="icon" class="uikit-icon-tile"><SvgIcon :name="icon" /><div class="uikit-icon-tile__meta"><strong>{{ icon }}</strong><span>&lt;SvgIcon name="{{ icon }}" /&gt;</span></div></article></section>
         <section v-else class="uikit-demo-grid"><UiCard><p class="mc-caption">Display</p><h3 class="mc-title-display">Mecorion</h3><p class="mc-caption">Title 1</p><h3 class="mc-title-1">Цифровая экосистема</h3><p class="mc-caption">Title 2</p><h3 class="mc-title-2">Каталог компонентов</h3></UiCard><UiCard><p class="mc-text-lg">Крупный текст для вводных блоков.</p><p class="mc-text">Основной интерфейсный текст.</p><p class="mc-text-sm">Вторичный текст и метаданные.</p></UiCard></section>
       </main>
