@@ -135,6 +135,21 @@
   .ui-toggle--lg { min-width: var(--mcrn-size-48px); min-height: var(--mcrn-size-48px); padding-inline: var(--mc-space-4); font-size: var(--mc-font-lg); }
   .ui-toggle .svg-icon { width: var(--mcrn-size-16px); height: var(--mcrn-size-16px); }
   .ui-toggle:disabled { opacity: .5; cursor: not-allowed; }
+  .ui-field { display: grid; min-width: 0; gap: var(--mc-space-2); }
+  .ui-field__content { display: grid; min-width: 0; gap: var(--mc-space-2); }
+  .ui-field__label, .ui-fieldset__legend { color: var(--mc-text-primary); font-size: var(--mc-font-sm); font-weight: 700; }
+  .ui-field__description, .ui-fieldset__description { margin: 0; color: var(--mc-text-secondary); font-size: var(--mc-font-sm); line-height: 1.45; }
+  .ui-field__error { display: grid; gap: var(--mc-space-1); color: var(--mc-danger); font-size: var(--mc-font-sm); }
+  .ui-field[data-invalid] .ui-field__label { color: var(--mc-danger); }
+  .ui-field--horizontal { grid-template-columns: minmax(140px, .45fr) minmax(0, 1fr); align-items: start; gap: var(--mc-space-5); }
+  .ui-field--responsive { grid-template-columns: minmax(140px, .45fr) minmax(0, 1fr); align-items: start; gap: var(--mc-space-5); }
+  .ui-field-group { display: grid; min-width: 0; gap: var(--mc-space-5); }
+  .ui-fieldset { display: grid; min-width: 0; gap: var(--mc-space-3); margin: 0; border: 0; padding: 0; }
+  .ui-fieldset__legend { margin-bottom: var(--mc-space-1); padding: 0; font-size: var(--mc-font-lg); }
+  .ui-fieldset__legend--label { font-size: var(--mc-font-sm); }
+  .ui-field-separator { display: flex; align-items: center; gap: var(--mc-space-3); color: var(--mc-text-muted); font-size: var(--mc-font-xs); }
+  .ui-field-separator::before, .ui-field-separator::after { height: 1px; flex: 1 1 auto; background: var(--mc-border-soft); content: ""; }
+  @media (max-width: 720px) { .ui-field--responsive { grid-template-columns: 1fr; gap: var(--mc-space-2); } }
   .ui-progress { display: grid; width: 100%; min-width: 0; gap: var(--mc-space-2); }
   .ui-progress__meta { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--mc-space-3); color: var(--mc-text-secondary); font-size: var(--mc-font-sm); }
   .ui-progress__label { min-width: 0; }

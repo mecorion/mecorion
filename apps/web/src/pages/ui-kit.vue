@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -25,6 +25,8 @@ const sliderMultiple = ref([20, 50, 80]);
 const sliderVertical = ref([25, 70]);
 const sliderTemperature = ref([0.3, 0.7]);
 const progressValue = ref(56);
+const fieldPrice = ref([200, 800]);
+const fieldDepartment = ref("");
 const densityOptions = [
   {label: "Default", value: "default"},
   {label: "Comfortable", value: "comfortable"},
@@ -55,6 +57,7 @@ const allPeopleSelected = computed({
 const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !allPeopleSelected.value);
 const categories = [
   {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
+  {value: "field", label: "Field", count: 10},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
   {value: "toggle", label: "Toggle", count: 9},
@@ -107,6 +110,73 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiInput v-model="inputValue" label="Название проекта" placeholder="Mecorion Cloud" hint="До 80 символов" /><UiInput label="Email" type="email" model-value="mail@mecorion.dev" /><UiInput label="С ошибкой" error="Введите корректный адрес" placeholder="name@example.com" /><UiInput label="Успешная проверка" success="Название доступно" model-value="mecorion-cloud" /></UiCard>
           <UiCard><template #header><h3 class="mc-title-3">Размеры</h3></template><UiInput size="lg" label="Большой" placeholder="Large input" /><UiInput size="md" label="Средний" placeholder="Medium input" /><UiInput size="sm" label="Маленький" placeholder="Small input" /></UiCard>
           <UiCard><template #header><h3 class="mc-title-3">Дополнительный контент</h3></template><UiInput label="Поиск" placeholder="Найти компонент"><template #prefix><SvgIcon name="search" /></template></UiInput><UiInput label="Адрес пространства" model-value="design-system"><template #suffix>.mecorion</template></UiInput></UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'field'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Input</h3></template>
+            <UiField id="field-username" label="Имя пользователя" description="Выберите уникальное имя для аккаунта.">
+              <UiInput id="field-username" model-value="mecorion" autocomplete="off" />
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Textarea</h3></template>
+            <UiField id="field-feedback" label="Обратная связь" description="Расскажите, что можно улучшить.">
+              <UiTextarea id="field-feedback" placeholder="Ваши мысли о сервисе" />
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Select</h3></template>
+            <UiField id="field-department" label="Отдел" description="Выберите направление вашей работы.">
+              <UiSelect id="field-department" v-model="fieldDepartment" placeholder="Выберите отдел" :options="[{label: 'Дизайн', value: 'design'}, {label: 'Разработка', value: 'development'}, {label: 'Маркетинг', value: 'marketing'}]" />
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Slider</h3></template>
+            <UiField label="Диапазон цены" :description="`Укажите бюджет (${fieldPrice[0]}–${fieldPrice[1]} ₽).`">
+              <UiSlider v-model="fieldPrice" :min="0" :max="1000" :step="50" label="Диапазон цены" />
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Validation</h3></template>
+            <UiField id="field-email" label="Email" error="Введите корректный адрес электронной почты.">
+              <template #default="{id, invalid}"><UiInput :id="id" model-value="wrong-address" :error="invalid ? ' ' : ''" aria-invalid="true" /></template>
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Horizontal</h3></template>
+            <UiField id="field-notifications" orientation="horizontal" label="Уведомления" description="Получать новости и обновления продукта.">
+              <UiCheckbox id="field-notifications" model-value aria-label="Уведомления" />
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Responsive</h3></template>
+            <UiField id="field-name" orientation="responsive" label="Полное имя" description="Используется в профиле и документах.">
+              <UiInput id="field-name" model-value="Иван Иванов" />
+            </UiField>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Fieldset</h3></template>
+            <UiFieldset legend="Адрес доставки" description="Укажите адрес, по которому нужно доставить заказ.">
+              <UiFieldGroup>
+                <UiField id="field-street" label="Улица"><UiInput id="field-street" placeholder="Название улицы" /></UiField>
+                <UiField id="field-city" label="Город"><UiInput id="field-city" placeholder="Название города" /></UiField>
+              </UiFieldGroup>
+            </UiFieldset>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Field Group</h3></template>
+            <UiFieldGroup>
+              <UiField label="Ответы" description="Сообщать о завершении долгих запросов."><UiCheckbox label="Push-уведомления" /></UiField>
+              <UiFieldSeparator>или</UiFieldSeparator>
+              <UiField label="Задачи" description="Сообщать об изменениях созданных задач."><UiCheckbox label="Email-уведомления" /></UiField>
+            </UiFieldGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Choice Card</h3></template>
+            <UiFieldset legend="Среда вычислений" legend-variant="label" description="Выберите окружение для кластера.">
+              <UiRadioGroup v-model="radioPlan" variant="cards" :options="[{label: 'Kubernetes', value: 'kubernetes', description: 'Запуск GPU-нагрузок в K8s.'}, {label: 'Virtual Machine', value: 'virtual-machine', description: 'Доступ к отдельной виртуальной машине.'}]" />
+            </UiFieldset>
+          </UiCard>
         </section>
         <section v-else-if="activeCategory === 'textarea'" class="uikit-demo-grid">
           <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiTextarea v-model="textareaValue" label="Описание" placeholder="Расскажите о пространстве" hint="Поддерживает многострочный текст" /><UiTextarea label="Успешная проверка" success="Описание заполнено корректно" model-value="Готовое описание пространства." /><UiTextarea label="Ошибка" danger="Описание должно содержать не менее 20 символов" model-value="Коротко" /></UiCard>
