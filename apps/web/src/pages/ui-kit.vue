@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiButton, UiCard, UiCheckbox, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -57,6 +57,7 @@ const allPeopleSelected = computed({
 const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !allPeopleSelected.value);
 const categories = [
   {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
+  {value: "avatar", label: "Avatar", count: 9},
   {value: "field", label: "Field", count: 10},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
@@ -104,6 +105,44 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
               <UiButton href="#button-links" target="_self" variant="ghost">Ghost link</UiButton>
               <UiButton href="https://mecorion.com" target="_blank" variant="outline">Outline link</UiButton>
             </div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'avatar'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <div class="mc-row"><UiAvatar src="https://github.com/shadcn.png" alt="Профиль shadcn" fallback="CN" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Fallback</h3></template>
+            <div class="mc-row"><UiAvatar fallback="ИИ" /><UiAvatar src="/missing-avatar.png" alt="Иван Иванов" fallback="ИИ" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Badge</h3></template>
+            <div class="mc-row"><UiAvatar fallback="ИИ" status="online" /><UiAvatar fallback="АК" status="busy" /><UiAvatar fallback="МП" status="offline" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Badge with icon</h3></template>
+            <div class="mc-row"><UiAvatar fallback="PP"><template #badge>+</template></UiAvatar></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Avatar Group</h3></template>
+            <UiAvatarGroup><UiAvatar fallback="CN" /><UiAvatar fallback="LR" /><UiAvatar fallback="ER" /></UiAvatarGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Group Count</h3></template>
+            <UiAvatarGroup><UiAvatar fallback="CN" /><UiAvatar fallback="LR" /><UiAvatar fallback="ER" /><UiAvatarGroupCount :count="3" /></UiAvatarGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Group Count with icon</h3></template>
+            <UiAvatarGroup><UiAvatar fallback="CN" /><UiAvatar fallback="LR" /><UiAvatar fallback="ER" /><UiAvatarGroupCount label="Добавить пользователя">+</UiAvatarGroupCount></UiAvatarGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Размеры</h3></template>
+            <div class="mc-row"><UiAvatar size="sm" fallback="CN" /><UiAvatar fallback="CN" /><UiAvatar size="lg" fallback="CN" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Dropdown trigger</h3></template>
+            <div class="mc-row"><UiAvatar interactive src="https://github.com/shadcn.png" alt="Открыть меню профиля" fallback="CN" /></div>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'inputs'" class="uikit-demo-grid">

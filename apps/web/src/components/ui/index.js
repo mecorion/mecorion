@@ -1,4 +1,7 @@
 export {default as UiAlert} from "./UiAlert.vue";
+export {default as UiAvatar} from "./UiAvatar.vue";
+export {default as UiAvatarGroup} from "./UiAvatarGroup.vue";
+export {default as UiAvatarGroupCount} from "./UiAvatarGroupCount.vue";
 export {default as UiBadge} from "./UiBadge.vue";
 export {default as UiButton} from "./UiButton.vue";
 export {default as UiCard} from "./UiCard.vue";
