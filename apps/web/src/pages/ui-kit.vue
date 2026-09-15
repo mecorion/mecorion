@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiSelect, UiTabs, UiTextarea} from "@/components/ui/index.js";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiRadioGroup, UiSelect, UiTabs, UiTextarea} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -12,6 +12,26 @@ const textareaValue = ref("");
 const selectValue = ref("music");
 const scrollableSelectValue = ref("service-1");
 const checkboxValue = ref(true);
+const radioDensity = ref("default");
+const radioPlan = ref("pro");
+const radioBilling = ref("yearly");
+const invalidRadio = ref("");
+const densityOptions = [
+  {label: "Default", value: "default"},
+  {label: "Comfortable", value: "comfortable"},
+  {label: "Compact", value: "compact"},
+];
+const densityDescriptionOptions = densityOptions.map((option) => ({...option, description: option.value === "default" ? "Стандартные отступы для большинства случаев." : option.value === "comfortable" ? "Больше пространства между элементами." : "Минимальные отступы для плотных интерфейсов."}));
+const planOptions = [
+  {label: "Plus", value: "plus", description: "Для личных проектов и небольших команд."},
+  {label: "Pro", value: "pro", description: "Для растущих продуктов и компаний."},
+  {label: "Enterprise", value: "enterprise", description: "Для крупных команд и организаций."},
+];
+const billingOptions = [
+  {label: "Ежемесячно — 990 ₽", value: "monthly"},
+  {label: "Ежегодно — 9 900 ₽", value: "yearly"},
+  {label: "Навсегда — 29 900 ₽", value: "lifetime"},
+];
 const selectedDisks = ref(["hard-disks"]);
 const selectedPeople = ref(["sarah"]);
 const people = [
@@ -25,9 +45,10 @@ const allPeopleSelected = computed({
 });
 const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !allPeopleSelected.value);
 const categories = [
-  {value: "buttons", label: "Button", count: 6}, {value: "inputs", label: "Input", count: 9},
+  {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
-  {value: "checkbox", label: "Checkbox", count: 8}, {value: "cards", label: "Card", count: 8},
+  {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
+  {value: "cards", label: "Card", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
@@ -51,6 +72,23 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
         <section v-if="activeCategory === 'buttons'" class="uikit-demo-grid">
           <UiCard><template #header><h3 class="mc-title-3">Варианты</h3></template><div class="mc-row"><UiButton variant="primary">Primary</UiButton><UiButton>Default</UiButton><UiButton variant="ghost">Ghost</UiButton><UiButton variant="danger">Danger</UiButton><UiButton variant="success">Success</UiButton><UiButton variant="warning">Warning</UiButton></div></UiCard>
           <UiCard><template #header><h3 class="mc-title-3">Размеры и состояния</h3></template><div class="mc-row"><UiButton size="lg">Large</UiButton><UiButton>Medium</UiButton><UiButton size="sm">Small</UiButton><UiButton loading>Загрузка</UiButton><UiButton disabled>Disabled</UiButton></div></UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Icon Button</h3></template>
+            <div class="mc-row">
+              <UiButton icon aria-label="Уведомления"><SvgIcon name="bell" /></UiButton>
+              <UiButton icon rounded aria-label="Настройки"><SvgIcon name="settings" /></UiButton>
+              <UiButton icon variant="outline" aria-label="Поиск"><SvgIcon name="search" /></UiButton>
+              <UiButton icon variant="ghost" aria-label="Открыть меню"><SvgIcon name="menu" /></UiButton>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Link Button</h3></template>
+            <div class="mc-row">
+              <UiButton to="/dashboard">Default link</UiButton>
+              <UiButton href="#button-links" target="_self" variant="ghost">Ghost link</UiButton>
+              <UiButton href="https://mecorion.com" target="_blank" variant="outline">Outline link</UiButton>
+            </div>
+          </UiCard>
         </section>
         <section v-else-if="activeCategory === 'inputs'" class="uikit-demo-grid">
           <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiInput v-model="inputValue" label="Название проекта" placeholder="Mecorion Cloud" hint="До 80 символов" /><UiInput label="Email" type="email" model-value="mail@mecorion.dev" /><UiInput label="С ошибкой" error="Введите корректный адрес" placeholder="name@example.com" /><UiInput label="Успешная проверка" success="Название доступно" model-value="mecorion-cloud" /></UiCard>
@@ -104,6 +142,32 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
                 <span>{{ person.name }}</span><span>{{ person.email }}</span><span>{{ person.role }}</span>
               </div>
             </div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'radio'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiRadioGroup v-model="radioDensity" :options="densityOptions" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">С описанием</h3></template>
+            <UiRadioGroup v-model="radioDensity" :options="densityDescriptionOptions" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Choice Card</h3></template>
+            <UiRadioGroup v-model="radioPlan" variant="cards" :options="planOptions" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Fieldset</h3></template>
+            <UiRadioGroup v-model="radioBilling" label="Тарифный период" description="Годовой и бессрочный тарифы позволяют сэкономить." :options="billingOptions" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled</h3></template>
+            <UiRadioGroup model-value="default" disabled :options="densityOptions" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Invalid</h3></template>
+            <UiRadioGroup v-model="invalidRadio" label="Уведомления" description="Выберите способ получения уведомлений." invalid="Необходимо выбрать один вариант." :options="[{label: 'Только Email', value: 'email'}, {label: 'Только SMS', value: 'sms'}, {label: 'Email и SMS', value: 'both'}]" />
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">
