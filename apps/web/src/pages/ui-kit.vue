@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -60,6 +60,7 @@ const categories = [
   {value: "toggle", label: "Toggle", count: 9},
   {value: "slider", label: "Slider", count: 6},
   {value: "progress", label: "Progress", count: 7},
+  {value: "spinner", label: "Spinner", count: 13},
   {value: "cards", label: "Card", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
@@ -260,6 +261,52 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
               <UiProgress size="sm" :value="42" label="Small" show-value />
               <UiProgress :value="58" label="Default" show-value />
               <UiProgress size="lg" :value="74" label="Large" show-value />
+            </div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'spinner'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <div class="mc-row"><UiSpinner /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Размеры</h3></template>
+            <div class="mc-row">
+              <UiSpinner size="xs" label="Очень маленькая загрузка" />
+              <UiSpinner size="sm" label="Маленькая загрузка" />
+              <UiSpinner label="Загрузка" />
+              <UiSpinner size="lg" label="Большая загрузка" />
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Button</h3></template>
+            <div class="mc-row">
+              <UiButton loading>Загрузка...</UiButton>
+              <UiButton><UiSpinner size="sm" decorative /> Подождите</UiButton>
+              <UiButton>Обработка <UiSpinner size="sm" decorative /></UiButton>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Badge</h3></template>
+            <div class="mc-row">
+              <UiBadge loading>Синхронизация</UiBadge>
+              <UiBadge><UiSpinner size="xs" decorative /> Обновление</UiBadge>
+              <UiBadge>Обработка <UiSpinner size="xs" decorative /></UiBadge>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Input</h3></template>
+            <UiInput label="Сообщение" placeholder="Отправить сообщение...">
+              <template #suffix><UiSpinner size="sm" label="Проверка сообщения" /></template>
+            </UiInput>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Empty state</h3></template>
+            <div class="ui-spinner-empty">
+              <UiSpinner size="lg" />
+              <strong>Обрабатываем ваш запрос</strong>
+              <span class="mc-text-sm">Пожалуйста, не закрывайте страницу.</span>
+              <UiButton size="sm">Отменить</UiButton>
             </div>
           </UiCard>
         </section>

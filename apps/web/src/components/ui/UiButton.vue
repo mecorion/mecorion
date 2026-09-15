@@ -1,5 +1,6 @@
 <script setup>
 import {computed, resolveComponent} from "vue";
+import UiSpinner from "./UiSpinner.vue";
 
 const props = defineProps({
   variant: {type: String, default: "default"},
@@ -48,7 +49,7 @@ function handleClick(event) {
     :aria-busy="props.loading || undefined"
     @click="handleClick"
   >
-    <span v-if="props.loading" class="ui-spinner" aria-hidden="true"></span>
+    <UiSpinner v-if="props.loading" decorative />
     <slot />
   </component>
 </template>

@@ -1,6 +1,7 @@
 <script setup>
 import {computed, resolveComponent} from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
+import UiSpinner from "./UiSpinner.vue";
 
 const props = defineProps({
   variant: {type: String, default: "default"},
@@ -34,7 +35,7 @@ function handleClick(event) {
     :tabindex="props.disabled || props.loading ? -1 : undefined"
     @click="handleClick"
   >
-    <span v-if="props.loading" class="ui-spinner ui-badge__spinner" aria-hidden="true"></span>
+    <UiSpinner v-if="props.loading" class="ui-badge__spinner" size="sm" decorative />
     <slot />
     <SvgIcon v-if="isLink" class="ui-badge__link-icon" name="arrow-up-right-1" />
   </component>
