@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiRadioGroup, UiSelect, UiTabs, UiTextarea} from "@/components/ui/index.js";
+import {UiAlert, UiBadge, UiButton, UiCard, UiCheckbox, UiInput, UiRadioGroup, UiSelect, UiTabs, UiTextarea, UiToggle} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -16,6 +16,9 @@ const radioDensity = ref("default");
 const radioPlan = ref("pro");
 const radioBilling = ref("yearly");
 const invalidRadio = ref("");
+const toggleBookmark = ref(true);
+const toggleBold = ref(false);
+const toggleItalic = ref(true);
 const densityOptions = [
   {label: "Default", value: "default"},
   {label: "Comfortable", value: "comfortable"},
@@ -48,6 +51,7 @@ const categories = [
   {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
+  {value: "toggle", label: "Toggle", count: 9},
   {value: "cards", label: "Card", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
@@ -168,6 +172,28 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard>
             <template #header><h3 class="mc-title-3">Invalid</h3></template>
             <UiRadioGroup v-model="invalidRadio" label="Уведомления" description="Выберите способ получения уведомлений." invalid="Необходимо выбрать один вариант." :options="[{label: 'Только Email', value: 'email'}, {label: 'Только SMS', value: 'sms'}, {label: 'Email и SMS', value: 'both'}]" />
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'toggle'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <div class="mc-row"><UiToggle v-model="toggleBookmark" aria-label="Добавить в избранное"><SvgIcon name="star" /></UiToggle></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Outline</h3></template>
+            <div class="mc-row"><UiToggle v-model="toggleBold" variant="outline" aria-label="Полужирный"><strong>B</strong></UiToggle><UiToggle v-model="toggleItalic" variant="outline" aria-label="Курсив"><em>I</em></UiToggle></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">С текстом</h3></template>
+            <div class="mc-row"><UiToggle v-model="toggleBookmark"><SvgIcon name="star" /> Избранное</UiToggle></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Размеры</h3></template>
+            <div class="mc-row"><UiToggle size="sm">Small</UiToggle><UiToggle>Default</UiToggle><UiToggle size="lg">Large</UiToggle></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled</h3></template>
+            <div class="mc-row"><UiToggle disabled>Disabled</UiToggle><UiToggle disabled model-value variant="outline">Disabled active</UiToggle></div>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">

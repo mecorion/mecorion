@@ -8,3 +8,4 @@ export {default as UiRadioGroup} from "./UiRadioGroup.vue";
 export {default as UiSelect} from "./UiSelect.vue";
 export {default as UiTabs} from "./UiTabs.vue";
 export {default as UiTextarea} from "./UiTextarea.vue";
+export {default as UiToggle} from "./UiToggle.vue";
