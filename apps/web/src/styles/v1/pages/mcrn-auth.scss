@@ -5,6 +5,9 @@
     background: var(--mcrn-landing-page-background);
     color: var(--mc-text-primary);
   }
+  .landing-page {
+    padding-bottom: var(--mcrn-space-16px);
+  }
   .landing-header {
     display: flex;
     align-items: center;
