@@ -1,61 +1,41 @@
 import type {FastifyInstance} from "fastify";
 import {query} from "../../core/database.js";
 
-interface ArtistRow {
-  id: string;
-  name: string;
-  slug: string;
-  verified: boolean;
-  albumCount: number;
-  trackCount: number;
-}
-
-interface AlbumRow {
-  id: string;
-  title: string;
-  slug: string;
-  artistId: string;
-  artistName: string;
-  releaseDate: string | null;
-  coverUrl: string | null;
-  trackCount: number;
-}
-
 export async function registerCatalogRoutes(app: FastifyInstance) {
-  app.get("/api/v1/artists", async () => {
-    const result = await query<ArtistRow>(`
+  app.get("/api/v1/music/artists", async () => {
+    const result = await query(`
       SELECT
-        ar.id,
-        ar.name,
-        ar.slug,
-        ar.verified,
-        COUNT(DISTINCT al.id)::int AS "albumCount",
-        COUNT(DISTINCT t.id)::int AS "trackCount"
-      FROM music.artists ar
-      LEFT JOIN music.albums al ON al.artist_id = ar.id
-      LEFT JOIN music.tracks t ON t.artist_id = ar.id
-      GROUP BY ar.id
-      ORDER BY ar.name
+        contributor."publicId"::TEXT AS "id",
+        contributor."primaryName" AS "name",
+        contributor."normalizedName",
+        COUNT(DISTINCT contentContributor."contentId")::INT AS "trackCount"
+      FROM content."tContributor" contributor
+      JOIN content."tContributorRole" role ON role."code" IN ('PRIMARY_ARTIST', 'FEATURED_ARTIST')
+      LEFT JOIN content."tContentContributor" contentContributor
+        ON contentContributor."contributorId" = contributor."id"
+       AND contentContributor."contributorRoleId" = role."id"
+      WHERE contributor."retireDtm" IS NULL
+      GROUP BY contributor."publicId", contributor."primaryName", contributor."normalizedName"
+      ORDER BY contributor."primaryName"
     `);
     return {items: result.rows};
   });
 
-  app.get("/api/v1/albums", async () => {
-    const result = await query<AlbumRow>(`
+  app.get("/api/v1/music/albums", async () => {
+    const result = await query(`
       SELECT
-        al.id,
-        al.title,
-        al.slug,
-        al.artist_id AS "artistId",
-        ar.name AS "artistName",
-        al.release_date AS "releaseDate",
-        al.cover_url AS "coverUrl",
-        COUNT(t.id)::int AS "trackCount"
-      FROM music.albums al
-      JOIN music.artists ar ON ar.id = al.artist_id
-      LEFT JOIN music.tracks t ON t.album_id = al.id
-      GROUP BY al.id, ar.name
-      ORDER BY al.release_date DESC NULLS LAST, al.title
+        contentItem."publicId"::TEXT AS "id",
+        contentItem."originalTitle" AS "title",
+        contentItem."releaseDt" AS "releaseDate",
+        albumType."code" AS "albumType",
+        COUNT(albumTrack."trackContentId")::INT AS "trackCount"
+      FROM music."tAlbum" album
+      JOIN content."tContent" contentItem ON contentItem."id" = album."contentId"
+      JOIN music."tAlbumType" albumType ON albumType."id" = album."albumTypeId"
+      LEFT JOIN music."tAlbumTrack" albumTrack ON albumTrack."albumContentId" = album."contentId"
+      WHERE contentItem."retireDtm" IS NULL
+      GROUP BY contentItem."publicId", contentItem."originalTitle", contentItem."releaseDt", albumType."code"
+      ORDER BY contentItem."releaseDt" DESC NULLS LAST, contentItem."originalTitle"
     `);
     return {items: result.rows};
   });

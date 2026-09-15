@@ -2,8 +2,12 @@ import cors from "@fastify/cors";
 import Fastify from "fastify";
 import {ZodError} from "zod";
 import {config} from "../config.js";
+import {ApiError} from "./api-error.js";
+import {registerAdminModule} from "../../modules/admin/admin.module.js";
 import {registerAuthModule} from "../../modules/auth/auth.module.js";
+import {registerContentModule} from "../../modules/content/content.module.js";
 import {registerMusicModule} from "../../modules/music/music.module.js";
+import {registerVideoModule} from "../../modules/video/video.module.js";
 import {registerHealthRoutes} from "./health.routes.js";
 
 export async function createApp() {
@@ -17,7 +21,10 @@ export async function createApp() {
 
   await registerHealthRoutes(app);
   await registerAuthModule(app);
+  await registerAdminModule(app);
+  await registerContentModule(app);
   await registerMusicModule(app);
+  await registerVideoModule(app);
 
   app.setErrorHandler((error, _request, reply) => {
     if (error instanceof ZodError) {
@@ -25,6 +32,14 @@ export async function createApp() {
         error: "VALIDATION_ERROR",
         message: "Проверьте переданные параметры",
         details: error.flatten(),
+      });
+    }
+
+    if (error instanceof ApiError) {
+      return reply.status(error.statusCode).send({
+        error: error.code,
+        message: error.message,
+        details: error.details,
       });
     }
 
