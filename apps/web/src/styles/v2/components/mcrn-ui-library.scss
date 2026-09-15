@@ -47,8 +47,8 @@
   .ui-select__chevron { width: var(--mcrn-size-10px); height: var(--mcrn-size-10px); flex: 0 0 auto; margin-right: var(--mc-space-1); border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--mc-text-muted); transform: rotate(45deg); transition: transform .16s ease; }
   .ui-select--open .ui-select__chevron { transform: rotate(225deg); }
   .ui-select--invalid .ui-select__trigger, .ui-select--invalid .ui-select__trigger:hover, .ui-select--invalid .ui-select__trigger:focus { border-color: var(--mc-danger); }
-  .ui-select__menu { --ui-select-menu-offset: calc(var(--mc-space-2) * -1); position: absolute; z-index: 20; top: calc(100% + var(--mc-space-2)); right: 0; left: 0; display: grid; grid-template-rows: minmax(0, 1fr); min-height: 0; gap: var(--mc-space-1); overflow: hidden; margin: 0; padding: var(--mc-space-2); border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-md); background: var(--mc-surface); box-shadow: var(--mc-shadow-card); }
-  .ui-select--top .ui-select__menu { --ui-select-menu-offset: var(--mc-space-2); top: auto; bottom: calc(100% + var(--mc-space-2)); }
+  .ui-select__menu { --ui-select-menu-offset: calc(var(--mc-space-2) * -1); position: fixed; z-index: 1200; display: grid; grid-template-rows: minmax(0, 1fr); min-height: 0; gap: var(--mc-space-1); overflow: hidden; margin: 0; padding: var(--mc-space-2); border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-md); background: var(--mc-surface); box-shadow: var(--mc-shadow-card); }
+  .ui-select__menu--top { --ui-select-menu-offset: var(--mc-space-2); }
   .ui-select__menu--scrollable { grid-template-rows: var(--mcrn-size-28px) minmax(0, 1fr) var(--mcrn-size-28px); height: calc(var(--mcrn-size-52px) * 4.5); max-height: calc(var(--mcrn-size-52px) * 4.5); }
   .ui-select__options { display: grid; min-height: 0; gap: var(--mc-space-1); overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0; scrollbar-width: none; list-style: none; }
   .ui-select__options::-webkit-scrollbar { display: none; }

@@ -23,6 +23,7 @@ const isOpen = ref(false);
 const activeIndex = ref(-1);
 const placement = ref("bottom");
 const menuMaxHeight = ref(null);
+const menuPosition = ref({top: 0, left: 0, width: 0});
 const canScrollUp = ref(false);
 const canScrollDown = ref(false);
 let autoScrollFrame = null;
@@ -36,7 +37,15 @@ const selectedIndex = computed(() => normalizedOptions.value.findIndex((option) 
 const selectedOption = computed(() => normalizedOptions.value[selectedIndex.value]);
 const menuStyle = computed(() => {
   const height = menuMaxHeight.value === null ? undefined : `${menuMaxHeight.value}px`;
-  return {maxHeight: height, height: props.scrollable ? height : undefined};
+  return {
+    top: `${menuPosition.value.top}px`,
+    right: "auto",
+    bottom: "auto",
+    left: `${menuPosition.value.left}px`,
+    width: `${menuPosition.value.width}px`,
+    maxHeight: height,
+    height: props.scrollable ? height : undefined,
+  };
 });
 
 function updateMenuPlacement() {
@@ -50,6 +59,13 @@ function updateMenuPlacement() {
   placement.value = naturalHeight > spaceBelow && spaceAbove > spaceBelow ? "top" : "bottom";
   const availableSpace = Math.max(0, placement.value === "top" ? spaceAbove : spaceBelow);
   menuMaxHeight.value = Math.floor(Math.min(naturalHeight, availableSpace));
+  menuPosition.value = {
+    top: placement.value === "top"
+      ? triggerRect.top - menuGap - menuMaxHeight.value
+      : triggerRect.bottom + menuGap,
+    left: triggerRect.left,
+    width: triggerRect.width,
+  };
 }
 
 function updateScrollControls() {
@@ -135,14 +151,14 @@ function handleKeydown(event) {
 }
 
 function handleOutsidePointer(event) {
-  if (!root.value?.contains(event.target)) {
+  if (!root.value?.contains(event.target) && !menu.value?.contains(event.target)) {
     stopAutoScroll();
     isOpen.value = false;
   }
 }
 
 function handleViewportScroll(event) {
-  if (root.value?.contains(event.target)) return;
+  if (root.value?.contains(event.target) || menu.value?.contains(event.target)) return;
   updateMenuPlacement();
 }
 
@@ -167,15 +183,17 @@ onBeforeUnmount(() => {
         <span :class="{'ui-select__placeholder': !selectedOption}">{{ selectedOption?.label ?? props.placeholder }}</span>
         <span class="ui-select__chevron" aria-hidden="true"></span>
       </button>
-      <Transition name="ui-select-menu">
-        <div v-if="isOpen" ref="menu" class="ui-select__menu" :class="{'ui-select__menu--scrollable': props.scrollable}" :style="menuStyle">
+      <Teleport to="body">
+        <Transition name="ui-select-menu">
+          <div v-if="isOpen" ref="menu" class="ui-select__menu" :class="[`ui-select__menu--${placement}`, {'ui-select__menu--scrollable': props.scrollable}]" :style="menuStyle">
           <button v-if="props.scrollable" class="ui-select__scroll-control ui-select__scroll-control--up" type="button" aria-label="Прокрутить список вверх" :disabled="!canScrollUp" @pointerenter="startAutoScroll(-1, $event)" @pointerleave="stopAutoScroll" @click="scrollStep(-1)"><span aria-hidden="true"></span></button>
           <ul :id="listboxId" ref="scrollArea" class="ui-select__options" role="listbox" @scroll="updateScrollControls">
             <li v-for="(option, index) in normalizedOptions" :id="`${listboxId}-option-${index}`" :key="String(option.value)" class="ui-select__option" :class="{'ui-select__option--selected': option.value === model, 'ui-select__option--active': index === activeIndex, 'ui-select__option--disabled': option.disabled}" role="option" :aria-selected="option.value === model" :aria-disabled="option.disabled || undefined" @mouseenter="activeIndex = index" @click="selectOption(option, index)">{{ option.label }}</li>
           </ul>
           <button v-if="props.scrollable" class="ui-select__scroll-control ui-select__scroll-control--down" type="button" aria-label="Прокрутить список вниз" :disabled="!canScrollDown" @pointerenter="startAutoScroll(1, $event)" @pointerleave="stopAutoScroll" @click="scrollStep(1)"><span aria-hidden="true"></span></button>
-        </div>
-      </Transition>
+          </div>
+        </Transition>
+      </Teleport>
     </div>
     <span v-if="props.invalid" :id="messageId" class="ui-field-message ui-field-message--error">{{ props.invalid }}</span>
   </div>
