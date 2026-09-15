@@ -12,10 +12,22 @@ const textareaValue = ref("");
 const selectValue = ref("music");
 const scrollableSelectValue = ref("service-1");
 const checkboxValue = ref(true);
+const selectedDisks = ref(["hard-disks"]);
+const selectedPeople = ref(["sarah"]);
+const people = [
+  {id: "sarah", name: "Sarah Chen", email: "sarah.chen@example.com", role: "Admin"},
+  {id: "marcus", name: "Marcus Rodriguez", email: "marcus.rodriguez@example.com", role: "User"},
+  {id: "priya", name: "Priya Patel", email: "priya.patel@example.com", role: "User"},
+];
+const allPeopleSelected = computed({
+  get: () => selectedPeople.value.length === people.length,
+  set: (checked) => { selectedPeople.value = checked ? people.map((person) => person.id) : []; },
+});
+const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !allPeopleSelected.value);
 const categories = [
   {value: "buttons", label: "Button", count: 6}, {value: "inputs", label: "Input", count: 9},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
-  {value: "checkbox", label: "Checkbox", count: 2}, {value: "cards", label: "Card", count: 3},
+  {value: "checkbox", label: "Checkbox", count: 7}, {value: "cards", label: "Card", count: 3},
   {value: "alerts", label: "Alert", count: 4}, {value: "badges", label: "Badge", count: 5},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
@@ -50,7 +62,46 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard><UiTextarea label="Только чтение" model-value="Компонент принимает стандартные HTML-атрибуты." readonly /></UiCard>
         </section>
         <section v-else-if="activeCategory === 'select'" class="uikit-demo-grid"><UiCard><template #header><h3 class="mc-title-3">Основной</h3></template><UiSelect v-model="selectValue" label="Сервис" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" /></UiCard><UiCard><template #header><h3 class="mc-title-3">Scrollable</h3></template><UiSelect v-model="scrollableSelectValue" label="Большой список" :options="manySelectOptions" scrollable /></UiCard><UiCard><template #header><h3 class="mc-title-3">Invalid</h3></template><UiSelect label="Обязательное поле" placeholder="Выберите сервис" invalid="Выберите один из доступных сервисов" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}]" /></UiCard></section>
-        <section v-else-if="activeCategory === 'checkbox'" class="uikit-demo-grid"><UiCard><UiCheckbox v-model="checkboxValue" label="Получать уведомления" description="Сообщим о важных событиях аккаунта" /><UiCheckbox label="Автоматическое сохранение" /></UiCard></section>
+        <section v-else-if="activeCategory === 'checkbox'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Состояние</h3></template>
+            <div class="ui-checkbox-stack"><UiCheckbox v-model="checkboxValue" label="Управляемый checkbox" /><UiCheckbox label="Не выбран" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Описание</h3></template>
+            <UiCheckbox label="Получать уведомления" description="Уведомления можно включить или отключить в любое время." />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Invalid</h3></template>
+            <UiCheckbox invalid label="Принять условия использования" description="Для продолжения необходимо принять условия." />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled</h3></template>
+            <UiCheckbox disabled label="Автоматическое сохранение" description="Эта настройка сейчас недоступна." />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Группа</h3></template>
+            <p class="mc-text-sm ui-checkbox-group__description">Выберите устройства, которые нужно показывать на рабочем столе.</p>
+            <div class="ui-checkbox-stack">
+              <UiCheckbox v-model="selectedDisks" value="hard-disks" label="Жёсткие диски" />
+              <UiCheckbox v-model="selectedDisks" value="external-disks" label="Внешние диски" />
+              <UiCheckbox v-model="selectedDisks" value="servers" label="Подключённые серверы" />
+            </div>
+          </UiCard>
+          <UiCard class="ui-checkbox-table-card">
+            <template #header><h3 class="mc-title-3">Таблица</h3></template>
+            <div class="ui-checkbox-table">
+              <div class="ui-checkbox-table__row ui-checkbox-table__head">
+                <UiCheckbox v-model="allPeopleSelected" :indeterminate="somePeopleSelected" aria-label="Выбрать всех" />
+                <strong>Имя</strong><strong>Email</strong><strong>Роль</strong>
+              </div>
+              <div v-for="person in people" :key="person.id" class="ui-checkbox-table__row">
+                <UiCheckbox v-model="selectedPeople" :value="person.id" :aria-label="`Выбрать ${person.name}`" />
+                <span>{{ person.name }}</span><span>{{ person.email }}</span><span>{{ person.role }}</span>
+              </div>
+            </div>
+          </UiCard>
+        </section>
         <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">
           <UiCard><template #header><h3 class="mc-title-3">Default</h3></template><p class="mc-text">Базовая поверхность для контента.</p><template #footer><UiButton size="sm">Действие</UiButton></template></UiCard>
           <UiCard variant="flat"><h3 class="mc-title-3">Flat</h3><p class="mc-text-sm">Спокойный контейнер второго уровня.</p></UiCard>
