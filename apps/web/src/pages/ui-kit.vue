@@ -27,7 +27,7 @@ const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !al
 const categories = [
   {value: "buttons", label: "Button", count: 6}, {value: "inputs", label: "Input", count: 9},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
-  {value: "checkbox", label: "Checkbox", count: 7}, {value: "cards", label: "Card", count: 3},
+  {value: "checkbox", label: "Checkbox", count: 8}, {value: "cards", label: "Card", count: 8},
   {value: "alerts", label: "Alert", count: 4}, {value: "badges", label: "Badge", count: 5},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
@@ -63,6 +63,10 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
         </section>
         <section v-else-if="activeCategory === 'select'" class="uikit-demo-grid"><UiCard><template #header><h3 class="mc-title-3">Основной</h3></template><UiSelect v-model="selectValue" label="Сервис" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" /></UiCard><UiCard><template #header><h3 class="mc-title-3">Scrollable</h3></template><UiSelect v-model="scrollableSelectValue" label="Большой список" :options="manySelectOptions" scrollable /></UiCard><UiCard><template #header><h3 class="mc-title-3">Invalid</h3></template><UiSelect label="Обязательное поле" placeholder="Выберите сервис" invalid="Выберите один из доступных сервисов" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}]" /></UiCard></section>
         <section v-else-if="activeCategory === 'checkbox'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Размеры</h3></template>
+            <div class="ui-checkbox-stack"><UiCheckbox label="Стандартный checkbox" model-value /><UiCheckbox size="sm" label="Маленький checkbox" model-value /></div>
+          </UiCard>
           <UiCard>
             <template #header><h3 class="mc-title-3">Состояние</h3></template>
             <div class="ui-checkbox-stack"><UiCheckbox v-model="checkboxValue" label="Управляемый checkbox" /><UiCheckbox label="Не выбран" /></div>
@@ -103,9 +107,22 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'cards'" class="uikit-demo-grid uikit-demo-grid--cards">
-          <UiCard><template #header><h3 class="mc-title-3">Default</h3></template><p class="mc-text">Базовая поверхность для контента.</p><template #footer><UiButton size="sm">Действие</UiButton></template></UiCard>
-          <UiCard variant="flat"><h3 class="mc-title-3">Flat</h3><p class="mc-text-sm">Спокойный контейнер второго уровня.</p></UiCard>
-          <UiCard variant="raised" interactive><h3 class="mc-title-3">Interactive</h3><p class="mc-text-sm">Карточка с интерактивным состоянием.</p></UiCard>
+          <UiCard title="Default" description="Базовая поверхность для структурированного контента."><p class="mc-text">Основное содержимое карточки.</p><template #footer><UiButton size="sm">Действие</UiButton></template></UiCard>
+          <UiCard variant="flat" title="Flat" description="Спокойный контейнер без тени."><p class="mc-text-sm">Подходит для вложенных блоков.</p></UiCard>
+          <UiCard variant="raised" interactive title="Interactive" description="Интерактивная карточка с hover-состоянием."><p class="mc-text-sm">Карточка реагирует на наведение.</p></UiCard>
+          <UiCard title="Композиция" description="Header поддерживает описание и действие.">
+            <template #action><UiBadge variant="soft">Новое</UiBadge></template>
+            <p class="mc-text">Контент отделён от заголовка и остаётся независимым.</p>
+            <template #footer><span class="mc-text-sm">Обновлено недавно</span><UiButton size="sm">Открыть</UiButton></template>
+          </UiCard>
+          <UiCard title="Стандартный размер" description="Размер по умолчанию использует обычные отступы."><p class="mc-text-sm">Default</p></UiCard>
+          <UiCard size="sm" title="Маленький размер" description="Компактные отступы для плотных интерфейсов."><p class="mc-text-sm">size=&quot;sm&quot;</p><template #footer><UiButton size="sm">Настроить</UiButton></template></UiCard>
+          <UiCard spacing="32px" title="Настраиваемый spacing" description="Отступы всех частей задаются одним значением."><p class="mc-text-sm">spacing=&quot;32px&quot;</p></UiCard>
+          <UiCard title="Карточка с изображением" description="Media располагается перед заголовком.">
+            <template #media><div class="ui-card-demo-media">Mecorion</div></template>
+            <p class="mc-text">Для обложек событий, сервисов и публикаций.</p>
+            <template #footer><UiButton size="sm">Подробнее</UiButton></template>
+          </UiCard>
         </section>
         <section v-else-if="activeCategory === 'alerts'" class="uikit-demo-grid"><UiAlert title="Информация">Настройки синхронизированы.</UiAlert><UiAlert variant="success" title="Готово">Изменения успешно сохранены.</UiAlert><UiAlert variant="warning" title="Внимание">Проверьте доступное место.</UiAlert><UiAlert variant="danger" title="Ошибка">Не удалось подключиться к API.</UiAlert></section>
         <section v-else-if="activeCategory === 'badges'" class="uikit-demo-grid"><UiCard><div class="mc-row"><UiBadge>Default</UiBadge><UiBadge variant="soft">Soft</UiBadge><UiBadge variant="success">Active</UiBadge><UiBadge variant="warning">Pending</UiBadge><UiBadge variant="danger">Blocked</UiBadge></div></UiCard></section>

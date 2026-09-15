@@ -8,6 +8,7 @@ const props = defineProps({
   label: {type: String, default: ""},
   description: {type: String, default: ""},
   value: {type: [String, Number, Boolean], default: undefined},
+  size: {type: String, default: "md"},
   invalid: {type: Boolean, default: false},
   indeterminate: {type: Boolean, default: false},
   disabled: {type: Boolean, default: false},
@@ -23,7 +24,7 @@ watchEffect(() => {
 <template>
   <label
     class="mc-checkbox ui-checkbox"
-    :class="{'ui-checkbox--invalid': props.invalid, 'ui-checkbox--disabled': props.disabled}"
+    :class="[`ui-checkbox--${props.size}`, {'ui-checkbox--invalid': props.invalid, 'ui-checkbox--disabled': props.disabled}]"
     :data-invalid="props.invalid || undefined"
     :data-disabled="props.disabled || undefined"
   >
