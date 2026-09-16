@@ -595,6 +595,19 @@
     border-radius: inherit;
     background: var(--mc-accent);
   }
+  .dashboard-profile-progress__bar {
+    margin: var(--mcrn-dashboard-profile-progress-margin);
+  }
+  .dashboard-profile-progress__bar .ui-progress__meta {
+    display: none;
+  }
+  .dashboard-profile-progress__bar .ui-progress__track {
+    height: var(--mcrn-size-9px);
+    background: var(--mc-surface-deep);
+  }
+  .dashboard-profile-progress__bar .ui-progress__indicator {
+    background: var(--mc-accent);
+  }
   .dashboard-profile-progress small {
     display: block;
     color: var(--mc-text-muted);

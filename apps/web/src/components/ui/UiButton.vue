@@ -14,6 +14,7 @@ const props = defineProps({
   href: {type: String, default: ""},
   target: {type: String, default: ""},
   rel: {type: String, default: ""},
+  unstyled: {type: Boolean, default: false},
 });
 
 const isLink = computed(() => Boolean(props.to || props.href));
@@ -32,11 +33,11 @@ function handleClick(event) {
 <template>
   <component
     :is="componentTag"
-    class="mc-button"
     :class="[
-      `mc-button--${props.variant}`,
-      props.size !== 'md' && `mc-button--${props.size}`,
-      {'mc-button--icon': props.icon, 'mc-button--rounded': props.rounded, 'mc-button--link': isLink},
+      !props.unstyled && 'mc-button',
+      !props.unstyled && `mc-button--${props.variant}`,
+      !props.unstyled && props.size !== 'md' && `mc-button--${props.size}`,
+      {'mc-button--icon': !props.unstyled && props.icon, 'mc-button--rounded': !props.unstyled && props.rounded, 'mc-button--link': !props.unstyled && isLink},
     ]"
     :type="isLink ? undefined : props.type"
     :disabled="!isLink && (props.disabled || props.loading)"
