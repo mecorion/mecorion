@@ -3,7 +3,7 @@ import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -65,6 +65,7 @@ const categories = [
   {value: "item", label: "Item", count: 14},
   {value: "drawer", label: "Drawer", count: 10},
   {value: "dialog", label: "Dialog", count: 6},
+  {value: "popover", label: "Popover", count: 10},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "form", label: "Form", count: 5},
@@ -418,6 +419,52 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
               <template #trigger="{open}"><UiButton @click="open">Scrollable</UiButton></template>
               <UiItemGroup><UiItem v-for="index in 12" :key="index" size="sm" :title="`Версия 1.${13 - index}`" :description="`Изменения интерфейса и компонентов — запись ${index}.`" /><UiItemSeparator /></UiItemGroup>
             </UiDialog>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'popover'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiPopover title="Настройки пространства" description="Управляйте отображением и доступом.">
+              <template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Открыть Popover</UiButton></template>
+              <p class="mc-text-secondary">Здесь может находиться любой интерактивный контент.</p>
+            </UiPopover>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Align</h3></template>
+            <div class="mc-row">
+              <UiPopover v-for="align in ['start', 'center', 'end']" :key="align" :align="align" :title="`Align: ${align}`" width="240px">
+                <template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">{{ align }}</UiButton></template>
+                <span class="mc-text-sm">Положение относительно trigger.</span>
+              </UiPopover>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Side</h3></template>
+            <div class="mc-row">
+              <UiPopover v-for="side in ['top', 'right', 'bottom', 'left']" :key="side" :side="side" :title="`Side: ${side}`" width="220px">
+                <template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">{{ side }}</UiButton></template>
+                <span class="mc-text-sm">При нехватке места сторона изменится автоматически.</span>
+              </UiPopover>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">With form</h3></template>
+            <UiPopover align="start" title="Размеры" description="Настройте ширину и высоту блока." width="360px">
+              <template #trigger="{toggle}"><UiButton @click="toggle">Изменить размеры</UiButton></template>
+              <template #default="{close}">
+                <UiForm spacing="compact">
+                  <UiFieldGroup><UiInput label="Ширина" model-value="100%" size="sm" /><UiInput label="Высота" model-value="320px" size="sm" /></UiFieldGroup>
+                  <template #actions><UiButton size="sm" @click="close">Применить</UiButton></template>
+                </UiForm>
+              </template>
+            </UiPopover>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Trigger width</h3></template>
+            <UiPopover match-trigger-width align="start" title="Быстрые действия">
+              <template #trigger="{toggle}"><UiButton class="ui-popover-demo-wide-trigger" variant="outline" @click="toggle">Ширина как у trigger</UiButton></template>
+              <UiItemGroup><UiItem size="sm" title="Создать проект" /><UiItemSeparator /><UiItem size="sm" title="Импортировать данные" /></UiItemGroup>
+            </UiPopover>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">

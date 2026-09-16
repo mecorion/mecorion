@@ -292,6 +292,13 @@
   .ui-spinner--lg { width: var(--mcrn-size-24px); height: var(--mcrn-size-24px); border-width: 3px; }
   .ui-spinner-empty { display: grid; justify-items: center; gap: var(--mc-space-3); padding: var(--mc-space-6); color: var(--mc-text-secondary); text-align: center; }
   .ui-spinner-empty strong { color: var(--mc-text-primary); }
+  .ui-popover__anchor { display: inline-flex; max-width: 100%; }
+  .ui-popover { position: fixed; z-index: 1400; display: grid; width: min(320px, calc(100vw - 16px)); max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); overflow-y: auto; border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-md); background: var(--mc-surface); color: var(--mc-text-primary); box-shadow: var(--mcrn-shadow-float); }
+  .ui-popover__header { display: grid; gap: var(--mc-space-1); padding: var(--mc-space-4) var(--mc-space-4) 0; }
+  .ui-popover__title { margin: 0; font-size: var(--mc-font-md); line-height: 1.35; }
+  .ui-popover__description { margin: 0; color: var(--mc-text-secondary); font-size: var(--mc-font-sm); line-height: 1.45; }
+  .ui-popover__content { min-width: 0; padding: var(--mc-space-4); }
+  .ui-popover-demo-wide-trigger { width: min(320px, 100%); }
   .ui-dialog { position: fixed; inset: 0; z-index: 1350; display: grid; place-items: center; padding: var(--mc-space-4); pointer-events: none; }
   .ui-dialog__overlay { position: absolute; inset: 0; background: rgb(8 7 18 / 68%); pointer-events: auto; }
   .ui-dialog__panel { position: relative; z-index: 1; display: flex; width: min(100%, 560px); max-height: min(720px, calc(100dvh - 32px)); flex-direction: column; overflow: hidden; border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-md); background: var(--mc-surface); color: var(--mc-text-primary); box-shadow: var(--mc-shadow-soft); pointer-events: auto; }

@@ -19,6 +19,7 @@ export {default as UiInput} from "./UiInput.vue";
 export {default as UiItem} from "./UiItem.vue";
 export {default as UiItemGroup} from "./UiItemGroup.vue";
 export {default as UiItemSeparator} from "./UiItemSeparator.vue";
+export {default as UiPopover} from "./UiPopover.vue";
 export {default as UiProgress} from "./UiProgress.vue";
 export {default as UiRadioGroup} from "./UiRadioGroup.vue";
 export {default as UiSelect} from "./UiSelect.vue";
