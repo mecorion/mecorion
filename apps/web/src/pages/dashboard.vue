@@ -187,9 +187,8 @@ const activity = [
           </UiCard>
 
           <UiCard raw unstyled class="dashboard-widget dashboard-premium-card">
-            <span aria-hidden="true">◇</span>
             <h2>Mecorion Premium</h2>
-            <p>Больше возможностей, никаких ограничений.</p>
+            <p style="marginBottom: 10px;">Больше возможностей, никаких ограничений.</p>
             <UiButton unstyled type="button">Узнать больше</UiButton>
           </UiCard>
         </aside>
