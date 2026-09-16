@@ -42,6 +42,9 @@
   textarea.ui-textarea[readonly], textarea.ui-textarea[readonly]:hover, textarea.ui-textarea[readonly]:focus, textarea.ui-textarea[readonly]:focus-visible { border-color: var(--mc-border-soft); outline: 0; background: var(--mc-surface-deep); box-shadow: none; cursor: default; }
   .ui-select__control { position: relative; }
   .ui-select__trigger { display: flex; align-items: center; justify-content: space-between; gap: var(--mc-space-3); padding-right: var(--mc-space-4); text-align: left; cursor: pointer; }
+  .ui-select--sm .ui-select__trigger { min-height: var(--mcrn-size-36px); border-radius: var(--mc-radius-sm); padding: 0 var(--mc-space-3); font-size: var(--mc-font-sm); }
+  .ui-select--sm .ui-select__chevron { width: 6px; height: 6px; margin-right: 1px; border-width: 0 1.5px 1.5px 0; }
+  .ui-select--sm > .mc-field__label { font-size: var(--mc-font-xs); }
   .ui-select__trigger:disabled { opacity: .5; cursor: not-allowed; }
   .ui-select__placeholder { color: var(--mc-text-faint); }
   .ui-select__chevron { width: var(--mcrn-size-10px); height: var(--mcrn-size-10px); flex: 0 0 auto; margin-right: var(--mc-space-1); border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--mc-text-muted); transform: rotate(45deg); transition: transform .16s ease; }

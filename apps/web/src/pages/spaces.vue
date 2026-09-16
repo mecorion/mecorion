@@ -71,7 +71,7 @@ const compactSpaces = computed(() => visibleSpaces.value.slice(8));
         </div>
 
         <div class="spaces-sort-control">
-          <UiSelect v-model="activeSort" class="spaces-sort" :options="sortOptions" aria-label="Сортировка пространств" />
+          <UiSelect v-model="activeSort" class="spaces-sort" size="sm" :options="sortOptions" aria-label="Сортировка пространств" />
         </div>
       </section>
 

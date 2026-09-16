@@ -13,6 +13,7 @@ const props = defineProps({
   scrollable: {type: Boolean, default: false},
   disabled: {type: Boolean, default: false},
   id: {type: String, default: ""},
+  size: {type: String, default: "default"},
 });
 
 const root = ref(null);
@@ -176,7 +177,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="root" class="mc-field ui-select" :class="[`ui-select--${placement}`, {'ui-select--open': isOpen, 'ui-select--invalid': props.invalid}]">
+  <div ref="root" class="mc-field ui-select" :class="[`ui-select--${props.size}`, `ui-select--${placement}`, {'ui-select--open': isOpen, 'ui-select--invalid': props.invalid}]">
     <label v-if="props.label" class="mc-field__label" :for="controlId">{{ props.label }}</label>
     <div class="ui-select__control">
       <button ref="trigger" v-bind="$attrs" :id="controlId" class="mc-field__control ui-select__trigger" type="button" role="combobox" aria-haspopup="listbox" :aria-expanded="isOpen" :aria-controls="listboxId" :aria-activedescendant="isOpen && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined" :aria-invalid="Boolean(props.invalid)" :aria-describedby="props.invalid ? messageId : undefined" :disabled="props.disabled" @click="toggleSelect" @keydown="handleKeydown">

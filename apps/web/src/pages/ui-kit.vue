@@ -76,7 +76,7 @@ const categories = [
   {value: "field", label: "Field", count: 10},
   {value: "form", label: "Form", count: 5},
   {value: "file-picker", label: "File Picker", count: 7},
-  {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
+  {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 4},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
   {value: "toggle", label: "Toggle", count: 9},
   {value: "slider", label: "Slider", count: 6},
@@ -702,7 +702,7 @@ const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "
           <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiTextarea v-model="textareaValue" label="Описание" placeholder="Расскажите о пространстве" hint="Поддерживает многострочный текст" /><UiTextarea label="Успешная проверка" success="Описание заполнено корректно" model-value="Готовое описание пространства." /><UiTextarea label="Ошибка" danger="Описание должно содержать не менее 20 символов" model-value="Коротко" /></UiCard>
           <UiCard><UiTextarea label="Только чтение" model-value="Компонент принимает стандартные HTML-атрибуты." readonly /></UiCard>
         </section>
-        <section v-else-if="activeCategory === 'select'" class="uikit-demo-grid"><UiCard><template #header><h3 class="mc-title-3">Основной</h3></template><UiSelect v-model="selectValue" label="Сервис" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" /></UiCard><UiCard><template #header><h3 class="mc-title-3">Scrollable</h3></template><UiSelect v-model="scrollableSelectValue" label="Большой список" :options="manySelectOptions" scrollable /></UiCard><UiCard><template #header><h3 class="mc-title-3">Invalid</h3></template><UiSelect label="Обязательное поле" placeholder="Выберите сервис" invalid="Выберите один из доступных сервисов" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}]" /></UiCard></section>
+        <section v-else-if="activeCategory === 'select'" class="uikit-demo-grid"><UiCard><template #header><h3 class="mc-title-3">Основной</h3></template><UiSelect v-model="selectValue" label="Сервис" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" /></UiCard><UiCard><template #header><h3 class="mc-title-3">Small</h3></template><UiSelect v-model="selectValue" size="sm" label="Компактный select" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" /></UiCard><UiCard><template #header><h3 class="mc-title-3">Scrollable</h3></template><UiSelect v-model="scrollableSelectValue" label="Большой список" :options="manySelectOptions" scrollable /></UiCard><UiCard><template #header><h3 class="mc-title-3">Invalid</h3></template><UiSelect label="Обязательное поле" placeholder="Выберите сервис" invalid="Выберите один из доступных сервисов" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}]" /></UiCard></section>
         <section v-else-if="activeCategory === 'checkbox'" class="uikit-demo-grid">
           <UiCard>
             <template #header><h3 class="mc-title-3">Размеры</h3></template>
