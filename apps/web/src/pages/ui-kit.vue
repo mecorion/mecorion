@@ -3,7 +3,7 @@ import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -66,6 +66,7 @@ const categories = [
   {value: "drawer", label: "Drawer", count: 10},
   {value: "dialog", label: "Dialog", count: 6},
   {value: "popover", label: "Popover", count: 10},
+  {value: "dropdown-menu", label: "Dropdown Menu", count: 9},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "form", label: "Form", count: 5},
@@ -82,6 +83,14 @@ const categories = [
 const activeMeta = computed(() => categories.find((item) => item.value === activeCategory.value));
 const menuIcons = ["home", "search", "boxes", "grid", "star", "download", "music", "play", "book", "graduation-cap", "cloud", "shield", "users", "badge-check", "git-pull-request", "user", "settings", "menu", "bell", "moon", "sun"];
 const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Сервис ${index + 1}`, value: `service-${index + 1}`}));
+const dropdownBasic = [{type: "label", label: "Мой аккаунт"}, {id: "profile", label: "Профиль"}, {id: "billing", label: "Подписка"}, {type: "separator"}, {id: "team", label: "Команда"}, {id: "logout", label: "Выйти"}];
+const dropdownSubmenu = [{id: "new", label: "Создать", items: undefined}, {type: "submenu", label: "Пригласить пользователей", items: [{id: "email", label: "По Email"}, {id: "link", label: "По ссылке"}, {type: "submenu", label: "Другие способы", items: [{id: "qr", label: "QR-код"}, {id: "contacts", label: "Из контактов"}]}]}, {type: "separator"}, {id: "settings", label: "Настройки"}];
+const dropdownShortcuts = [{id: "new-tab", label: "Новая вкладка", shortcut: "⌘T"}, {id: "new-window", label: "Новое окно", shortcut: "⌘N"}, {type: "separator"}, {id: "search", label: "Поиск", shortcut: "⌘K"}];
+const dropdownIcons = [{id: "profile-icon", label: "Профиль", icon: "user"}, {id: "team-icon", label: "Команда", icon: "users"}, {id: "settings-icon", label: "Настройки", icon: "settings"}];
+const dropdownCheckboxes = [{type: "label", label: "Отображение"}, {id: "status-bar", type: "checkbox", label: "Строка состояния", checked: true}, {id: "activity-bar", type: "checkbox", label: "Панель активности", checked: false}, {id: "panel", type: "checkbox", label: "Нижняя панель", checked: true}];
+const dropdownRadio = [{type: "label", label: "Положение панели"}, {id: "radio-top", type: "radio", group: "panel", label: "Сверху", checked: false}, {id: "radio-bottom", type: "radio", group: "panel", label: "Снизу", checked: true}, {id: "radio-right", type: "radio", group: "panel", label: "Справа", checked: false}];
+const dropdownDestructive = [{id: "edit", label: "Редактировать", icon: "settings"}, {id: "share", label: "Поделиться", icon: "users"}, {type: "separator"}, {id: "delete", label: "Удалить", icon: "exit", variant: "danger"}];
+const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "open", label: "Открыть", icon: "grid", shortcut: "↵"}, {id: "favorite", type: "checkbox", label: "В избранном", icon: "star", checked: true}, {type: "submenu", label: "Переместить в сервис", icon: "boxes", items: [{id: "music-service", label: "Music", icon: "music"}, {id: "book-service", label: "Books", icon: "book"}, {id: "cloud-service", label: "Cloud", icon: "cloud"}]}, {type: "separator"}, {id: "complex-delete", label: "Удалить проект", icon: "exit", variant: "danger"}];
 </script>
 
 <template>
@@ -465,6 +474,44 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
               <template #trigger="{toggle}"><UiButton class="ui-popover-demo-wide-trigger" variant="outline" @click="toggle">Ширина как у trigger</UiButton></template>
               <UiItemGroup><UiItem size="sm" title="Создать проект" /><UiItemSeparator /><UiItem size="sm" title="Импортировать данные" /></UiItemGroup>
             </UiPopover>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'dropdown-menu'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiDropdownMenu :items="dropdownBasic"><template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Открыть меню</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Submenu</h3></template>
+            <UiDropdownMenu :items="dropdownSubmenu" align="start"><template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Вложенное меню</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Shortcuts</h3></template>
+            <UiDropdownMenu :items="dropdownShortcuts"><template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Команды</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Icons</h3></template>
+            <UiDropdownMenu :items="dropdownIcons"><template #trigger="{toggle}"><UiButton @click="toggle">Аккаунт</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Checkboxes</h3></template>
+            <UiDropdownMenu :items="dropdownCheckboxes"><template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Отображение</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Radio group</h3></template>
+            <UiDropdownMenu :items="dropdownRadio"><template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Положение панели</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Destructive</h3></template>
+            <UiDropdownMenu :items="dropdownDestructive"><template #trigger="{toggle}"><UiButton variant="outline" @click="toggle">Действия</UiButton></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Avatar trigger</h3></template>
+            <UiDropdownMenu :items="dropdownBasic" align="start"><template #trigger="{toggle}"><button class="ui-dropdown-menu-demo-avatar" type="button" aria-label="Открыть меню пользователя" @click="toggle"><UiAvatar fallback="ИИ" status="online" /></button></template></UiDropdownMenu>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Complex</h3></template>
+            <UiDropdownMenu :items="dropdownComplex" width="260px"><template #trigger="{toggle}"><UiButton @click="toggle">Сложное меню</UiButton></template></UiDropdownMenu>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">
