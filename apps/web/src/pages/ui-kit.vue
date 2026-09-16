@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiButton, UiCard, UiCheckbox, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -58,6 +58,8 @@ const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !al
 const categories = [
   {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
   {value: "avatar", label: "Avatar", count: 9},
+  {value: "breadcrumb", label: "Breadcrumb", count: 6},
+  {value: "empty", label: "Empty State", count: 7},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
@@ -144,6 +146,85 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
           <UiCard>
             <template #header><h3 class="mc-title-3">Dropdown trigger</h3></template>
             <div class="mc-row"><UiAvatar interactive src="https://github.com/shadcn.png" alt="Открыть меню профиля" fallback="CN" /></div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'breadcrumb'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiBreadcrumb :items="[{label: 'Главная', to: '/'}, {label: 'Компоненты', href: '#components'}, {label: 'Breadcrumb'}]" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Custom separator</h3></template>
+            <UiBreadcrumb :items="[{label: 'Главная', to: '/'}, {label: 'Компоненты', href: '#components'}, {label: 'Breadcrumb'}]"><template #separator>•</template></UiBreadcrumb>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Dropdown</h3></template>
+            <UiBreadcrumb :items="[{label: 'Главная', to: '/'}, {label: 'Компоненты', children: [{label: 'Button', href: '#buttons'}, {label: 'Select', href: '#select'}, {label: 'Tooltip', href: '#tooltip'}]}, {label: 'Breadcrumb'}]" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Collapsed</h3></template>
+            <UiBreadcrumb :max-items="4" :items="[{label: 'Главная', to: '/'}, {label: 'Документация', href: '#docs'}, {label: 'UI Kit', href: '#ui-kit'}, {label: 'Компоненты', href: '#components'}, {label: 'Навигация', href: '#navigation'}, {label: 'Breadcrumb'}]" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Router links</h3></template>
+            <UiBreadcrumb :items="[{label: 'Dashboard', to: '/dashboard'}, {label: 'Настройки', to: '/settings'}, {label: 'Интерфейс'}]" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Long labels</h3></template>
+            <UiBreadcrumb :items="[{label: 'Рабочее пространство', to: '/spaces'}, {label: 'Библиотека переиспользуемых компонентов интерфейса', href: '#library'}, {label: 'Текущий компонент'}]" />
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'empty'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiEmptyState media-variant="icon" title="Проектов пока нет" description="Создайте первый проект или импортируйте уже существующий.">
+              <template #media><SvgIcon name="boxes" /></template>
+              <template #actions><UiButton>Создать проект</UiButton><UiButton variant="outline">Импортировать</UiButton></template>
+              <template #footer><UiButton variant="ghost" href="#empty-learn-more">Подробнее</UiButton></template>
+            </UiEmptyState>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Outline</h3></template>
+            <UiEmptyState variant="outline" media-variant="icon" title="Облачное хранилище пусто" description="Загрузите файлы, чтобы получить к ним доступ с любого устройства.">
+              <template #media><SvgIcon name="cloud" /></template>
+              <template #actions><UiButton>Загрузить файлы</UiButton></template>
+            </UiEmptyState>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Background</h3></template>
+            <UiEmptyState variant="background" media-variant="icon" title="Новых уведомлений нет" description="Здесь появятся новые события и обновления.">
+              <template #media><SvgIcon name="bell" /></template>
+              <template #actions><UiButton>Обновить</UiButton></template>
+            </UiEmptyState>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Avatar</h3></template>
+            <UiEmptyState title="Пользователь не в сети" description="Оставьте сообщение — пользователь получит уведомление, когда вернётся.">
+              <template #media><UiAvatar size="lg" fallback="LR" status="offline" /></template>
+              <template #actions><UiButton>Оставить сообщение</UiButton></template>
+            </UiEmptyState>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Avatar Group</h3></template>
+            <UiEmptyState title="В команде пока никого нет" description="Пригласите участников для совместной работы над проектом.">
+              <template #media><UiAvatarGroup><UiAvatar fallback="CN" /><UiAvatar fallback="LR" /><UiAvatar fallback="ER" /></UiAvatarGroup></template>
+              <template #actions><UiButton>Пригласить участников</UiButton></template>
+            </UiEmptyState>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Input</h3></template>
+            <UiEmptyState title="404 — страница не найдена" description="Попробуйте найти нужную страницу через поиск.">
+              <template #media><SvgIcon name="search" /></template>
+              <UiInput placeholder="Поиск по страницам"><template #prefix><SvgIcon name="search" /></template><template #suffix><UiButton size="sm">Найти</UiButton></template></UiInput>
+              <template #footer><span class="mc-text-sm">Нужна помощь? <a href="#support">Связаться с поддержкой</a></span></template>
+            </UiEmptyState>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Compact</h3></template>
+            <UiEmptyState size="sm" media-variant="icon" title="Нет результатов" description="Измените параметры поиска или сбросьте фильтры.">
+              <template #media><SvgIcon name="search" /></template>
+              <template #actions><UiButton size="sm" variant="outline">Сбросить фильтры</UiButton></template>
+            </UiEmptyState>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">
