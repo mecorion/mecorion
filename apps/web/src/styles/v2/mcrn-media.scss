@@ -2045,7 +2045,6 @@
   .mcrn-settings__panel { padding: var(--mc-space-3); }
   .mcrn-settings__panel-heading { flex-direction: column; }
   .mcrn-settings__versions { grid-template-columns: minmax(0, 1fr); }
-  .mcrn-settings-option { grid-template-columns: 72px minmax(0, 1fr) 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

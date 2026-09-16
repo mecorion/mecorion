@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: {enabled: false},
   modules: ['@pinia/nuxt'],
-  css: ['plyr/dist/plyr.css', '~/styles/fonts.scss'],
+  css: ['plyr/dist/plyr.css', '~/styles/fonts.scss', '~/styles/main.scss'],
   app: {
     head: {
       title: 'Mecorion',

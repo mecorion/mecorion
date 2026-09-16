@@ -32,7 +32,7 @@ Nuxt dev/preview читает `apps/web/.env`; production Node-сервер по
 npm run build       # production Node-сервер в apps/web/.output
 npm run preview     # локальная проверка production-сборки
 npm run generate    # статический экспорт в apps/web/.output/public
-npm run ui:check    # проверка библиотек стилей v1/v2
+npm run ui:check    # проверка библиотеки стилей Mecorion UI
 ```
 
 Production запуск:

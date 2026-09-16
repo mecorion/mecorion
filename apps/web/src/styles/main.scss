@@ -1,2 +1,2 @@
-// Compatibility entry point for code that expects the default v1 library.
-@use 'v1/main';
+// Единственная актуальная библиотека интерфейса Mecorion.
+@use 'v2/main';

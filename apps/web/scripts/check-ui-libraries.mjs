@@ -9,10 +9,8 @@ const src = fileURLToPath(new URL('../src/', import.meta.url));
 const list = (dir, prefix = '') => fs.readdirSync(dir, {withFileTypes: true}).flatMap(entry =>
   entry.isDirectory() ? list(path.join(dir, entry.name), `${prefix}${entry.name}/`) : [`${prefix}${entry.name}`]);
 const sorted = values => [...new Set(values)].sort();
-const results = [];
-
-for (const version of ['v1', 'v2']) {
-  const dir = path.join(src, 'styles', version);
+const version = 'v2';
+const dir = path.join(src, 'styles', version);
   const files = list(dir);
   for (const file of files) {
     const text = fs.readFileSync(path.join(dir, file), 'utf8');
@@ -38,8 +36,5 @@ for (const version of ['v1', 'v2']) {
     return sorted(names);
   };
   assert.deepEqual(themeProperties('light'), themeProperties('dark'), `${version}: incomplete theme palette`);
-  results.push({files, selectors: sorted(selectors), properties: sorted(properties)});
   console.log(`${version}: ${files.length} files, ${sorted(selectors).length} selectors, ${sorted(properties).length} public variables; standalone Sass compilation passed`);
-}
-assert.deepEqual(results[0], results[1], 'The public contracts of v1 and v2 differ');
-console.log('UI library structure, themes, selectors, variables and import isolation match.');
+console.log('UI library structure, themes, variables and import isolation are valid.');

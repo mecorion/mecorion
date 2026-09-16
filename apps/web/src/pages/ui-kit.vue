@@ -1,12 +1,10 @@
 <script setup>
 import {computed, ref} from "vue";
-import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
 import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
-const app = useAppStore();
 const activeCategory = ref("buttons");
 const inputValue = ref("");
 const textareaValue = ref("");
@@ -103,7 +101,7 @@ const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "
   <div class="uikit-view"><div class="mc-shell">
     <header class="uikit-hero">
       <div><p class="mc-caption mc-accent">Mecorion Design System</p><h1 class="mc-title-display">UI Library</h1></div>
-      <div class="uikit-hero__aside"><p class="mc-text-lg">Переиспользуемые Vue-компоненты, токены и состояния интерфейса.</p><div class="uikit-hero__controls"><code>@/components/ui</code><div class="uikit-version-switch" role="group" aria-label="Версия интерфейса"><button v-for="version in ['v1', 'v2']" :key="version" class="uikit-version-switch__button" :class="{'uikit-version-switch__button--active': app.uiVersion === version}" type="button" @click="app.setUiVersion(version)">{{ version }}</button></div></div></div>
+      <div class="uikit-hero__aside"><p class="mc-text-lg">Переиспользуемые Vue-компоненты, токены и состояния интерфейса.</p><div class="uikit-hero__controls"><code>@/components/ui</code></div></div>
     </header>
 
     <div class="uikit-catalog">

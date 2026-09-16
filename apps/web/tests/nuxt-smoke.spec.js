@@ -18,7 +18,6 @@ for (const path of routes) {
     await expect(page.locator('h1').first()).toBeVisible();
     await expect(page).toHaveURL(path);
     await expect(page.locator('.mcrn-sidebar')).toHaveCount(path === '/' || path.startsWith('/sign-') ? 0 : 1);
-    await expect(page.locator('#mecorion-ui-library')).toHaveCount(1);
     expect(errors).toEqual([]);
   });
 }
@@ -38,18 +37,14 @@ test('client navigation keeps the workspace and changes service menus', async ({
   await expect(sidebar).toHaveAttribute('data-smoke-identity', 'original');
 });
 
-test('UI version and theme survive a reload', async ({page}) => {
+test('theme survives a reload', async ({page}) => {
   await page.goto('/settings');
-  await page.locator('input[value="v2"]').check();
-  await expect(page.locator('html')).toHaveAttribute('data-ui-version', 'v2');
   const initialDark = await page.locator('html').evaluate(element => element.classList.contains('dark'));
   await page.getByRole('button', {name: 'Переключить тему'}).click();
   const theme = initialDark ? 'light' : 'dark';
   await expect(page.locator('html')).toHaveClass(new RegExp(theme));
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-ui-version', 'v2');
   await expect(page.locator('html')).toHaveClass(new RegExp(theme));
-  await expect(page.locator('input[value="v2"]')).toBeChecked();
 });
 
 test('SVG sprite is registered', async ({page}) => {
