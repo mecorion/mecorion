@@ -1,0 +1,116 @@
+@use '../mcrn-root' as root;
+
+// Loaded after the shared responsive layer so Music keeps the same UI Kit
+// density and touch targets at every workspace breakpoint.
+@layer components {
+  @media (max-width: #{root.$mcrn-breakpoint-840}) {
+    .memusic-app {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) 84px;
+      height: auto;
+      min-height: 100dvh;
+      overflow: visible;
+    }
+    .memusic-workspace {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .memusic-content {
+      height: auto;
+      overflow: visible;
+      padding: var(--mc-space-5) var(--mc-space-4) calc(var(--mc-space-12) * 2);
+    }
+    .memusic-featured {
+      grid-template-columns: 120px minmax(0, 1fr);
+      min-height: 0;
+      gap: var(--mc-space-5);
+      padding: var(--mc-space-5);
+    }
+    .memusic-featured > img {
+      width: 120px;
+    }
+    .memusic-featured__copy > p:not(.memusic-kicker),
+    .memusic-featured__list {
+      display: none;
+    }
+    .memusic-media-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--mc-space-3);
+    }
+    .memusic-filters {
+      margin-inline: 0;
+      border: 1px solid var(--mc-border-soft);
+      border-radius: var(--mc-radius-md);
+      padding: var(--mc-space-3);
+    }
+    .memusic-filter-field,
+    .memusic-filter-field--compact {
+      max-width: none;
+    }
+    .memusic-player {
+      position: sticky;
+      bottom: 0;
+      grid-column: 1;
+      grid-row: 2;
+      grid-template-columns: minmax(0, 1fr) auto;
+      min-height: 84px;
+      gap: var(--mc-space-3);
+      padding: var(--mc-space-3) var(--mc-space-4);
+    }
+    .memusic-player__center {
+      flex-direction: row;
+    }
+    .memusic-player__tools,
+    .memusic-player__progress,
+    .memusic-player__controls > button:not(.memusic-player__play) {
+      display: none;
+    }
+    .memusic-playlist-heading {
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: var(--mc-space-5);
+      padding: var(--mc-space-4);
+    }
+    .memusic-playlist-heading > img {
+      width: 120px;
+    }
+  }
+
+  @media (max-width: #{root.$mcrn-breakpoint-480}) {
+    .memusic-content {
+      padding-inline: var(--mc-space-3);
+    }
+    .memusic-welcome h1,
+    .memusic-page-heading h1,
+    .memusic-local__header h1 {
+      font-size: 2rem;
+    }
+    .memusic-featured,
+    .memusic-playlist-heading,
+    .memusic-folder-picker,
+    .memusic-local__summary {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .memusic-featured > img,
+    .memusic-playlist-heading > img {
+      width: min(100%, 240px);
+    }
+    .memusic-media-grid,
+    .memusic-genre-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .memusic-track-row {
+      grid-template-columns: minmax(0, 1fr) 44px;
+    }
+    .memusic-track-row__main {
+      grid-template-columns: 28px minmax(0, 1fr);
+    }
+    .memusic-track-row__main .memusic-artwork,
+    .memusic-track-row__duration {
+      display: none;
+    }
+    .memusic-local-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}

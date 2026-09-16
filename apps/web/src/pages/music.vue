@@ -9,6 +9,9 @@ import MusicQueuePanel from "@/components/music/MusicQueuePanel.vue";
 import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
 import LocalMusicView from "@/components/music/LocalMusicView.vue";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiCard from "@/components/ui/UiCard.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import {getTracksByIds, musicGenres, musicPlaylists, musicTracks} from "@/music/catalog.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
@@ -64,14 +67,14 @@ useContextNavigation({
   activeId: activeSection,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Music", items: [
-      {id: "home", title: "Главная", symbol: "⌂", action: () => navigate("home")},
-      {id: "library", title: "Моя музыка", symbol: "▤", action: () => navigate("library")},
-      {id: "local", title: "Локальная музыка", symbol: "▰", action: () => navigate("local")},
+      {id: "home", title: "Главная", icon: "home", action: () => navigate("home")},
+      {id: "library", title: "Моя музыка", icon: "music", action: () => navigate("library")},
+      {id: "local", title: "Локальная музыка", icon: "download", action: () => navigate("local")},
     ]},
     {label: "Плейлисты", items: musicPlaylists.map((playlist) => ({
       id: `playlist-${playlist.id}`,
       title: playlist.title,
-      symbol: "♫",
+      icon: "music",
       active: selectedPlaylistId.value === playlist.id,
       action: () => openPlaylist(playlist.id),
     }))},
@@ -94,7 +97,7 @@ watch(selectedPlaylistId, () => {
           </section>
 
           <section class="memusic-quick-grid" aria-label="Быстрый выбор">
-            <button
+            <UiButton unstyled
               v-for="track in musicTracks"
               :key="track.id"
               type="button"
@@ -103,30 +106,30 @@ watch(selectedPlaylistId, () => {
             >
               <MusicArtwork :track="track" />
               <span><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
-              <i aria-hidden="true">▶</i>
-            </button>
+              <i aria-hidden="true"><SvgIcon name="play" /></i>
+            </UiButton>
           </section>
 
-          <section class="memusic-featured">
+          <UiCard raw unstyled class="memusic-featured">
             <img :src="featuredPlaylist.cover" :alt="`Обложка ${featuredPlaylist.title}`" />
             <div class="memusic-featured__copy">
               <p class="memusic-kicker">Персональная подборка</p>
               <h2>{{ featuredPlaylist.title }}</h2>
               <p>{{ featuredPlaylist.description }}. Обновляется по мере прослушивания.</p>
               <div>
-                <button class="memusic-primary-action" type="button" @click="player.playCollection(featuredPlaylist.trackIds)">▶ Слушать</button>
-                <button class="memusic-icon-action" type="button" aria-label="Добавить подборку в библиотеку">＋</button>
+                <UiButton unstyled class="memusic-primary-action" @click="player.playCollection(featuredPlaylist.trackIds)"><SvgIcon name="play" /> Слушать</UiButton>
+                <UiButton unstyled class="memusic-icon-action" aria-label="Добавить подборку в библиотеку"><SvgIcon name="plus" /></UiButton>
               </div>
             </div>
             <div class="memusic-featured__list">
-              <button v-for="(track, index) in featuredTracks" :key="track.id" type="button" @click="player.playTrack(track.id, featuredPlaylist.trackIds)">
+              <UiButton v-for="(track, index) in featuredTracks" :key="track.id" unstyled @click="player.playTrack(track.id, featuredPlaylist.trackIds)">
                 <span>{{ String(index + 1).padStart(2, '0') }}</span><strong>{{ track.title }}</strong><small>{{ track.durationLabel }}</small>
-              </button>
+              </UiButton>
             </div>
-          </section>
+          </UiCard>
 
           <section class="memusic-carousel-section">
-            <div class="memusic-section-heading"><h2>Собрано для вас</h2><button type="button" @click="activeSection = 'library'">Смотреть всё</button></div>
+            <div class="memusic-section-heading"><h2>Собрано для вас</h2><UiButton unstyled @click="activeSection = 'library'">Смотреть всё</UiButton></div>
             <div class="memusic-media-grid">
               <MusicMediaCard v-for="playlist in musicPlaylists" :key="playlist.id" :playlist="playlist" />
             </div>
@@ -153,9 +156,9 @@ watch(selectedPlaylistId, () => {
             <section class="memusic-genre-section">
               <div class="memusic-section-heading"><h2>Настроения и жанры</h2></div>
               <div class="memusic-genre-grid">
-                <button v-for="genre in musicGenres" :key="genre.id" :class="`is-${genre.accent}`" type="button">
-                  <strong>{{ genre.title }}</strong><span aria-hidden="true">♪</span>
-                </button>
+                <UiButton v-for="genre in musicGenres" :key="genre.id" unstyled :class="`is-${genre.accent}`">
+                  <strong>{{ genre.title }}</strong><span aria-hidden="true"><SvgIcon name="music" /></span>
+                </UiButton>
               </div>
             </section>
           </template>
@@ -168,7 +171,7 @@ watch(selectedPlaylistId, () => {
         <template v-else>
           <section v-if="selectedPlaylist" class="memusic-playlist-heading">
             <img :src="selectedPlaylist.cover" :alt="`Обложка ${selectedPlaylist.title}`" />
-            <div><p class="memusic-kicker">Плейлист</p><h1>{{ selectedPlaylist.title }}</h1><p>{{ selectedPlaylist.description }}</p><button class="memusic-primary-action" type="button" @click="player.playCollection(selectedPlaylist.trackIds)">▶ Слушать</button></div>
+            <div><p class="memusic-kicker">Плейлист</p><h1>{{ selectedPlaylist.title }}</h1><p>{{ selectedPlaylist.description }}</p><UiButton unstyled class="memusic-primary-action" @click="player.playCollection(selectedPlaylist.trackIds)"><SvgIcon name="play" /> Слушать</UiButton></div>
           </section>
           <section v-else class="memusic-page-heading">
             <p class="memusic-kicker">Коллекция</p><h1>Моя музыка</h1><p>Избранные треки и сохранённые подборки.</p>

@@ -184,13 +184,10 @@ onBeforeUnmount(() => {
             <span class="dashboard-nav__label">{{ item.title }}</span>
           </component>
         </div>
-      </template>
 
-      <NuxtLink v-if="contextNavigation" class="sidebar-link dashboard-sidebar__support" to="/dashboard" data-tooltip="Все сервисы">
-        <span aria-hidden="true">←</span>
-        <span class="dashboard-nav__label">Все сервисы</span>
-      </NuxtLink>
-      <NuxtLink v-else class="sidebar-link dashboard-sidebar__support" to="/support" data-tooltip="Помощь и поддержка">
+        
+      </template>
+      <NuxtLink class="sidebar-link dashboard-sidebar__support" to="/support" data-tooltip="Помощь и поддержка">
         <span aria-hidden="true">?</span>
         <span class="dashboard-nav__label">Помощь и поддержка</span>
       </NuxtLink>
