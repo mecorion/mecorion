@@ -2,6 +2,9 @@
 import {computed} from "vue";
 import {getTracksByIds} from "@/music/catalog.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiCard from "@/components/ui/UiCard.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
   playlist: {type: Object, required: true},
@@ -16,12 +19,12 @@ function playPlaylist() {
 </script>
 
 <template>
-  <article class="memusic-media-card">
+  <UiCard raw unstyled class="memusic-media-card">
     <div class="memusic-media-card__cover">
       <img :src="playlist.cover" :alt="`Обложка плейлиста ${playlist.title}`" />
-      <button type="button" :aria-label="`Включить ${playlist.title}`" @click="playPlaylist">▶</button>
+      <UiButton unstyled :aria-label="`Включить ${playlist.title}`" @click="playPlaylist"><SvgIcon name="play" /></UiButton>
     </div>
     <strong>{{ playlist.title }}</strong>
     <p>{{ playlist.description }}</p>
-  </article>
+  </UiCard>
 </template>

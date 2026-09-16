@@ -4,6 +4,9 @@
 каждой папке, какие части проекта уже есть, как они связаны между собой и как
 правильно добавлять новые сервисы Mecorion.
 
+Архитектура и правила двух взаимозаменяемых UI-библиотек описаны отдельно в
+`docs/ui-libraries.md`.
+
 ## 1. Что такое Mecorion
 
 Mecorion — это единая экосистема пользовательских сервисов. В одном продукте
@@ -172,14 +175,14 @@ Frontend-часть:
 
 - auth-клиент лежит в `apps/web/src/auth/session.js`;
 - `/sign-in` и `/sign-up` вызывают Mecorion API;
-- route guard в `apps/web/src/router/index.js` подтверждает локальный токен
-  через `GET /api/v1/auth/me` перед входом в защищённые разделы.
+- проверка авторизации при переходах отключена для разработки;
+  `/auth/me` доступен через `fetchCurrentUser`, но middleware его не вызывает.
 
 Для локальной разработки frontend ожидает API по адресу
 `http://127.0.0.1:4000`. Его можно переопределить переменной:
 
 ```bash
-VITE_MECORION_API_URL=http://127.0.0.1:4000
+NUXT_PUBLIC_MECORION_API_URL=http://127.0.0.1:4000
 ```
 
 Dev-seed создаёт администратора:
@@ -271,73 +274,68 @@ apps = процессы, которые можно запустить
 
 Технологии:
 
-- Vue 3;
-- Vue Router;
-- Pinia;
-- Vite;
-- SCSS;
-- Element Plus;
-- Tailwind-зависимости пока присутствуют в проекте.
+- Nuxt 4 (SPA, `ssr: false`), Vue 3;
+- файловая маршрутизация Nuxt;
+- Pinia через `@pinia/nuxt`;
+- Vite внутри Nuxt, SCSS и PostCSS.
 
 Структура:
 
 ```text
 apps/web/
-├── index.html
+├── nuxt.config.ts
 ├── package.json
-├── vite.config.js
-├── postcss.config.js
-├── tailwind.config.js
+├── tsconfig.json
 ├── public/
 └── src/
+    ├── app.vue
+    ├── layouts/{default,auth}.vue
+    ├── plugins/mecorion.client.js
+    ├── pages/
+    ├── components/
+    └── stores/
 ```
 
-### `apps/web/src/main.js`
+### Вход и layouts
 
-Точка входа frontend-приложения. Здесь создаётся Vue-приложение, подключаются
-router, Pinia и глобальные стили.
+`src/app.vue` выводит `NuxtLayout` и `NuxtPage`. Layout `default` подключает
+единый `WorkspaceLayout`, а `auth` используется на `/`, `/sign-in` и `/sign-up`.
+Клиентский плагин подключает Plyr, SVG-спрайт, версии UI, тему и адрес API.
 
-### `apps/web/src/App.vue`
-
-Корневой Vue-компонент.
-
-### `apps/web/src/router`
-
-Маршрутизация frontend. Здесь описываются URL-адреса страниц:
-
-- dashboard;
-- Music;
-- Video;
-- UiKit;
-- старые страницы просмотра видео.
-
-При добавлении нового сервиса, например Course, frontend-маршруты нужно
-добавлять сюда или в будущую модульную роутинг-структуру.
+Сервисные страницы используют `src/navigation/contextNavigation.js` для
+замены содержимого общего sidebar. Внутри страниц второй layout не нужен.
 
 ### `apps/web/src/pages`
 
-Страницы верхнего уровня.
+Маршруты Nuxt формируются из имён файлов, компоненты загружаются по маршруту:
 
-Примеры:
+- `index.vue` — `/`;
+- `dashboard.vue`, `music.vue`, `video.vue`, `books.vue`, `course.vue`;
+- `sign-in.vue`, `sign-up.vue`, `profile.vue`, `settings.vue`;
+- `spaces.vue` — `/spaces`;
+- `space/[id].vue` — `/space/:id`;
+- `space/[spaceId]/publication/[id].vue` — `/space/:spaceId/publication/:id`;
+- `ui-kit.vue` — `/ui-kit`.
 
-- `DashboardView.vue` — главный dashboard экосистемы;
-- `MusicView.vue` — музыкальное приложение;
-- `VideoPage.vue` — текущая video-страница;
-- `UiKitView.vue` — страница UI kit;
-- `HomePage.vue`, `PlayerPage.vue` — старые/переходные страницы видеосервиса.
+Новые страницы добавляются сюда. Ссылки используют `NuxtLink`, маршрут —
+Nuxt `useRoute()`. Метаданные объявляются через `definePageMeta`.
+Проверка `requiresAuth` / `guestOnly` отключена: middleware пока нет.
 
-Страница должна описывать экран или крупный сценарий, а не маленькую кнопку или
-строку списка.
+Настройка API и команды запуска описаны в [README](../README.md).
 
 ### `apps/web/src/components`
 
 Переиспользуемые Vue-компоненты.
 
+`SvgIcon.vue` выводит локальные иконки из SVG-спрайта. Спрайт генерируется
+`vite-plugin-svg-icons` из `src/assets/icons`; идентификатор формируется как
+`icon-<dir>-<name>`.
+
 Текущие группы:
 
-- `components/layout` — layout-компоненты общего интерфейса;
+- `components/workspace` — общий layout платформы;
 - `components/music` — компоненты Mecorion Music;
-- остальные компоненты — текущие общие или video-компоненты.
+- остальные компоненты — общие либо принадлежат актуальным сервисам.
 
 Правило: компоненты конкретного сервиса должны лежать в своей подпапке. Для
 нового Course лучше создать:
@@ -345,10 +343,6 @@ router, Pinia и глобальные стили.
 ```text
 apps/web/src/components/course/
 ```
-
-### `apps/web/src/layouts`
-
-Крупные layout-обёртки. Например, общий layout с сайдбаром и шапкой.
 
 ### `apps/web/src/stores`
 
@@ -358,7 +352,6 @@ Pinia stores.
 
 - `app.js` — состояние приложения;
 - `musicPlayer.js` — состояние музыкального плеера;
-- `requests.js` — состояние/логика запросов.
 
 Для новых сервисов следует создавать отдельные stores:
 
@@ -843,9 +836,14 @@ Nginx в будущем может маршрутизировать:
 Диаграммы стоит использовать для крупных решений: экосистема сервисов,
 маршрутизация, upload pipeline, database boundaries, media processing.
 
-## 18. `dist`
+## 18. Сборка Nuxt
 
-`dist` — результат сборки frontend. Это build-артефакт.
+`apps/web/.output` — результат `npm run build`. Node-сервер запускается
+командой `node apps/web/.output/server/index.mjs`.
+`npm run generate` создаёт статический frontend в `.output/public`;
+статический хост должен поддерживать fallback на `200.html` для прямых URL.
+`.nuxt` содержит генерируемые Nuxt типы и служебные файлы.
+Оба каталога игнорируются Git.
 
 В нормальном режиме разработки его не нужно редактировать вручную. Если он
 попадает в Git, нужно отдельно решить, действительно ли проект хочет хранить
@@ -892,7 +890,7 @@ course.certificates
 Создать страницы:
 
 ```text
-apps/web/src/pages/CourseView.vue
+apps/web/src/pages/course.vue
 ```
 
 Создать компоненты:
@@ -907,11 +905,7 @@ apps/web/src/components/course/
 apps/web/src/stores/course.js
 ```
 
-Добавить маршруты в:
-
-```text
-apps/web/src/router/index.js
-```
+Маршрут `/course` создаётся автоматически по имени файла `pages/course.vue`.
 
 ### Contracts
 
@@ -1031,8 +1025,9 @@ Music находится на уровне MVP:
 
 ### Video
 
-В проекте есть старые video-компоненты и страницы. Они пока не приведены к
-новой модульной архитектуре.
+Актуальный frontend Video расположен в `pages/video.vue` и доступен по
+маршруту `/video`. Старые маршруты `/home`, `/videos/:category` и `/watch`
+вместе с их отдельным layout удалены.
 
 ### Book, Course, Cloud, Mail, VPN
 
@@ -1110,7 +1105,7 @@ apps/api/database/migrations
 Если нужно работать с Music:
 
 ```text
-apps/web/src/pages/MusicView.vue
+apps/web/src/pages/music.vue
 apps/web/src/components/music
 apps/web/src/stores/musicPlayer.js
 apps/api/src/modules/music

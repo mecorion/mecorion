@@ -1,3 +1,16 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Speed Boost Solid">
-  <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="M3.5 11h3.1M2.8 14h3.8M4.2 17h2.4"/><path fill="currentColor" d="M15.25 5.35a7.2 7.2 0 0 0-6.95 13.95h10.6a7.2 7.2 0 0 0-3.65-13.95Zm-.95 10.3a1.1 1.1 0 1 1-1.4-1.65l3.5-4.65 1.4 1.05-3.5 4.65v.6Z"/><path fill="none" stroke="var(--mc-icon-cutout, #ffffff)" stroke-width="1.2" stroke-linecap="round" d="M10.05 12.5l-.6-1.1M16 8.95l1.05-.62M13.15 8.1V6.9"/>
+<!-- @license lucide-static v1.46.0 - ISC -->
+<svg
+  class="lucide lucide-gauge"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="m12 14 4-4" />
+  <path d="M3.34 19a10 10 0 1 1 17.32 0" />
 </svg>

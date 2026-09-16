@@ -2,6 +2,8 @@
 import {computed, ref, watch} from "vue";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 import {formatPlaybackTime} from "@/utils/music.js";
+import UiButton from "@/components/ui/UiButton.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
   tracks: {type: Array, required: true},
@@ -78,15 +80,15 @@ watch(() => props.rootName, () => { selectedFolders.value = []; });
 <template>
   <section class="memusic-finder">
     <nav class="memusic-finder__breadcrumb" aria-label="Путь к папке">
-      <button type="button" @click="openBreadcrumb(-1)">⌂ {{ rootName }}</button>
+      <UiButton unstyled @click="openBreadcrumb(-1)"><SvgIcon name="home" /> {{ rootName }}</UiButton>
       <template v-for="(folder, index) in selectedFolders" :key="folder.path">
-        <span>/</span><button type="button" @click="openBreadcrumb(index)">{{ folder.name }}</button>
+        <span>/</span><UiButton unstyled @click="openBreadcrumb(index)">{{ folder.name }}</UiButton>
       </template>
     </nav>
 
     <div class="memusic-finder__columns">
       <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="memusic-finder__column">
-        <button
+        <UiButton unstyled
           v-for="entry in column"
           :key="entry.path"
           class="memusic-finder__entry"
@@ -97,15 +99,15 @@ watch(() => props.rootName, () => { selectedFolders.value = []; });
           type="button"
           @click="selectEntry(entry, columnIndex)"
         >
-          <span class="memusic-finder__entry-icon" aria-hidden="true">{{ entry.type === 'directory' ? '▰' : '♪' }}</span>
+          <span class="memusic-finder__entry-icon" aria-hidden="true"><SvgIcon :name="entry.type === 'directory' ? 'grid' : 'music'" /></span>
           <span class="memusic-finder__entry-name">
             <strong>{{ entry.type === 'file' ? entry.track.title : entry.name }}</strong>
             <small v-if="entry.type === 'file'">{{ entry.track.artist }}</small>
             <small v-else>{{ entry.children.length }} элементов</small>
           </span>
           <span v-if="entry.type === 'file'" class="memusic-finder__entry-meta">{{ formatPlaybackTime(entry.track.duration) }}</span>
-          <span v-else class="memusic-finder__entry-meta" aria-hidden="true">›</span>
-        </button>
+          <span v-else class="memusic-finder__entry-meta" aria-hidden="true"><SvgIcon name="chevron-right" /></span>
+        </UiButton>
       </div>
     </div>
   </section>

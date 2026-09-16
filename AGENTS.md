@@ -36,6 +36,10 @@ npm run dev
 npm run build
 ```
 
+Локальные SVG-иконки собираются в спрайт через `vite-plugin-svg-icons` из
+`apps/web/src/assets/icons`. Для вывода использовать `components/SvgIcon.vue`
+и имя символа в формате `<dir>-<name>`, например `mc-vpn-outline-shield`.
+
 API:
 
 ```bash
@@ -108,49 +112,88 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
 - `/profile` — профиль пользователя с mock API ролей;
 - `/spaces` — корневое пространство/каталог контента;
 - `/music` — Mecorion Music MVP;
-- `/ui-kit` — страница UI kit.
+- `/ui-kit` — каталог компонентов Mecorion UI Kit;
 
-Общий layout для dashboard/profile/spaces:
+Единый layout всех страниц, кроме главной `/` и sign-in/sign-up:
 
 ```text
 apps/web/src/components/workspace/WorkspaceLayout.vue
 ```
 
-Он содержит общий header и sidebar. Активный пункт sidebar определяется через
-`vue-router` по текущему `route.path`.
+Он подключается один раз в Nuxt layout `src/layouts/default.vue` и содержит общий header и sidebar.
+Страницы не должны оборачивать себя в `WorkspaceLayout`. Активный пункт sidebar
+определяется через Nuxt `useRoute()` по текущему `route.path`.
 
-Route guard в `apps/web/src/router/index.js` сейчас закомментирован. Не
-включать его обратно без отдельной задачи, потому что пользователь ранее
-отключал проверку авторизации для удобной разработки.
+На страницах Music, Video, Books и Course содержимое общего sidebar заменяется
+контекстным меню сервиса через `src/navigation/contextNavigation.js`. Не
+добавлять внутрь сервисных страниц второй sidebar или отдельный верхний header.
+Контекст сервиса также передаёт его `accent`, `accentStrong` и при необходимости
+`accentContrast`, чтобы общий layout сохранял фирменный primary-цвет сервиса.
+
+Проверка авторизации при навигации отключена для удобной разработки.
+Метаданные `requiresAuth` / `guestOnly` сохранены в `definePageMeta`, но
+middleware их не применяет. Не включать проверку без отдельной задачи.
+
+### Обязательное правило для нового интерфейса
+
+- Любые новые страницы, блоки, формы и интерактивные элементы по умолчанию
+  собирать из компонентов Mecorion UI Kit из `apps/web/src/components/ui`.
+- Перед созданием локального или захардкоженного элемента проверять, есть ли
+  подходящий компонент в UI Kit. Если его возможностей не хватает — сначала
+  универсально расширить UI-компонент и задокументировать новое состояние в
+  `/ui-kit`, а затем использовать его в продуктовой странице.
+- Не создавать нативные `button`, `input`, `select`, `textarea`, карточки,
+  модальные окна и другие контролы прямо в продуктовых страницах, если для них
+  существует компонент UI Kit. Исключение — скрытые технические элементы,
+  необходимые браузерному API.
+- Все новые интерфейсы делать полностью адаптивными во всём диапазоне от
+  `180px` до wide screen. Обязательно проверять ширины `180px`, обычный
+  мобильный экран, планшет, desktop и wide screen. Даже на ширине `180px`
+  интерфейс должен помещаться без горизонтального скролла, сохранять читаемую
+  иерархию, доступ ко всем действиям и корректный UI/UX. Допускается осознанно
+  перестраивать сетку, переносить или компактно компоновать контент, но нельзя
+  просто обрезать или скрывать обязательные функции. Внутри `grid` и `flex`
+  учитывать `min-width: 0`, безопасные переносы, длинный контент и доступные
+  touch-targets.
+- Визуальное качество является частью готовности задачи: соблюдать понятную
+  иерархию, читаемую типографику, единый ритм отступов, согласованные размеры
+  компонентов, состояния hover/focus/active/disabled/loading и поддержку
+  светлой и тёмной тем. Ориентироваться на практики зрелых дизайн-систем, но
+  сохранять фирменный стиль и токены Mecorion.
+- Иконки брать из локального SVG-спрайта `apps/web/src/assets/icons` через
+  `SvgIcon.vue`. Не использовать Unicode-символы, emoji или сторонние наборы
+  вместо проектных иконок. Если нужной иконки нет, сначала добавить SVG из
+  утверждённой библиотеки Figma.
+- Задача по интерфейсу не считается законченной, пока основной сценарий и
+  адаптивные состояния не приведены к визуально аккуратному и удобному виду.
 
 ## Стили Mecorion
 
-Стили собраны в `apps/web/src/styles`.
+Основная библиотека стилей находится в `apps/web/src/styles/v2`.
 
-Главный вход:
+Главный вход для совместимости:
 
 ```text
 apps/web/src/styles/main.scss
 ```
 
-Важные файлы:
+Полная архитектура, правила расширения и команды проверки описаны в
+`docs/ui-libraries.md`.
 
-- `var.scss` — CSS-переменные, темы, токены Mecorion и Element Plus;
-- `mecorion-foundation.scss` — базовый слой: типографика, focus states,
-  scrollbar, utility-классы;
-- `mecorion-ui.scss` — UI kit: кнопки, карточки, поля, типографика;
-- `mecorion-workspaces.scss` — dashboard/workspace layout;
-- `mecorion-auth.scss` — landing/sign-in/sign-up;
-- `mecorion-profile.scss` — профиль;
-- `mecorion-spaces.scss` — корневое пространство;
-- `mecorion-music.scss` — Mecorion Music.
+В библиотеке обязательны:
+
+- `mcrn-root.scss` — размеры, токены и публичные переменные;
+- `mcrn-light-theme.scss`, `mcrn-dark-theme.scss` — полные палитры;
+- `mcrn-media.scss` — весь адаптив;
+- `components/*` — переиспользуемые UI-компоненты без внешней UI-библиотеки;
+- `style/{music,video,book,course}/mcrn-init.scss` — сервисные стили.
 
 Правила стиля:
 
 - держать визуальный стиль тёмным, мягким, с акцентом `--mc-accent`;
 - новые размеры, радиусы, отступы брать из `--mc-*` токенов;
 - не возвращать глобальный `line-height: 1 !important`;
-- на мобильных проверять ширины вплоть до 320px;
+- проверять диапазон ширин от 180px до wide screen;
 - избегать переполнений через `min-width: 0` внутри grid/flex;
 - cards radius держать умеренным: обычно `var(--mc-radius-md)`;
 - новые страницы лучше подключать отдельным `mecorion-*.scss` через
@@ -162,7 +205,7 @@ apps/web/src/styles/main.scss
 
 Текущая реализация:
 
-- view: `apps/web/src/pages/SpacesView.vue`;
+- view: `apps/web/src/pages/spaces.vue`;
 - mock-данные: `apps/web/src/spaces/spaces.mock.js`;
 - стили: `apps/web/src/styles/mecorion-spaces.scss`;
 - пункт sidebar добавлен в `WorkspaceLayout.vue`.
@@ -188,7 +231,7 @@ Music сейчас считается достаточным MVP для даль
 
 Важные файлы:
 
-- `apps/web/src/pages/MusicView.vue`;
+- `apps/web/src/pages/music.vue`;
 - `apps/web/src/components/music/*`;
 - `apps/web/src/stores/musicPlayer.js`;
 - `apps/web/src/music/catalog.js`;
@@ -266,10 +309,14 @@ Health route:
 ### Готово / близко к MVP
 
 - Монорепозиторий уже собран через npm workspaces.
-- `apps/web` запускается и собирается через Vite.
+- `apps/web` запускается и собирается через Nuxt 4 (SPA, `ssr: false`).
+- Файловые маршруты: `src/pages`, layouts: `src/layouts`, вход: `src/app.vue`.
+- `src/plugins/mecorion.client.js` подключает Plyr, SVG, темы и API config.
+- API URL: `NUXT_PUBLIC_MECORION_API_URL`; dev-порт остаётся 5173.
+- Сборка: `apps/web/.output`, статический экспорт: `npm run generate`.
 - Есть базовая визуальная система Mecorion: токены, foundation, UI kit,
   workspace layout, auth, dashboard, profile, spaces, music.
-- Есть landing, sign-in, sign-up, dashboard, profile, spaces, music, ui-kit.
+- Есть landing, sign-in, sign-up, dashboard, profile, spaces, music и UI-каталог.
 - Dashboard переведён на общий `WorkspaceLayout`.
 - Profile переведён на общий `WorkspaceLayout`, имеет mock API для ролей:
   `user`, `agent`, `moderator`.
@@ -298,8 +345,8 @@ Health route:
   - backend auth routes реализованы;
   - frontend sign-in/sign-up умеют обращаться к API;
   - frontend session хранится в `localStorage`;
-  - route guard в `router/index.js` сейчас закомментирован для удобной
-    разработки. Это осознанное состояние, не включать без отдельной задачи.
+  - auth middleware отключено для удобной разработки. Это осознанное
+    состояние, не включать без отдельной задачи.
 - Music backend:
   - есть таблицы artists/albums/tracks/genres/playlists/likes/history/lyrics;
   - есть `GET /api/v1/artists`, `GET /api/v1/albums`;
@@ -308,7 +355,7 @@ Health route:
     локальном `apps/web/src/music/catalog.js`.
 - UI library:
   - базовые стили есть;
-  - `UiKitView` есть;
+  - `UiKitView` доступен на `/ui-kit`;
   - компоненты ещё не выделены в полноценный reusable component layer;
   - `packages/ui` пока пустой/резервный.
 - Spaces:
@@ -331,8 +378,8 @@ Health route:
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.
 - Нет настоящего S3/local-storage abstraction implementation, есть только
   интерфейс.
-- Нет e2e/visual тестов адаптива. Проверки пока в основном через build.
-- Нет Playwright в зависимостях проекта.
+- Есть Playwright smoke-тесты миграции Nuxt: `npm run web:test:smoke` после
+  `npm run build`. Полноценные visual-тесты адаптива ещё не добавлены.
 
 ## Что следует реализовать дальше
 
@@ -391,11 +438,8 @@ Health route:
 
 ## Риски и технический долг
 
-- В репозитории есть следы старого frontend layout (`components/layout`,
-  `MainLayout`, старые video pages). Перед удалением проверить routes и imports.
-- В `apps/web/src/router/index.js` импортируются `fetchCurrentUser` и
-  `isAuthenticated`, но guard закомментирован. Это нормально сейчас, но
-  линтер позже может считать это неиспользуемым кодом.
+- Nuxt работает в SPA-режиме. Перед включением SSR адаптировать браузерное
+  состояние (темы, сессия, локальная музыка и плеер).
 - Music frontend и Music API пока живут параллельно и не интегрированы.
 - Схемы миграций сейчас используют имена `music.artists`, `identity.users`,
   а пользователь отдельно проговаривал правило будущего именования таблиц
@@ -434,11 +478,23 @@ Health route:
 3. Запустить `git diff --check`.
 4. В ответе кратко описать, что сделано, что проверено и как назвать коммит.
 
-Текущий рекомендуемый стиль названий коммитов:
+Коммиты оформляются в формате `<type>: <краткое описание>`. Использовать
+следующие типы:
 
 ```text
-Web. Добавлена страница корневых пространств
-Web. Исправлен мобильный адаптив dashboard и профиля
-API. Добавлена схема авторизации
-DOCS. Описана архитектура проекта
+feat: новая функциональность
+fix: исправление бага
+refactor: изменение кода без новой функциональности или исправления бага
+perf: улучшение производительности
+style: форматирование или CSS без изменения логики
+test: добавление или изменение тестов
+docs: документация
+build: сборка, зависимости и инструменты сборки
+ci: CI/CD
+chore: техническая рутина, которая не подходит под остальные типы
+revert: откат предыдущего коммита
 ```
+
+Описание после двоеточия должно быть коротким. После каждой завершённой задачи
+указывать в финальном ответе готовую строку коммита, которую пользователь может
+скопировать. Автоматически не выполнять `git add` и `git commit`.

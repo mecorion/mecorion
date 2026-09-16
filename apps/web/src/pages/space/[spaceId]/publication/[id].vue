@@ -1,0 +1,110 @@
+<script setup>
+definePageMeta({workspace: true, requiresAuth: true});
+import {computed, ref} from "vue";
+import {useRoute} from "#imports";
+import SectionHeader from "@/components/layout/SectionHeader.vue";
+import {
+  getPublicationById,
+  getSpaceBreadcrumb,
+  getSpaceById,
+  publicationTypeLabels,
+} from "@/spaces/spaces.mock.js";
+
+const route = useRoute();
+const selectedQuality = ref("1080p");
+const selectedSubtitles = ref("Русские");
+const selectedVoice = ref("Оригинал");
+
+const publication = computed(() => getPublicationById(route.params.id));
+const space = computed(() => publication.value ? getSpaceById(publication.value.spaceId) : null);
+const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publication.value) : "");
+</script>
+
+<template>
+    <main v-if="publication && space" class="publication-page">
+      <nav class="mcrn-route-path" aria-label="Путь">
+        <NuxtLink to="/spaces">/</NuxtLink>
+        <NuxtLink :to="`/space/${space.id}`">{{ space.title }}</NuxtLink>
+        <span aria-current="page">{{ publication.title }}</span>
+      </nav>
+
+      <NuxtLink class="space-back-link" :to="`/space/${space.id}`">← {{ space.title }}</NuxtLink>
+
+      <section class="publication-hero">
+        <article class="publication-cover" :class="`space-publication-card--${publication.coverTone}`">
+          <span>{{ publicationTypeLabels[publication.type] }}</span>
+          <strong>{{ publication.title }}</strong>
+        </article>
+
+        <div class="publication-summary">
+          <p class="workspace-eyebrow">{{ breadcrumb }}</p>
+          <h1>{{ publication.title }}</h1>
+          <p>{{ publication.subtitle }}</p>
+          <dl>
+            <div><dt>Автор</dt><dd>{{ publication.author }}</dd></div>
+            <div><dt>Год</dt><dd>{{ publication.year }}</dd></div>
+            <div><dt>Объём</dt><dd>{{ publication.duration }}</dd></div>
+          </dl>
+          <div class="publication-actions">
+            <button type="button">Добавить в библиотеку</button>
+            <button type="button">Поделиться</button>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="publication.video" class="publication-panel">
+        <SectionHeader class="space-section-header" eyebrow="Видео-параметры" title="Просмотр" />
+        <div class="publication-settings-grid">
+          <label>
+            <span>Качество</span>
+            <select v-model="selectedQuality">
+              <option v-for="quality in publication.video.quality" :key="quality">{{ quality }}</option>
+            </select>
+          </label>
+          <label>
+            <span>Субтитры</span>
+            <select v-model="selectedSubtitles">
+              <option v-for="subtitle in publication.video.subtitles" :key="subtitle">{{ subtitle }}</option>
+            </select>
+          </label>
+          <label>
+            <span>Озвучка</span>
+            <select v-model="selectedVoice">
+              <option v-for="voice in publication.video.voice" :key="voice">{{ voice }}</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section v-if="publication.items?.length" class="publication-panel">
+        <SectionHeader class="space-section-header" eyebrow="Состав" title="Материалы сборника" />
+        <ol class="publication-item-list">
+          <li v-for="item in publication.items" :key="item">{{ item }}</li>
+        </ol>
+      </section>
+
+      <section class="publication-panel">
+        <SectionHeader class="space-section-header" eyebrow="Описание" title="О публикации" />
+        <p class="publication-body">{{ publication.body }}</p>
+      </section>
+
+      <section class="publication-panel">
+        <SectionHeader class="space-section-header" eyebrow="Обсуждение" title="Комментарии"><template #action><button type="button">Написать комментарий</button></template></SectionHeader>
+        <div class="publication-comments">
+          <article v-for="comment in publication.comments" :key="`${comment.author}-${comment.time}`">
+            <strong>{{ comment.author }}</strong>
+            <p>{{ comment.text }}</p>
+            <small>{{ comment.time }}</small>
+          </article>
+          <p v-if="!publication.comments.length" class="publication-empty-comments">Пока нет комментариев.</p>
+        </div>
+      </section>
+    </main>
+
+    <main v-else class="publication-page">
+      <section class="space-empty-state">
+        <h1>Публикация не найдена</h1>
+        <NuxtLink to="/spaces">Вернуться в пространства</NuxtLink>
+      </section>
+    </main>
+</template>

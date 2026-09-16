@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "npm --workspace @mecorion/web run dev --",
     "build": "npm --workspace @mecorion/web run build",
+    "ui:check": "npm --workspace @mecorion/web run ui:check",
     "preview": "npm --workspace @mecorion/web run preview",
     "api:dev": "npm --workspace @mecorion/api run dev",
     "api:build": "npm --workspace @mecorion/api run build",
@@ -20,6 +21,8 @@
     "db:down": "docker-compose -f infrastructure/docker-compose.yml down",
     "db:migrate": "npm --workspace @mecorion/api run db:migrate",
     "db:seed": "npm --workspace @mecorion/api run db:seed",
-    "typecheck": "npm --workspace @mecorion/api run typecheck && npm --workspace @mecorion/media-worker run typecheck"
+    "typecheck": "npm --workspace @mecorion/api run typecheck && npm --workspace @mecorion/media-worker run typecheck",
+    "generate": "npm --workspace @mecorion/web run generate",
+    "web:test:smoke": "npm --workspace @mecorion/web run test:smoke"
   }
 }

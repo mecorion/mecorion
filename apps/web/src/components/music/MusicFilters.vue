@@ -1,6 +1,9 @@
 <script setup>
 import {computed} from "vue";
 import {trackFolder, trackFormat} from "@/music/trackFilters.js";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiSelect from "@/components/ui/UiSelect.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
   tracks: {type: Array, required: true},
@@ -22,6 +25,7 @@ const albums = computed(() => uniqueOptions(props.tracks.map((track) => track.al
 const years = computed(() => uniqueOptions(props.tracks.map((track) => String(track.year ?? ""))).reverse());
 const folders = computed(() => uniqueOptions(props.tracks.map(trackFolder)));
 const formats = computed(() => uniqueOptions(props.tracks.map(trackFormat)));
+const asOptions = (values) => values.map((value) => ({value, label: value}));
 
 const hasActiveFilters = computed(() => Object.entries(props.modelValue)
   .some(([key, value]) => key !== "sort" && Boolean(value)) || props.modelValue.sort !== "title");
@@ -55,94 +59,30 @@ function resetFilters() {
 <template>
   <section class="memusic-filters" :aria-label="`Фильтры: ${context}`">
     <div class="memusic-filters__heading">
-      <span aria-hidden="true">⌁</span>
+      <span aria-hidden="true"><SvgIcon name="filter" /></span>
       <strong>Фильтры</strong>
       <small>{{ tracks.length }} в разделе</small>
     </div>
 
-    <label v-if="context === 'favorites'" class="memusic-filter-field">
-      <span>Источник</span>
-      <select :value="modelValue.source || ''" @change="updateFilter('source', $event.target.value)">
-        <option value="">Все источники</option>
-        <option value="online">Mecorion</option>
-        <option value="local">Локальные</option>
-      </select>
-    </label>
+    <UiSelect v-if="context === 'favorites'" wrapper-class="memusic-filter-field" label="Источник" :model-value="modelValue.source || ''" :options="[{value: '', label: 'Все источники'}, {value: 'online', label: 'Mecorion'}, {value: 'local', label: 'Локальные'}]" @update:model-value="updateFilter('source', $event)" />
+    <UiSelect wrapper-class="memusic-filter-field" label="Исполнитель" :model-value="modelValue.artist || ''" :options="[{value: '', label: 'Все исполнители'}, ...asOptions(artists)]" @update:model-value="updateFilter('artist', $event)" />
+    <UiSelect v-if="context !== 'local'" wrapper-class="memusic-filter-field" label="Альбом" :model-value="modelValue.album || ''" :options="[{value: '', label: 'Все альбомы'}, ...asOptions(albums)]" @update:model-value="updateFilter('album', $event)" />
+    <UiSelect v-if="context === 'online'" wrapper-class="memusic-filter-field" label="Год" :model-value="modelValue.year || ''" :options="[{value: '', label: 'Любой год'}, ...asOptions(years)]" @update:model-value="updateFilter('year', $event)" />
+    <UiSelect v-if="context === 'local'" wrapper-class="memusic-filter-field" label="Папка" :model-value="modelValue.folder || ''" :options="[{value: '', label: 'Все папки'}, ...asOptions(folders)]" @update:model-value="updateFilter('folder', $event)" />
+    <UiSelect v-if="context === 'local'" wrapper-class="memusic-filter-field memusic-filter-field--compact" label="Формат" :model-value="modelValue.format || ''" :options="[{value: '', label: 'Все'}, ...asOptions(formats)]" @update:model-value="updateFilter('format', $event)" />
+    <UiSelect wrapper-class="memusic-filter-field" label="Длительность" :model-value="modelValue.duration || ''" :options="[{value: '', label: 'Любая'}, {value: 'short', label: 'До 3 минут'}, {value: 'medium', label: '3–5 минут'}, {value: 'long', label: 'Больше 5 минут'}]" @update:model-value="updateFilter('duration', $event)" />
+    <UiSelect v-if="context === 'online'" wrapper-class="memusic-filter-field" label="Доступность" :model-value="modelValue.availability || ''" :options="[{value: '', label: 'Все треки'}, {value: 'available', label: 'Можно слушать'}, {value: 'unavailable', label: 'Недоступные'}]" @update:model-value="updateFilter('availability', $event)" />
+    <UiSelect wrapper-class="memusic-filter-field" label="Порядок" :model-value="modelValue.sort || 'title'" :options="sortOptions" @update:model-value="updateFilter('sort', $event)" />
 
-    <label class="memusic-filter-field">
-      <span>Исполнитель</span>
-      <select :value="modelValue.artist || ''" @change="updateFilter('artist', $event.target.value)">
-        <option value="">Все исполнители</option>
-        <option v-for="artist in artists" :key="artist" :value="artist">{{ artist }}</option>
-      </select>
-    </label>
-
-    <label v-if="context !== 'local'" class="memusic-filter-field">
-      <span>Альбом</span>
-      <select :value="modelValue.album || ''" @change="updateFilter('album', $event.target.value)">
-        <option value="">Все альбомы</option>
-        <option v-for="album in albums" :key="album" :value="album">{{ album }}</option>
-      </select>
-    </label>
-
-    <label v-if="context === 'online'" class="memusic-filter-field">
-      <span>Год</span>
-      <select :value="modelValue.year || ''" @change="updateFilter('year', $event.target.value)">
-        <option value="">Любой год</option>
-        <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
-      </select>
-    </label>
-
-    <label v-if="context === 'local'" class="memusic-filter-field">
-      <span>Папка</span>
-      <select :value="modelValue.folder || ''" @change="updateFilter('folder', $event.target.value)">
-        <option value="">Все папки</option>
-        <option v-for="folder in folders" :key="folder" :value="folder">{{ folder }}</option>
-      </select>
-    </label>
-
-    <label v-if="context === 'local'" class="memusic-filter-field memusic-filter-field--compact">
-      <span>Формат</span>
-      <select :value="modelValue.format || ''" @change="updateFilter('format', $event.target.value)">
-        <option value="">Все</option>
-        <option v-for="format in formats" :key="format" :value="format">{{ format }}</option>
-      </select>
-    </label>
-
-    <label class="memusic-filter-field">
-      <span>Длительность</span>
-      <select :value="modelValue.duration || ''" @change="updateFilter('duration', $event.target.value)">
-        <option value="">Любая</option>
-        <option value="short">До 3 минут</option>
-        <option value="medium">3–5 минут</option>
-        <option value="long">Больше 5 минут</option>
-      </select>
-    </label>
-
-    <label v-if="context === 'online'" class="memusic-filter-field">
-      <span>Доступность</span>
-      <select :value="modelValue.availability || ''" @change="updateFilter('availability', $event.target.value)">
-        <option value="">Все треки</option>
-        <option value="available">Можно слушать</option>
-        <option value="unavailable">Недоступные</option>
-      </select>
-    </label>
-
-    <label class="memusic-filter-field">
-      <span>Порядок</span>
-      <select :value="modelValue.sort || 'title'" @change="updateFilter('sort', $event.target.value)">
-        <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-      </select>
-    </label>
-
-    <button
+    <UiButton
       v-if="hasActiveFilters"
+      unstyled
       class="memusic-filters__reset"
       type="button"
       aria-label="Сбросить фильтры"
       title="Сбросить фильтры"
       @click="resetFilters"
-    >×</button>
+    ><SvgIcon name="x" /></UiButton>
   </section>
 </template>
 
