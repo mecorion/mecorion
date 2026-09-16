@@ -2,6 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
+import SectionHeader from "@/components/layout/SectionHeader.vue";
 import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
@@ -88,7 +89,7 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
     <div class="uikit-catalog">
       <aside class="uikit-catalog__sidebar"><p class="mc-caption">Компоненты</p><UiTabs v-model="activeCategory" :items="categories" orientation="vertical" /></aside>
       <main class="uikit-catalog__content">
-        <header class="uikit-section-heading"><div><p class="mc-caption">Component</p><h2 class="mc-title-1">{{ activeMeta.label }}</h2></div><UiBadge variant="soft">{{ activeMeta.count }} вариантов</UiBadge></header>
+        <SectionHeader class="uikit-section-heading" eyebrow="Component" :title="activeMeta.label" eyebrow-class="mc-caption" title-class="mc-title-1"><template #action><UiBadge variant="soft">{{ activeMeta.count }} вариантов</UiBadge></template></SectionHeader>
 
         <section v-if="activeCategory === 'buttons'" class="uikit-demo-grid">
           <UiCard><template #header><h3 class="mc-title-3">Варианты</h3></template><div class="mc-row"><UiButton variant="primary">Primary</UiButton><UiButton>Default</UiButton><UiButton variant="ghost">Ghost</UiButton><UiButton variant="danger">Danger</UiButton><UiButton variant="success">Success</UiButton><UiButton variant="warning">Warning</UiButton></div></UiCard>

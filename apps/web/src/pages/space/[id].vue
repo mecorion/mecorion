@@ -2,6 +2,7 @@
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
 import {useRoute} from "#imports";
+import SectionHeader from "@/components/layout/SectionHeader.vue";
 import {
   getPublicationsBySpace,
   getPublicationsBySubspace,
@@ -47,13 +48,7 @@ const publications = computed(() => {
       </section>
 
       <section class="space-subspaces" aria-label="Подпространства">
-        <div class="space-section-header">
-          <div>
-            <p class="workspace-eyebrow">Дерево пространства</p>
-            <h2>Подпространства</h2>
-          </div>
-          <button type="button">Создать подпространство</button>
-        </div>
+        <SectionHeader class="space-section-header" eyebrow="Дерево пространства" title="Подпространства"><template #action><button type="button">Создать подпространство</button></template></SectionHeader>
 
         <div class="space-subspace-grid">
           <button
@@ -82,13 +77,7 @@ const publications = computed(() => {
       </section>
 
       <section class="space-publications">
-        <div class="space-section-header">
-          <div>
-            <p class="workspace-eyebrow">Публикации</p>
-            <h2>{{ publications.length }} материалов</h2>
-          </div>
-          <button type="button">Новая публикация</button>
-        </div>
+        <SectionHeader class="space-section-header" eyebrow="Публикации" :title="`${publications.length} материалов`"><template #action><button type="button">Новая публикация</button></template></SectionHeader>
 
         <div class="space-publication-grid">
           <NuxtLink

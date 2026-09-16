@@ -2,6 +2,7 @@
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
 import {useRoute} from "#imports";
+import SectionHeader from "@/components/layout/SectionHeader.vue";
 import {
   getPublicationById,
   getSpaceBreadcrumb,
@@ -52,12 +53,7 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
       </section>
 
       <section v-if="publication.video" class="publication-panel">
-        <div class="space-section-header">
-          <div>
-            <p class="workspace-eyebrow">Видео-параметры</p>
-            <h2>Просмотр</h2>
-          </div>
-        </div>
+        <SectionHeader class="space-section-header" eyebrow="Видео-параметры" title="Просмотр" />
         <div class="publication-settings-grid">
           <label>
             <span>Качество</span>
@@ -81,35 +77,19 @@ const breadcrumb = computed(() => publication.value ? getSpaceBreadcrumb(publica
       </section>
 
       <section v-if="publication.items?.length" class="publication-panel">
-        <div class="space-section-header">
-          <div>
-            <p class="workspace-eyebrow">Состав</p>
-            <h2>Материалы сборника</h2>
-          </div>
-        </div>
+        <SectionHeader class="space-section-header" eyebrow="Состав" title="Материалы сборника" />
         <ol class="publication-item-list">
           <li v-for="item in publication.items" :key="item">{{ item }}</li>
         </ol>
       </section>
 
       <section class="publication-panel">
-        <div class="space-section-header">
-          <div>
-            <p class="workspace-eyebrow">Описание</p>
-            <h2>О публикации</h2>
-          </div>
-        </div>
+        <SectionHeader class="space-section-header" eyebrow="Описание" title="О публикации" />
         <p class="publication-body">{{ publication.body }}</p>
       </section>
 
       <section class="publication-panel">
-        <div class="space-section-header">
-          <div>
-            <p class="workspace-eyebrow">Обсуждение</p>
-            <h2>Комментарии</h2>
-          </div>
-          <button type="button">Написать комментарий</button>
-        </div>
+        <SectionHeader class="space-section-header" eyebrow="Обсуждение" title="Комментарии"><template #action><button type="button">Написать комментарий</button></template></SectionHeader>
         <div class="publication-comments">
           <article v-for="comment in publication.comments" :key="`${comment.author}-${comment.time}`">
             <strong>{{ comment.author }}</strong>
