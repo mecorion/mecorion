@@ -3,7 +3,7 @@ import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDrawer, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -62,8 +62,11 @@ const categories = [
   {value: "breadcrumb", label: "Breadcrumb", count: 6},
   {value: "empty", label: "Empty State", count: 7},
   {value: "skeleton", label: "Skeleton", count: 6},
+  {value: "item", label: "Item", count: 14},
+  {value: "drawer", label: "Drawer", count: 10},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
+  {value: "form", label: "Form", count: 5},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
   {value: "toggle", label: "Toggle", count: 9},
@@ -266,6 +269,106 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
             </div>
           </UiCard>
         </section>
+        <section v-else-if="activeCategory === 'item'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiItem title="Базовый элемент" description="Заголовок, описание и действие в одной строке."><template #actions><UiButton size="sm">Действие</UiButton></template></UiItem>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Варианты</h3></template>
+            <UiItemGroup><UiItem title="Default" description="Прозрачный фон без рамки." /><UiItem variant="outline" title="Outline" description="Выделенная рамка элемента." /><UiItem variant="muted" title="Muted" description="Спокойный фон для вторичного контента." /></UiItemGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Размеры</h3></template>
+            <UiItemGroup><UiItem title="Default" description="Стандартная плотность." /><UiItem size="sm" title="Small" description="Компактная строка." /><UiItem size="xs" title="Extra Small" description="Максимально плотная строка." /></UiItemGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Icon</h3></template>
+            <UiItem variant="outline" media-variant="icon" title="Предупреждение безопасности" description="Обнаружен вход с неизвестного устройства."><template #media><SvgIcon name="shield" /></template><template #actions><UiButton size="sm" variant="outline">Проверить</UiButton></template></UiItem>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Avatar</h3></template>
+            <UiItem title="Evil Rabbit" description="Был в сети пять месяцев назад."><template #media><UiAvatar fallback="ER" status="offline" /></template><template #actions><UiBadge>Участник</UiBadge></template></UiItem>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Image</h3></template>
+            <UiItem media-variant="image" title="Midnight City Lights" description="Electric Nights · Neon Dreams · 3:45"><template #media><div class="ui-item-demo-image">M</div></template><template #actions><UiButton icon variant="ghost" aria-label="Воспроизвести"><SvgIcon name="play" /></UiButton></template></UiItem>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Group</h3></template>
+            <UiItemGroup><UiItem size="sm" title="shadcn" description="shadcn@vercel.com"><template #media><UiAvatar size="sm" fallback="S" /></template></UiItem><UiItemSeparator /><UiItem size="sm" title="maxleiter" description="maxleiter@vercel.com"><template #media><UiAvatar size="sm" fallback="M" /></template></UiItem><UiItemSeparator /><UiItem size="sm" title="evilrabbit" description="evilrabbit@vercel.com"><template #media><UiAvatar size="sm" fallback="E" /></template></UiItem></UiItemGroup>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Header and Footer</h3></template>
+            <UiItem variant="outline" title="v0-2.0-mini" description="Open Source model for everyone."><template #header><UiBadge variant="soft">Новая модель</UiBadge></template><template #media><div class="ui-item-demo-image">v0</div></template><template #footer><span class="mc-text-sm">Обновлено сегодня</span><UiButton size="sm">Открыть</UiButton></template></UiItem>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Link</h3></template>
+            <UiItem to="/dashboard" variant="outline" media-variant="icon" title="Перейти в Dashboard" description="Обзор аккаунта и текущей активности."><template #media><SvgIcon name="home" /></template><template #actions><span aria-hidden="true">→</span></template></UiItem>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Actions</h3></template>
+            <UiItem variant="muted" title="Настройки публикации" description="Измените видимость или удалите публикацию."><template #actions><UiButton size="sm" variant="ghost">Изменить</UiButton><UiButton size="sm" variant="danger">Удалить</UiButton></template></UiItem>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'drawer'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiDrawer title="Новый проект" description="Создайте проект и пригласите участников.">
+              <template #trigger="{open}"><UiButton @click="open">Открыть Drawer</UiButton></template>
+              <UiInput label="Название проекта" placeholder="Mecorion Cloud" />
+              <template #footer="{close}"><UiButton variant="outline" @click="close">Отмена</UiButton><UiButton @click="close">Создать</UiButton></template>
+            </UiDrawer>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Sides</h3></template>
+            <div class="mc-row">
+              <UiDrawer v-for="side in ['top', 'right', 'bottom', 'left']" :key="side" :side="side" :title="`Drawer: ${side}`" description="Панель может появляться с любой стороны экрана.">
+                <template #trigger="{open}"><UiButton variant="outline" @click="open">{{ side }}</UiButton></template>
+                <p class="mc-text-secondary">Контент боковой панели.</p>
+              </UiDrawer>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Custom size</h3></template>
+            <UiDrawer side="right" size="min(520px, 92vw)" title="Широкая панель" description="Размер задаётся через prop size.">
+              <template #trigger="{open}"><UiButton @click="open">Открыть широкую</UiButton></template>
+              <p class="mc-text-secondary">Подходит для форм и подробной информации.</p>
+            </UiDrawer>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Without handle</h3></template>
+            <UiDrawer :show-handle="false" title="Без индикатора" description="Вертикальная панель без верхней ручки.">
+              <template #trigger="{open}"><UiButton variant="outline" @click="open">Без ручки</UiButton></template>
+              <p class="mc-text-secondary">Ручка отключается независимо от заголовка.</p>
+            </UiDrawer>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Non-modal</h3></template>
+            <UiDrawer side="right" :modal="false" title="Немодальная панель" description="Остальная страница остаётся доступной.">
+              <template #trigger="{open}"><UiButton variant="outline" @click="open">Non-modal</UiButton></template>
+              <p class="mc-text-secondary">Нет overlay и блокировки прокрутки страницы.</p>
+            </UiDrawer>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Non-dismissible</h3></template>
+            <UiDrawer :dismissible="false" title="Подтвердите действие" description="Escape и клик по overlay не закроют панель.">
+              <template #trigger="{open}"><UiButton variant="danger" @click="open">Важное действие</UiButton></template>
+              <p class="mc-text-secondary">Закрытие доступно через явную кнопку.</p>
+              <template #footer="{close}"><UiButton variant="default" @click="close">Закрыть</UiButton></template>
+            </UiDrawer>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Nested</h3></template>
+            <UiDrawer title="Родительская панель" description="Drawer может содержать другой Drawer.">
+              <template #trigger="{open}"><UiButton @click="open">Открыть вложенный</UiButton></template>
+              <UiDrawer side="right" title="Вложенная панель" description="Открыта поверх родительской.">
+                <template #trigger="{open}"><UiButton variant="outline" @click="open">Следующий Drawer</UiButton></template>
+                <p class="mc-text-secondary">Вложенный контент.</p>
+              </UiDrawer>
+            </UiDrawer>
+          </UiCard>
+        </section>
         <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">
           <UiCard>
             <template #header><h3 class="mc-title-3">Basic</h3></template>
@@ -370,6 +473,48 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
             <UiFieldset legend="Среда вычислений" legend-variant="label" description="Выберите окружение для кластера.">
               <UiRadioGroup v-model="radioPlan" variant="cards" :options="[{label: 'Kubernetes', value: 'kubernetes', description: 'Запуск GPU-нагрузок в K8s.'}, {label: 'Virtual Machine', value: 'virtual-machine', description: 'Доступ к отдельной виртуальной машине.'}]" />
             </UiFieldset>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'form'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiForm>
+              <UiField id="form-name" label="Название проекта"><UiInput id="form-name" placeholder="Mecorion Cloud" /></UiField>
+              <UiField id="form-description" label="Описание"><UiTextarea id="form-description" placeholder="Кратко опишите проект" /></UiField>
+              <template #actions><UiButton type="submit">Создать проект</UiButton><UiButton type="button" variant="ghost">Отмена</UiButton></template>
+            </UiForm>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Server Error</h3></template>
+            <UiForm error="Сервер временно недоступен. Повторите попытку позже.">
+              <UiField id="form-error-email" label="Email"><UiInput id="form-error-email" type="email" model-value="user@mecorion.dev" /></UiField>
+              <template #actions><UiButton type="submit">Повторить</UiButton></template>
+            </UiForm>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Loading</h3></template>
+            <UiForm loading>
+              <UiField id="form-loading-email" label="Email"><UiInput id="form-loading-email" model-value="user@mecorion.dev" /></UiField>
+              <UiField id="form-loading-password" label="Пароль"><UiInput id="form-loading-password" type="password" model-value="password" /></UiField>
+              <template #actions="{loading}"><UiButton type="submit" :loading="loading">Сохранение</UiButton></template>
+            </UiForm>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled</h3></template>
+            <UiForm disabled>
+              <UiField id="form-disabled-name" label="Профиль"><UiInput id="form-disabled-name" model-value="Иван Иванов" /></UiField>
+              <UiCheckbox model-value label="Получать уведомления" />
+              <template #actions><UiButton type="submit">Сохранить</UiButton></template>
+            </UiForm>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Composition</h3></template>
+            <UiForm spacing="lg">
+              <template #header><div><h3 class="mc-title-3">Настройки аккаунта</h3><p class="mc-text-sm">Измените основные данные и параметры уведомлений.</p></div></template>
+              <UiFieldGroup><UiField id="form-profile-name" label="Имя"><UiInput id="form-profile-name" model-value="Иван" /></UiField><UiField id="form-profile-email" label="Email"><UiInput id="form-profile-email" type="email" model-value="ivan@mecorion.dev" /></UiField></UiFieldGroup>
+              <template #actions><UiButton type="submit">Сохранить</UiButton><UiButton type="reset" variant="outline">Сбросить</UiButton></template>
+              <template #footer><span class="mc-text-sm">Изменения применятся ко всем сервисам Mecorion.</span></template>
+            </UiForm>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'textarea'" class="uikit-demo-grid">
