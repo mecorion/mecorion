@@ -84,6 +84,17 @@
     gap: var(--mcrn-space-10px);
     border-radius: var(--mc-radius-sm);
   }
+  .spaces-sort-control {
+    width: min(100%, 220px);
+    flex: 0 0 220px;
+  }
+  .spaces-sort-control .ui-select {
+    width: 100%;
+  }
+  .spaces-sort-control .spaces-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
   .spaces-featured-rail {
     display: grid;
     grid-auto-flow: column;
@@ -405,5 +416,12 @@
   }
   .spaces-callout {
     background: var(--mcrn-spaces-callout-background-396);
+  }
+}
+
+@media (max-width: 760px) {
+  .spaces-sort-control {
+    width: 100%;
+    flex-basis: auto;
   }
 }
