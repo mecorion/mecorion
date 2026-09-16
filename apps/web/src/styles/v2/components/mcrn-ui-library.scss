@@ -241,6 +241,33 @@
   .ui-fieldset__legend--label { font-size: var(--mc-font-sm); }
   .ui-field-separator { display: flex; align-items: center; gap: var(--mc-space-3); color: var(--mc-text-muted); font-size: var(--mc-font-xs); }
   .ui-field-separator::before, .ui-field-separator::after { height: 1px; flex: 1 1 auto; background: var(--mc-border-soft); content: ""; }
+  .ui-file-picker { display: grid; min-width: 0; gap: var(--mc-space-3); }
+  .ui-file-picker__input { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ui-file-picker__dropzone { display: grid; width: 100%; min-height: 156px; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--mc-space-4); border: 1px dashed var(--mc-border-strong); border-radius: var(--mc-radius-md); padding: var(--mc-space-5); background: var(--mc-surface-deep); color: var(--mc-text-primary); font: inherit; text-align: left; cursor: pointer; transition: border-color .16s ease, background-color .16s ease, transform .16s ease; }
+  .ui-file-picker__dropzone:hover, .ui-file-picker__dropzone:focus-visible, .ui-file-picker__dropzone--dragging { border-color: var(--mc-accent); background: color-mix(in srgb, var(--mc-accent) 7%, var(--mc-surface-deep)); outline: 0; }
+  .ui-file-picker__dropzone--dragging { transform: scale(.995); }
+  .ui-file-picker--invalid .ui-file-picker__dropzone { border-color: var(--mc-danger); }
+  .ui-file-picker__icon { display: inline-grid; width: 48px; height: 48px; place-items: center; border-radius: var(--mc-radius-md); background: var(--mcrn-button--soft-background); color: var(--mc-accent); }
+  .ui-file-picker__icon .svg-icon { width: var(--mcrn-size-24px); height: var(--mcrn-size-24px); }
+  .ui-file-picker__copy, .ui-file-picker__file-copy { display: grid; min-width: 0; gap: var(--mc-space-1); }
+  .ui-file-picker__label { overflow-wrap: anywhere; }
+  .ui-file-picker__description { color: var(--mc-text-secondary); font-size: var(--mc-font-sm); line-height: 1.45; }
+  .ui-file-picker__action { border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-sm); padding: var(--mc-space-2) var(--mc-space-3); background: var(--mcrn-button--default-background); font-size: var(--mc-font-sm); font-weight: 700; }
+  .ui-file-picker__button-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--mc-space-3); }
+  .ui-file-picker__button-row .svg-icon { width: var(--mcrn-size-16px); height: var(--mcrn-size-16px); }
+  .ui-file-picker__message { margin: 0; color: var(--mc-text-muted); font-size: var(--mc-font-xs); }
+  .ui-file-picker__message--error { color: var(--mc-danger); }
+  .ui-file-picker__list { display: grid; gap: var(--mc-space-2); margin: 0; padding: 0; list-style: none; }
+  .ui-file-picker__file { display: grid; min-width: 0; grid-template-columns: 36px minmax(0, 1fr) 32px; align-items: center; gap: var(--mc-space-3); border: 1px solid var(--mc-border-soft); border-radius: var(--mc-radius-md); padding: var(--mc-space-3); background: var(--mc-surface); }
+  .ui-file-picker__file-icon { display: grid; width: 36px; height: 36px; place-items: center; border-radius: var(--mc-radius-sm); background: var(--mcrn-button--soft-background); color: var(--mc-accent); }
+  .ui-file-picker__file-icon .svg-icon { width: var(--mcrn-size-16px); height: var(--mcrn-size-16px); }
+  .ui-file-picker__file-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ui-file-picker__file-copy span { color: var(--mc-text-muted); font-size: var(--mc-font-xs); }
+  .ui-file-picker__remove { display: grid; width: 32px; height: 32px; place-items: center; border: 0; border-radius: var(--mc-radius-sm); background: transparent; color: var(--mc-text-muted); font: inherit; font-size: 20px; cursor: pointer; transition: color .14s ease, background-color .14s ease; }
+  .ui-file-picker__remove:hover, .ui-file-picker__remove:focus-visible { background: color-mix(in srgb, var(--mc-danger) 12%, transparent); color: var(--mc-danger); outline: 0; }
+  .ui-file-picker--disabled { opacity: .55; }
+  .ui-file-picker--disabled :is(.ui-file-picker__dropzone, .ui-file-picker__remove) { cursor: not-allowed; }
+  @media (max-width: 560px) { .ui-file-picker__dropzone { grid-template-columns: 1fr; justify-items: center; text-align: center; } .ui-file-picker__action { width: 100%; text-align: center; } }
   .ui-form { display: grid; min-width: 0; gap: var(--mc-space-5); }
   .ui-form--compact { gap: var(--mc-space-3); }
   .ui-form--lg { gap: var(--mc-space-8); }

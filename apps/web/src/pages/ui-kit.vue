@@ -3,7 +3,7 @@ import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -28,6 +28,11 @@ const sliderTemperature = ref([0.3, 0.7]);
 const progressValue = ref(56);
 const fieldPrice = ref([200, 800]);
 const fieldDepartment = ref("");
+const singleFile = ref(null);
+const multipleFiles = ref([]);
+const imageFiles = ref([]);
+const documentFile = ref(null);
+const compactFiles = ref([]);
 const densityOptions = [
   {label: "Default", value: "default"},
   {label: "Comfortable", value: "comfortable"},
@@ -70,6 +75,7 @@ const categories = [
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "form", label: "Form", count: 5},
+  {value: "file-picker", label: "File Picker", count: 7},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
   {value: "checkbox", label: "Checkbox", count: 8}, {value: "radio", label: "Radio Group", count: 6},
   {value: "toggle", label: "Toggle", count: 9},
@@ -660,6 +666,36 @@ const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "
               <template #actions><UiButton type="submit">Сохранить</UiButton><UiButton type="reset" variant="outline">Сбросить</UiButton></template>
               <template #footer><span class="mc-text-sm">Изменения применятся ко всем сервисам Mecorion.</span></template>
             </UiForm>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'file-picker'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiFilePicker v-model="singleFile" hint="Максимальный размер зависит от настроек формы." />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Multiple</h3></template>
+            <UiFilePicker v-model="multipleFiles" multiple :max-files="5" label="Загрузить материалы" description="До пяти файлов за один раз" hint="Выбранные файлы можно удалить из списка." />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Images</h3></template>
+            <UiFilePicker v-model="imageFiles" multiple accept="image/png,image/jpeg,image/webp" :max-size="5 * 1024 * 1024" label="Добавить изображения" description="PNG, JPEG или WebP до 5 МБ" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Document</h3></template>
+            <UiFilePicker v-model="documentFile" accept=".pdf,.doc,.docx" :max-size="10 * 1024 * 1024" label="Добавить документ" description="PDF, DOC или DOCX до 10 МБ" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Button</h3></template>
+            <UiFilePicker v-model="compactFiles" variant="button" multiple label="Выбрать файлы" description="Компактный вариант без dropzone" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Invalid</h3></template>
+            <UiFilePicker error="Необходимо прикрепить хотя бы один файл." label="Обязательное вложение" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Disabled</h3></template>
+            <UiFilePicker disabled label="Загрузка недоступна" description="Файлы нельзя добавить в текущем состоянии" />
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'textarea'" class="uikit-demo-grid">

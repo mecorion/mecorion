@@ -15,6 +15,7 @@ export {default as UiField} from "./UiField.vue";
 export {default as UiFieldGroup} from "./UiFieldGroup.vue";
 export {default as UiFieldSeparator} from "./UiFieldSeparator.vue";
 export {default as UiFieldset} from "./UiFieldset.vue";
+export {default as UiFilePicker} from "./UiFilePicker.vue";
 export {default as UiForm} from "./UiForm.vue";
 export {default as UiInput} from "./UiInput.vue";
 export {default as UiItem} from "./UiItem.vue";
