@@ -3,7 +3,7 @@ import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDrawer, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -64,6 +64,7 @@ const categories = [
   {value: "skeleton", label: "Skeleton", count: 6},
   {value: "item", label: "Item", count: 14},
   {value: "drawer", label: "Drawer", count: 10},
+  {value: "dialog", label: "Dialog", count: 6},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "form", label: "Form", count: 5},
@@ -367,6 +368,56 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
                 <p class="mc-text-secondary">Вложенный контент.</p>
               </UiDrawer>
             </UiDrawer>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'dialog'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <UiDialog title="Редактировать профиль" description="Изменения будут применены ко всем сервисам Mecorion.">
+              <template #trigger="{open}"><UiButton @click="open">Открыть Dialog</UiButton></template>
+              <UiFieldGroup><UiInput label="Имя" model-value="Иван" /><UiInput label="Username" model-value="ivan" /></UiFieldGroup>
+              <template #footer="{close}"><UiButton variant="outline" @click="close">Отмена</UiButton><UiButton @click="close">Сохранить</UiButton></template>
+            </UiDialog>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Sizes</h3></template>
+            <div class="mc-row">
+              <UiDialog v-for="size in ['sm', 'md', 'lg']" :key="size" :size="size" :title="`Dialog ${size}`" description="Размер окна выбирается через prop size.">
+                <template #trigger="{open}"><UiButton variant="outline" @click="open">{{ size }}</UiButton></template>
+                <p class="mc-text-secondary">Содержимое модального окна.</p>
+              </UiDialog>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Custom close</h3></template>
+            <UiDialog title="Поделиться проектом" description="Скопируйте ссылку и отправьте её участникам.">
+              <template #trigger="{open}"><UiButton variant="outline" @click="open">Custom close</UiButton></template>
+              <template #close="{close}"><UiButton size="sm" variant="ghost" @click="close">Готово</UiButton></template>
+              <UiInput label="Ссылка" model-value="https://mecorion.dev/project" readonly />
+            </UiDialog>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">No close button</h3></template>
+            <UiDialog :show-close="false" title="Без кнопки закрытия" description="Окно закрывается по Escape, overlay или действию в footer.">
+              <template #trigger="{open}"><UiButton variant="outline" @click="open">Без крестика</UiButton></template>
+              <p class="mc-text-secondary">Полезно, когда закрытие должно быть частью сценария.</p>
+              <template #footer="{close}"><UiButton variant="default" @click="close">Закрыть</UiButton></template>
+            </UiDialog>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Sticky footer</h3></template>
+            <UiDialog sticky-footer size="lg" title="Условия использования" description="Footer остаётся видимым при прокрутке.">
+              <template #trigger="{open}"><UiButton variant="outline" @click="open">Sticky footer</UiButton></template>
+              <div class="ui-dialog-demo-copy"><p v-for="index in 10" :key="index">Раздел {{ index }}. Данные аккаунта используются только для работы сервисов Mecorion и синхронизации пользовательских настроек.</p></div>
+              <template #footer="{close}"><UiButton variant="outline" @click="close">Отмена</UiButton><UiButton @click="close">Принять</UiButton></template>
+            </UiDialog>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Scrollable content</h3></template>
+            <UiDialog size="md" title="История изменений" description="Заголовок остаётся на месте, содержимое прокручивается.">
+              <template #trigger="{open}"><UiButton @click="open">Scrollable</UiButton></template>
+              <UiItemGroup><UiItem v-for="index in 12" :key="index" size="sm" :title="`Версия 1.${13 - index}`" :description="`Изменения интерфейса и компонентов — запись ${index}.`" /><UiItemSeparator /></UiItemGroup>
+            </UiDialog>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">

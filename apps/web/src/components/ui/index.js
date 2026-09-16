@@ -7,6 +7,7 @@ export {default as UiBreadcrumb} from "./UiBreadcrumb.vue";
 export {default as UiButton} from "./UiButton.vue";
 export {default as UiCard} from "./UiCard.vue";
 export {default as UiCheckbox} from "./UiCheckbox.vue";
+export {default as UiDialog} from "./UiDialog.vue";
 export {default as UiDrawer} from "./UiDrawer.vue";
 export {default as UiEmptyState} from "./UiEmptyState.vue";
 export {default as UiField} from "./UiField.vue";
