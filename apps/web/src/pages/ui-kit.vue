@@ -2,7 +2,7 @@
 import {computed, ref} from "vue";
 import {useAppStore} from "@/stores/app.js";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiInput, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const app = useAppStore();
@@ -60,6 +60,7 @@ const categories = [
   {value: "avatar", label: "Avatar", count: 9},
   {value: "breadcrumb", label: "Breadcrumb", count: 6},
   {value: "empty", label: "Empty State", count: 7},
+  {value: "skeleton", label: "Skeleton", count: 6},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
   {value: "textarea", label: "Textarea", count: 4}, {value: "select", label: "Select", count: 3},
@@ -225,6 +226,43 @@ const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Се�
               <template #media><SvgIcon name="search" /></template>
               <template #actions><UiButton size="sm" variant="outline">Сбросить фильтры</UiButton></template>
             </UiEmptyState>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'skeleton'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Basic</h3></template>
+            <div class="ui-skeleton-stack"><UiSkeleton width="100px" height="20px" radius="999px" /><UiSkeleton width="70%" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Avatar</h3></template>
+            <div class="ui-skeleton-avatar"><UiSkeleton shape="circle" width="48px" height="48px" /><div class="ui-skeleton-stack"><UiSkeleton width="160px" height="16px" /><UiSkeleton width="110px" height="12px" /></div></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Card</h3></template>
+            <div class="ui-skeleton-card"><UiSkeleton height="180px" /><div class="ui-skeleton-stack"><UiSkeleton width="55%" height="22px" /><UiSkeleton /><UiSkeleton width="82%" /></div></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Text</h3></template>
+            <div class="ui-skeleton-stack"><UiSkeleton v-for="width in ['100%', '94%', '87%', '62%']" :key="width" :width="width" height="14px" shape="text" /></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Form</h3></template>
+            <div class="ui-skeleton-form">
+              <div class="ui-skeleton-stack"><UiSkeleton width="90px" height="12px" /><UiSkeleton height="48px" /></div>
+              <div class="ui-skeleton-stack"><UiSkeleton width="120px" height="12px" /><UiSkeleton height="48px" /></div>
+              <UiSkeleton width="140px" height="44px" />
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Table</h3></template>
+            <div class="ui-skeleton-table" role="status" aria-label="Таблица загружается">
+              <div v-for="row in 5" :key="row" class="ui-skeleton-table__row">
+                <UiSkeleton shape="circle" width="32px" height="32px" />
+                <UiSkeleton :width="row === 1 ? '85%' : '70%'" />
+                <UiSkeleton :width="row === 1 ? '75%' : '58%'" />
+                <UiSkeleton width="60px" />
+              </div>
+            </div>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'tooltip'" class="uikit-demo-grid">

@@ -96,6 +96,17 @@
   .ui-empty-state__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--mc-space-3); }
   .ui-empty-state__footer { display: flex; width: 100%; justify-content: center; color: var(--mc-text-muted); font-size: var(--mc-font-sm); }
   .ui-empty-state__footer a { color: var(--mc-accent); }
+  .ui-skeleton { position: relative; display: block; max-width: 100%; overflow: hidden; border-radius: var(--mc-radius-sm); background: var(--mcrn-button--default-background); }
+  .ui-skeleton--circle { border-radius: 50%; }
+  .ui-skeleton--text { border-radius: var(--mc-radius-pill); }
+  .ui-skeleton-stack { display: grid; width: 100%; min-width: 0; gap: var(--mc-space-3); }
+  .ui-skeleton-avatar { display: flex; min-width: 0; align-items: center; gap: var(--mc-space-4); }
+  .ui-skeleton-avatar > .ui-skeleton { flex: 0 0 auto; }
+  .ui-skeleton-card { display: grid; min-width: 0; gap: var(--mc-space-5); }
+  .ui-skeleton-form { display: grid; min-width: 0; gap: var(--mc-space-5); }
+  .ui-skeleton-table { display: grid; min-width: 0; overflow-x: auto; }
+  .ui-skeleton-table__row { display: grid; grid-template-columns: 32px minmax(140px, 1fr) minmax(140px, 1fr) 80px; min-width: 560px; align-items: center; gap: var(--mc-space-4); padding: var(--mc-space-3) 0; border-bottom: 1px solid var(--mc-border-soft); }
+  .ui-skeleton-table__row:last-child { border-bottom: 0; }
 
   .ui-checkbox-table__head { background: var(--mc-surface-deep); color: var(--mc-text-primary); font-size: var(--mc-font-sm); }
   .ui-card { --mc-card-spacing: var(--mc-space-5); overflow: hidden; }
