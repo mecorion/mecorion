@@ -19,11 +19,11 @@ const currentUser = {
 
 const primaryNavigation = [
   {title: "Главная", icon: "home", route: "/dashboard"},
-  {title: "Исследовать", icon: "search"},
+  {title: "Исследовать", icon: "search", route: "/explore"},
   {title: "Пространства", icon: "boxes", route: "/spaces"},
-  {title: "Сервисы", icon: "grid"},
-  {title: "Сохранённое", icon: "star"},
-  {title: "Загрузки", icon: "download"},
+  {title: "Сервисы", icon: "grid", route: "/services"},
+  {title: "Сохранённое", icon: "star", route: "/saved"},
+  {title: "Загрузки", icon: "download", route: "/downloads"},
 ];
 
 const serviceNavigation = [
@@ -31,14 +31,14 @@ const serviceNavigation = [
   {title: "Video", icon: "play", route: "/video"},
   {title: "Books", icon: "book", route: "/books"},
   {title: "Course", icon: "graduation-cap", route: "/course"},
-  {title: "Drive", icon: "cloud"},
-  {title: "VPN", icon: "shield"},
-  {title: "Agents", icon: "users"},
+  {title: "Drive", icon: "cloud", route: "/drive"},
+  {title: "VPN", icon: "shield", route: "/vpn"},
+  {title: "Agents", icon: "users", route: "/agents"},
 ];
 
 const communityNavigation = [
-  {title: "Resolutions", icon: "badge-check"},
-  {title: "Requests", icon: "git-pull-request"},
+  {title: "Resolutions", icon: "badge-check", route: "/resolutions"},
+  {title: "Requests", icon: "git-pull-request", route: "/requests"},
 ];
 
 const accountNavigation = [
@@ -190,10 +190,10 @@ onBeforeUnmount(() => {
         <span aria-hidden="true">←</span>
         <span class="dashboard-nav__label">Все сервисы</span>
       </NuxtLink>
-      <button v-else class="sidebar-link dashboard-sidebar__support" type="button" data-tooltip="Помощь и поддержка">
+      <NuxtLink v-else class="sidebar-link dashboard-sidebar__support" to="/support" data-tooltip="Помощь и поддержка">
         <span aria-hidden="true">?</span>
         <span class="dashboard-nav__label">Помощь и поддержка</span>
-      </button>
+      </NuxtLink>
     </aside>
 
     <section class="dashboard-board">
