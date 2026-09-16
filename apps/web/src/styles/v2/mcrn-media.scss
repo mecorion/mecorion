@@ -2088,12 +2088,15 @@
     }
     .uikit-catalog { grid-template-columns: 1fr; }
     .uikit-catalog__sidebar { position: static; }
+    .uikit-docs { grid-template-columns: minmax(0, 1fr); }
+    .uikit-docs__intro { grid-row: auto; }
     .ui-tabs--vertical { flex-direction: row; overflow-x: auto; padding-bottom: var(--mc-space-1); }
     .ui-tabs--vertical .ui-tabs__trigger { flex: 0 0 auto; }
   }
-  @media (max-width: 560px) {
+@media (max-width: 560px) {
     .uikit-demo-grid--cards { grid-template-columns: 1fr; }
     .uikit-section-heading { align-items: flex-start; flex-direction: column; }
+    .uikit-docs { gap: var(--mc-space-5); padding: var(--mc-space-4); }
   }
   @media (max-width: 360px) {
     .uikit-view {

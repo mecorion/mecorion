@@ -30,6 +30,56 @@
     justify-content: flex-end;
     gap: var(--mc-space-3);
   }
+  .uikit-docs {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: var(--mc-space-6);
+    margin-bottom: var(--mc-space-6);
+    padding: var(--mc-space-6);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    background: var(--mc-surface);
+  }
+  .uikit-docs__intro {
+    grid-row: span 2;
+  }
+  .uikit-docs__intro h2,
+  .uikit-docs__section h3 {
+    margin: 0;
+  }
+  .uikit-docs__intro > .mc-text {
+    max-width: 68ch;
+    margin: var(--mc-space-3) 0 0;
+    color: var(--mc-text-secondary);
+    line-height: var(--mc-line-body);
+  }
+  .uikit-docs__section {
+    display: grid;
+    min-width: 0;
+    gap: var(--mc-space-3);
+  }
+  .uikit-docs__section ul {
+    display: grid;
+    gap: var(--mc-space-2);
+    margin: 0;
+    padding-left: var(--mc-space-5);
+    color: var(--mc-text-secondary);
+  }
+  .uikit-docs__section pre {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0;
+    padding: var(--mc-space-4);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-sm);
+    background: var(--mc-surface-deep);
+    color: var(--mc-text-primary);
+    font-size: var(--mc-font-sm);
+    line-height: 1.55;
+    white-space: pre;
+  }
+
   .uikit-type-scale,
   .uikit-icon-preview {
     display: grid;

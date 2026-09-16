@@ -2,6 +2,8 @@
 import {computed, ref} from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
+import ComponentDocumentation from "@/components/ui-kit/ComponentDocumentation.vue";
+import {componentDocumentation} from "@/ui-kit/componentDocumentation.js";
 import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
@@ -85,6 +87,7 @@ const categories = [
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
 const activeMeta = computed(() => categories.find((item) => item.value === activeCategory.value));
+const activeDocumentation = computed(() => componentDocumentation[activeCategory.value]);
 const menuIcons = ["home", "search", "boxes", "grid", "star", "download", "music", "play", "book", "graduation-cap", "cloud", "shield", "users", "badge-check", "git-pull-request", "user", "settings", "menu", "bell", "moon", "sun"];
 const manySelectOptions = Array.from({length: 18}, (_, index) => ({label: `Сервис ${index + 1}`, value: `service-${index + 1}`}));
 const dropdownBasic = [{type: "label", label: "Мой аккаунт"}, {id: "profile", label: "Профиль"}, {id: "billing", label: "Подписка"}, {type: "separator"}, {id: "team", label: "Команда"}, {id: "logout", label: "Выйти"}];
@@ -108,6 +111,8 @@ const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "
       <aside class="uikit-catalog__sidebar"><p class="mc-caption">Компоненты</p><UiTabs v-model="activeCategory" :items="categories" orientation="vertical" /></aside>
       <main class="uikit-catalog__content">
         <SectionHeader class="uikit-section-heading" eyebrow="Component" :title="activeMeta.label" eyebrow-class="mc-caption" title-class="mc-title-1"><template #action><UiBadge variant="soft">{{ activeMeta.count }} вариантов</UiBadge></template></SectionHeader>
+
+        <ComponentDocumentation v-bind="activeDocumentation" />
 
         <section v-if="activeCategory === 'buttons'" class="uikit-demo-grid">
           <UiCard><template #header><h3 class="mc-title-3">Варианты</h3></template><div class="mc-row"><UiButton variant="primary">Primary</UiButton><UiButton>Default</UiButton><UiButton variant="ghost">Ghost</UiButton><UiButton variant="danger">Danger</UiButton><UiButton variant="success">Success</UiButton><UiButton variant="warning">Warning</UiButton></div></UiCard>
