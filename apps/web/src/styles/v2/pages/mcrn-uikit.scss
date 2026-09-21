@@ -1,0 +1,241 @@
+@layer components {
+  .uikit-view {
+    display: flex;
+    width: 100%;
+    padding-top: var(--mc-space-10);
+    padding-right: var(--mcrn-layout-inline-padding);
+    padding-bottom: var(--mc-space-10);
+    padding-left: var(--mcrn-layout-inline-padding);
+  }
+  .uikit-view > .mc-shell {
+    width: 100%;
+  }
+  .uikit-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 520px);
+    align-items: end;
+    gap: var(--mc-space-6);
+    padding: var(--mc-space-8);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-xl);
+    background: var(--mcrn-uikit-hero-background);
+  }
+  .uikit-hero__aside {
+    display: grid;
+    gap: var(--mc-space-4);
+  }
+  .uikit-hero__controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--mc-space-3);
+  }
+  .uikit-docs {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: var(--mc-space-6);
+    margin-bottom: var(--mc-space-6);
+    padding: var(--mc-space-6);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    background: var(--mc-surface);
+  }
+  .uikit-docs__intro {
+    grid-row: span 2;
+  }
+  .uikit-docs__intro h2,
+  .uikit-docs__section h3 {
+    margin: 0;
+  }
+  .uikit-docs__intro > .mc-text {
+    max-width: 68ch;
+    margin: var(--mc-space-3) 0 0;
+    color: var(--mc-text-secondary);
+    line-height: var(--mc-line-body);
+  }
+  .uikit-docs__section {
+    display: grid;
+    min-width: 0;
+    gap: var(--mc-space-3);
+  }
+  .uikit-docs__section ul {
+    display: grid;
+    gap: var(--mc-space-2);
+    margin: 0;
+    padding-left: var(--mc-space-5);
+    color: var(--mc-text-secondary);
+  }
+  .uikit-docs__section pre {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0;
+    padding: var(--mc-space-4);
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-sm);
+    background: var(--mc-surface-deep);
+    color: var(--mc-text-primary);
+    font-size: var(--mc-font-sm);
+    line-height: 1.55;
+    white-space: pre;
+  }
+
+  .uikit-type-scale,
+  .uikit-icon-preview {
+    display: grid;
+    gap: var(--mc-space-5);
+  }
+  .uikit-product-card {
+    align-items: flex-start;
+    min-height: var(--mcrn-size-300px);
+  }
+  .uikit-icon-preview__group {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .uikit-icon-preview__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--mc-space-4);
+    border-bottom: 1px solid var(--mc-border-soft);
+    padding: var(--mc-space-5);
+  }
+  .uikit-icon-preview__count {
+    display: inline-grid;
+    min-width: var(--mcrn-size-36px);
+    height: var(--mcrn-size-28px);
+    place-items: center;
+    border-radius: var(--mc-radius-sm);
+    background: var(--mcrn-button--soft-background);
+    color: var(--mc-accent);
+    font-size: var(--mc-font-sm);
+    font-weight: 700;
+    line-height: 1 !important;
+  }
+  .uikit-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: var(--mcrn-space-1px);
+    background: var(--mc-border-soft);
+  }
+  .uikit-icon-tile {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--mc-space-3);
+    padding: var(--mc-space-4);
+    background: var(--mc-surface);
+  }
+  .uikit-icon-tile__sizes {
+    --mc-icon-accent: var(--mc-accent);
+    --mc-icon-bg: var(--mc-surface);
+    --mc-icon-cutout: var(--mc-bg);
+    display: grid;
+    min-height: var(--mcrn-size-56px);
+    grid-template-columns: 32px 40px 48px;
+    align-items: center;
+    gap: var(--mc-space-3);
+    color: var(--mc-text-primary);
+  }
+  .uikit-icon-tile__sizes--duotone {
+    --mc-icon-accent: #7c5cff;
+  }
+  .uikit-icon-tile__icon {
+    display: grid;
+    place-items: center;
+    color: inherit;
+  }
+  .uikit-icon-tile__icon--sm {
+    width: var(--mcrn-size-16px);
+    height: var(--mcrn-size-16px);
+  }
+  .uikit-icon-tile__icon--md {
+    width: var(--mcrn-size-24px);
+    height: var(--mcrn-size-24px);
+  }
+  .uikit-icon-tile__icon--lg {
+    width: var(--mcrn-size-32px);
+    height: var(--mcrn-size-32px);
+  }
+  .uikit-icon-tile__icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .uikit-icon-tile__meta {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--mcrn-space-4px);
+  }
+  .uikit-icon-tile__meta strong,
+  .uikit-icon-tile__meta span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .uikit-icon-tile__meta strong {
+    color: var(--mc-text-primary);
+    font-size: var(--mc-font-sm);
+    font-weight: 700;
+    line-height: var(--mc-line-title) !important;
+  }
+  .uikit-icon-tile__meta span {
+    color: var(--mc-text-faint);
+    font-size: var(--mc-font-xs);
+    line-height: var(--mc-line-body) !important;
+  }
+  .uikit-catalog {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--mc-space-6);
+  }
+  .uikit-catalog__sidebar {
+    position: sticky;
+    top: var(--mc-space-4);
+    display: grid;
+    gap: var(--mc-space-3);
+    min-width: 0;
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    padding: var(--mc-space-3);
+    background: var(--mc-surface);
+  }
+  .uikit-catalog__content,
+  .uikit-demo-grid {
+    display: grid;
+    min-width: 0;
+    gap: var(--mc-space-5);
+  }
+  .uikit-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--mc-space-4);
+    border-bottom: 1px solid var(--mc-border-soft);
+    padding-bottom: var(--mc-space-5);
+  }
+  .uikit-demo-grid--cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .uikit-demo-grid .mc-card__body {
+    display: grid;
+    gap: var(--mc-space-4);
+  }
+  .uikit-catalog .uikit-icon-grid {
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    overflow: hidden;
+  }
+  .uikit-catalog .uikit-icon-tile {
+    justify-content: space-between;
+  }
+  .uikit-catalog .uikit-icon-tile > .svg-icon {
+    width: var(--mcrn-size-32px);
+    height: var(--mcrn-size-32px);
+    color: var(--mc-accent);
+  }
+}

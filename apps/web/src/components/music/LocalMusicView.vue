@@ -6,6 +6,10 @@ import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import {createLocalTracks, filesFromDirectoryInput, scanDirectoryHandle} from "@/music/localLibrary.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiCard from "@/components/ui/UiCard.vue";
+import UiProgress from "@/components/ui/UiProgress.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const player = useMusicPlayerStore();
 const fileInput = ref(null);
@@ -24,6 +28,7 @@ const totalSizeLabel = computed(() => {
   if (totalSize.value < 1024 ** 2) return `${Math.round(totalSize.value / 1024)} КБ`;
   return `${(totalSize.value / 1024 ** 2).toFixed(1)} МБ`;
 });
+const scanTotal = computed(() => Math.max(scannedFiles.value, processedFiles.value, 1));
 
 async function processFolder({entries, rootName}) {
   isScanning.value = true;
@@ -85,7 +90,7 @@ async function handleFallbackSelection(event) {
   <section class="memusic-local">
     <header class="memusic-local__header">
       <div><p class="memusic-kicker">На этом устройстве</p><h1>Локальная музыка</h1><p>Ваша коллекция из выбранной папки.</p></div>
-      <button v-if="hasLocalLibrary" class="memusic-secondary-action" type="button" @click="chooseFolder">Сменить папку</button>
+      <UiButton v-if="hasLocalLibrary" unstyled class="memusic-secondary-action" @click="chooseFolder">Сменить папку</UiButton>
     </header>
 
     <input
@@ -99,26 +104,26 @@ async function handleFallbackSelection(event) {
       @change="handleFallbackSelection"
     />
 
-    <section v-if="!hasLocalLibrary" class="memusic-folder-picker">
-      <div class="memusic-folder-picker__icon" aria-hidden="true">▰</div>
+    <UiCard v-if="!hasLocalLibrary" raw unstyled class="memusic-folder-picker">
+      <div class="memusic-folder-picker__icon" aria-hidden="true"><SvgIcon name="folder" /></div>
       <div><span>Локальная медиатека</span><h2>{{ isScanning ? scanStage : 'Выберите папку с музыкой' }}</h2><p>{{ isScanning ? `${processedFiles || scannedFiles} файлов обработано` : 'MP3, M4A, FLAC, WAV, OGG, AAC и Opus' }}</p></div>
-      <button v-if="!isScanning" class="memusic-primary-action" type="button" @click="chooseFolder">Выбрать папку</button>
-      <div v-else class="memusic-scan-progress"><span></span></div>
+      <UiButton v-if="!isScanning" unstyled class="memusic-primary-action" @click="chooseFolder">Выбрать папку</UiButton>
+      <UiProgress v-else class="memusic-scan-progress" :value="processedFiles" :max="scanTotal" size="sm" />
       <small>Файлы остаются на вашем устройстве</small>
-    </section>
+    </UiCard>
 
     <p v-if="scanError" class="memusic-local__error">{{ scanError }}</p>
 
     <template v-if="hasLocalLibrary">
-      <section class="memusic-local__summary">
-        <div class="memusic-local__folder-icon" aria-hidden="true">▰</div>
+      <UiCard raw unstyled class="memusic-local__summary">
+        <div class="memusic-local__folder-icon" aria-hidden="true"><SvgIcon name="folder" /></div>
         <div><strong>{{ player.localFolderName }}</strong><span>{{ player.localTracks.length }} треков · {{ totalSizeLabel }}</span></div>
-        <button type="button" aria-label="Воспроизвести локальную медиатеку" @click="player.playCollection(player.localTrackIds)">▶</button>
-      </section>
+        <UiButton unstyled aria-label="Воспроизвести локальную медиатеку" @click="player.playCollection(player.localTrackIds)"><SvgIcon name="play" /></UiButton>
+      </UiCard>
 
       <nav class="memusic-local-tabs" aria-label="Вид локальной медиатеки">
-        <button :class="{'is-active': viewMode === 'playlist'}" type="button" @click="viewMode = 'playlist'"><span aria-hidden="true">☷</span> Плейлист</button>
-        <button :class="{'is-active': viewMode === 'explorer'}" type="button" @click="viewMode = 'explorer'"><span aria-hidden="true">▰</span> Проводник</button>
+        <UiButton unstyled :class="{'is-active': viewMode === 'playlist'}" @click="viewMode = 'playlist'"><SvgIcon name="list-music" /> Плейлист</UiButton>
+        <UiButton unstyled :class="{'is-active': viewMode === 'explorer'}" @click="viewMode = 'explorer'"><SvgIcon name="folder" /> Проводник</UiButton>
       </nav>
 
       <template v-if="viewMode === 'playlist'">

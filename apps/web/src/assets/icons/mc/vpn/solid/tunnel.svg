@@ -1,3 +1,17 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tunnel Solid">
-  <path fill="currentColor" d="M12 5.75a6.8 6.8 0 0 0-6.8 6.8v7.7h4.45v-7.5a2.35 2.35 0 0 1 4.7 0v7.5h4.45v-7.7A6.8 6.8 0 0 0 12 5.75Z"/><path stroke="var(--mc-icon-cutout, #ffffff)" stroke-width="1.55" stroke-linecap="round" d="M12 16.55v1.05"/>
+<!-- @license lucide-static v1.46.0 - ISC -->
+<svg
+  class="lucide lucide-route"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <circle cx="6" cy="19" r="3" />
+  <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+  <circle cx="18" cy="5" r="3" />
 </svg>

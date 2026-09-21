@@ -3,12 +3,15 @@ import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 import {formatPlaybackTime} from "@/utils/music.js";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
+import UiButton from "@/components/ui/UiButton.vue";
+import UiSlider from "@/components/ui/UiSlider.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const player = useMusicPlayerStore();
 const audio = ref(null);
 
 const progress = computed(() => player.duration ? (player.currentTime / player.duration) * 100 : 0);
-const volumeIcon = computed(() => player.isMuted || player.volume === 0 ? "×" : player.volume < 0.5 ? "◖" : "◕");
+const volumeIconName = computed(() => player.isMuted || player.volume === 0 ? "volume-x" : player.volume < 0.5 ? "volume-low" : "volume-high");
 const repeatLabel = computed(() => player.repeatMode === "one" ? "Повтор трека" : player.repeatMode === "all" ? "Повтор очереди" : "Повтор выключен");
 
 async function applyPlaybackState() {
@@ -50,13 +53,13 @@ function loadCurrentTrack() {
   syncMediaSession();
 }
 
-function seek(event) {
+function seek(value) {
   if (!player.duration) return;
-  player.requestSeek((Number(event.target.value) / 100) * player.duration);
+  player.requestSeek((Number(value) / 100) * player.duration);
 }
 
-function changeVolume(event) {
-  player.setVolume(Number(event.target.value));
+function changeVolume(value) {
+  player.setVolume(Number(value));
 }
 
 function playPrevious() {
@@ -120,39 +123,39 @@ watch(() => [player.volume, player.isMuted], () => {
 <template>
   <footer class="memusic-player">
     <div v-if="player.currentTrack" class="memusic-player__track">
-      <button class="memusic-player__artwork-button" type="button" aria-label="Открыть режим плеера" @click="player.openPlayerMode">
+      <UiButton unstyled class="memusic-player__artwork-button" aria-label="Открыть режим плеера" @click="player.openPlayerMode">
         <MusicArtwork :track="player.currentTrack" />
-      </button>
+      </UiButton>
       <div><strong>{{ player.currentTrack.title }}</strong><small>{{ player.currentTrack.artist }}</small></div>
-      <button
+      <UiButton unstyled
         class="memusic-player__like-button"
         :class="{'is-active': player.likedTrackIds.includes(player.currentTrack.id)}"
         type="button"
         :aria-label="player.likedTrackIds.includes(player.currentTrack.id) ? 'Убрать из любимых' : 'Добавить в любимые'"
         @click="player.toggleLike(player.currentTrack.id)"
-      >{{ player.likedTrackIds.includes(player.currentTrack.id) ? '♥' : '♡' }}</button>
+      ><SvgIcon name="heart" /></UiButton>
     </div>
 
     <div class="memusic-player__center">
       <div class="memusic-player__controls">
-        <button :class="{'is-active': player.isShuffle}" type="button" aria-label="Перемешать" @click="player.toggleShuffle">⌘</button>
-        <button type="button" aria-label="Предыдущий трек" @click="playPrevious">◀</button>
-        <button class="memusic-player__play" type="button" :aria-label="player.isPlaying ? 'Пауза' : 'Воспроизвести'" @click="togglePlaybackFromControl">{{ player.isPlaying ? 'Ⅱ' : '▶' }}</button>
-        <button type="button" aria-label="Следующий трек" @click="player.nextTrack()">▶</button>
-        <button :class="{'is-active': player.repeatMode !== 'off'}" type="button" :aria-label="repeatLabel" @click="player.cycleRepeatMode">{{ player.repeatMode === 'one' ? '↻¹' : '↻' }}</button>
+        <UiButton unstyled :class="{'is-active': player.isShuffle}" aria-label="Перемешать" @click="player.toggleShuffle"><SvgIcon name="shuffle" /></UiButton>
+        <UiButton unstyled aria-label="Предыдущий трек" @click="playPrevious"><SvgIcon name="skip-back" /></UiButton>
+        <UiButton unstyled class="memusic-player__play" :aria-label="player.isPlaying ? 'Пауза' : 'Воспроизвести'" @click="togglePlaybackFromControl"><SvgIcon :name="player.isPlaying ? 'pause' : 'play'" /></UiButton>
+        <UiButton unstyled aria-label="Следующий трек" @click="player.nextTrack()"><SvgIcon name="skip-forward" /></UiButton>
+        <UiButton unstyled :class="{'is-active': player.repeatMode !== 'off'}" :aria-label="repeatLabel" @click="player.cycleRepeatMode"><SvgIcon :name="player.repeatMode === 'one' ? 'repeat-one' : 'repeat'" /></UiButton>
       </div>
       <div class="memusic-player__progress">
         <span>{{ formatPlaybackTime(player.currentTime) }}</span>
-        <input aria-label="Позиция трека" type="range" min="0" max="100" step="0.1" :value="progress" @input="seek" />
+        <UiSlider :model-value="progress" :min="0" :max="100" :step="0.1" label="Позиция трека" @update:model-value="seek" />
         <span>{{ formatPlaybackTime(player.duration) }}</span>
       </div>
     </div>
 
     <div class="memusic-player__tools">
-      <button type="button" aria-label="Открыть режим плеера" @click="player.openPlayerMode">⛶</button>
-      <button :class="{'is-active': player.isQueueOpen}" type="button" aria-label="Открыть очередь" @click="player.isQueueOpen = !player.isQueueOpen">≡</button>
-      <button type="button" :aria-label="player.isMuted ? 'Включить звук' : 'Выключить звук'" @click="player.toggleMute">{{ volumeIcon }}</button>
-      <input aria-label="Громкость" type="range" min="0" max="1" step="0.01" :value="player.volume" @input="changeVolume" />
+      <UiButton unstyled aria-label="Открыть режим плеера" @click="player.openPlayerMode"><SvgIcon name="maximize" /></UiButton>
+      <UiButton unstyled :class="{'is-active': player.isQueueOpen}" aria-label="Открыть очередь" @click="player.isQueueOpen = !player.isQueueOpen"><SvgIcon name="list-music" /></UiButton>
+      <UiButton unstyled :aria-label="player.isMuted ? 'Включить звук' : 'Выключить звук'" @click="player.toggleMute"><SvgIcon :name="volumeIconName" /></UiButton>
+      <UiSlider :model-value="player.volume" :min="0" :max="1" :step="0.01" label="Громкость" @update:model-value="changeVolume" />
     </div>
 
     <audio

@@ -1,0 +1,38 @@
+.mcrn-placeholder-page {
+  display: grid;
+  gap: var(--mc-space-6);
+  min-width: 0;
+  padding: var(--mc-space-8) var(--mc-page-gutter);
+}
+
+.mcrn-placeholder-page__header {
+  display: grid;
+  gap: var(--mc-space-2);
+}
+
+.mcrn-placeholder-page__header p {
+  margin: 0;
+  color: var(--mc-accent);
+  font-size: var(--mc-font-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mcrn-placeholder-page__header h1 {
+  margin: 0;
+  color: var(--mc-text);
+  font-size: clamp(2rem, 5vw, 4rem);
+}
+
+.mcrn-placeholder-page__empty {
+  min-height: min(480px, 58vh);
+  border: 1px solid var(--mc-border);
+  border-radius: var(--mc-radius-md);
+  background: var(--mc-surface);
+}
+
+.mcrn-placeholder-page__empty .ui-empty-state__media svg {
+  width: 32px;
+  height: 32px;
+}

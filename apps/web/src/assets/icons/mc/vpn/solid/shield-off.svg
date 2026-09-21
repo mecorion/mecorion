@@ -1,3 +1,17 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Shield Off Solid">
-  <path fill="currentColor" d="m5.04 2.77 15.8 17.78-1.31 1.17-15.8-17.78 1.31-1.17Zm1.82 2.84L12 3l6.25 3.15v5.3c0 1.65-.42 3.23-1.18 4.63L6.86 5.61Zm7.52 13.47c-.72.48-1.52.87-2.38 1.19-3.73-1.38-6.25-5-6.25-9.05V8.14l8.63 10.94Z"/>
+<!-- @license lucide-static v1.46.0 - ISC -->
+<svg
+  class="lucide lucide-shield-off"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="m2 2 20 20" />
+  <path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71" />
+  <path d="M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264" />
 </svg>
