@@ -134,6 +134,8 @@
   .landing-service-card {
     min-height: var(--mcrn-size-176px);
     padding: var(--mcrn-space-22px);
+    color: inherit;
+    text-decoration: none;
   }
   .landing-service-card > span {
     display: grid;

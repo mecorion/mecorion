@@ -2,10 +2,10 @@
 definePageMeta({layout: 'auth', standalone: true});
 
 const services = [
-  {title: "Music", text: "Локальные треки, плейлисты и единый плеер.", icon: "♪"},
-  {title: "Video", text: "Будущий центр видео, фильмов и личной медиатеки.", icon: "▶"},
-  {title: "Books", text: "Книги, заметки и прогресс чтения в одном контуре.", icon: "Aa"},
-  {title: "Cloud", text: "Файлы пользователя и защищённое хранение.", icon: "☁"},
+  {title: "Music", text: "Локальные треки, плейлисты и единый плеер.", icon: "♪", to: "/music"},
+  {title: "Video", text: "Будущий центр видео, фильмов и личной медиатеки.", icon: "▶", to: "/video"},
+  {title: "Books", text: "Книги, заметки и прогресс чтения в одном контуре.", icon: "Aa", to: "/books"},
+  {title: "Cloud", text: "Файлы пользователя и защищённое хранение.", icon: "☁", to: "/drive"},
 ];
 </script>
 
@@ -33,11 +33,11 @@ const services = [
     </section>
 
     <section class="landing-services" aria-label="Сервисы Mecorion">
-      <article v-for="service in services" :key="service.title" class="mc-card mc-card--interactive landing-service-card">
+      <NuxtLink v-for="service in services" :key="service.title" class="mc-card mc-card--interactive landing-service-card" :to="service.to" :aria-label="`Открыть Mecorion ${service.title}`">
         <span>{{ service.icon }}</span>
         <h2>{{ service.title }}</h2>
         <p>{{ service.text }}</p>
-      </article>
+      </NuxtLink>
     </section>
   </main>
 </template>
