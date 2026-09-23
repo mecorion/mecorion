@@ -4,6 +4,7 @@ import {reactive, ref} from "vue";
 import {useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signUp} from "@/auth/session.js";
+import {UiButton, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -61,15 +62,9 @@ async function submit() {
           <p>Создайте профиль, чтобы пользоваться сервисами Mecorion.</p>
         </div>
 
-        <label class="mc-field">
-          <span class="mc-field__label">Имя</span>
-          <input v-model="form.name" class="mc-field__control" type="text" autocomplete="name" placeholder="Иван" />
-        </label>
+        <UiInput v-model="form.name" label="Имя" type="text" autocomplete="name" placeholder="Иван" />
 
-        <label class="mc-field">
-          <span class="mc-field__label">Email</span>
-          <input v-model="form.email" class="mc-field__control" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
-        </label>
+        <UiInput v-model="form.email" label="Email" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
 
         <label class="mc-field">
           <span class="mc-field__label">Пароль</span>
@@ -95,11 +90,14 @@ async function submit() {
 
         <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
 
-        <button class="mc-button mc-button--primary mc-button--lg auth-submit" type="submit" :disabled="isSubmitting">
+        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">
           {{ isSubmitting ? 'Создаем...' : 'Создать аккаунт' }}
-        </button>
+        </UiButton>
 
-        <p class="auth-switch">Уже есть аккаунт? <NuxtLink to="/sign-in">Войти</NuxtLink></p>
+        <div class="auth-secondary-actions">
+          <UiButton to="/sign-up-seed" variant="outline">Регистрация по SeedPhrase</UiButton>
+          <UiButton to="/sign-in" variant="ghost">Войти</UiButton>
+        </div>
       </form>
     </section>
   </main>

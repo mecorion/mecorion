@@ -40,8 +40,8 @@ const RefreshSchema = z.object({
 });
 
 const SeedRegisterSchema = z.object({
-  displayName: z.string().trim().min(1).max(128),
-  username: z.string().trim().min(3).max(32).optional(),
+  displayName: z.string().trim().max(128).regex(/^[A-Za-zА-Яа-яЁё\s-]*$/).optional(),
+  username: z.string().trim().min(3).max(32).regex(/^[A-Za-z0-9_]+$/),
   wordCount: z.union([z.literal(12), z.literal(24)]).default(12),
 });
 
@@ -127,8 +127,8 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     const input = SeedRegisterSchema.parse(request.body);
     const seedPhrase = createRecoverySeed(input.wordCount);
     const account = await createAccount({
-      displayName: input.displayName.trim(),
-      usernameBase: normalizeUsername(input.username ?? input.displayName),
+      displayName: input.displayName?.trim() || input.username,
+      usernameBase: normalizeUsername(input.username),
       seedPhrase,
       emailVerified: true,
       statusCode: "ACTIVE",

@@ -4,6 +4,7 @@ import {reactive, ref} from "vue";
 import {useRoute, useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signIn} from "@/auth/session.js";
+import {UiButton, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -49,10 +50,7 @@ async function submit() {
           <p>Войдите, чтобы открыть dashboard и сервисы Mecorion.</p>
         </div>
 
-        <label class="mc-field">
-          <span class="mc-field__label">Email</span>
-          <input v-model="form.email" class="mc-field__control" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
-        </label>
+        <UiInput v-model="form.email" label="Email" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
 
         <label class="mc-field">
           <span class="mc-field__label">Пароль</span>
@@ -81,18 +79,14 @@ async function submit() {
           <button class="auth-link" type="button">Забыли пароль?</button>
         </div>
 
-        <button class="mc-button mc-button--primary mc-button--lg auth-submit" type="submit" :disabled="isSubmitting">
+        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">
           {{ isSubmitting ? 'Входим...' : 'Войти' }}
-        </button>
+        </UiButton>
 
-        <div class="auth-divider"><span>или продолжить через</span></div>
-        <div class="auth-socials" aria-label="Социальный вход">
-          <button type="button" aria-label="Google">G</button>
-          <button type="button" aria-label="GitHub">⌘</button>
-          <button type="button" aria-label="Yandex">Я</button>
+        <div class="auth-secondary-actions">
+          <UiButton to="/sign-up" variant="outline">Зарегистрироваться</UiButton>
+          <UiButton to="/sign-in-seed" variant="ghost">Войти по SeedPhrase</UiButton>
         </div>
-
-        <p class="auth-switch">Нет аккаунта? <NuxtLink to="/sign-up">Зарегистрироваться</NuxtLink></p>
       </form>
     </section>
 
