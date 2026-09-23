@@ -4,6 +4,7 @@ import {reactive, ref} from "vue";
 import {useRoute, useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signIn} from "@/auth/session.js";
+import {UiButton, UiCheckbox, UiForm, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -42,58 +43,33 @@ async function submit() {
         <strong>Mecorion</strong>
       </NuxtLink>
 
-      <form class="auth-card" @submit.prevent="submit">
+      <UiForm class="auth-card" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось войти" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Вход</p>
           <h1>С возвращением.</h1>
           <p>Войдите, чтобы открыть dashboard и сервисы Mecorion.</p>
         </div>
 
-        <label class="mc-field">
-          <span class="mc-field__label">Email</span>
-          <input v-model="form.email" class="mc-field__control" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
-        </label>
+        <UiInput v-model="form.email" label="Email" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
 
-        <label class="mc-field">
-          <span class="mc-field__label">Пароль</span>
-          <span class="auth-password-field">
-            <input
-              v-model="form.password"
-              class="mc-field__control"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="current-password"
-              placeholder="Введите пароль"
-            />
-            <button type="button" :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="showPassword = !showPassword">
-              {{ showPassword ? '◉' : '◌' }}
-            </button>
-          </span>
-        </label>
-
-        <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
+        <UiInput v-model="form.password" label="Пароль" :type="showPassword ? 'text' : 'password'" autocomplete="current-password" placeholder="Введите пароль">
+          <template #suffix><UiButton size="sm" variant="ghost" :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="showPassword = !showPassword">{{ showPassword ? 'Скрыть' : 'Показать' }}</UiButton></template>
+        </UiInput>
 
         <div class="auth-row">
-          <label class="mc-checkbox">
-            <input v-model="form.remember" type="checkbox" />
-            <span>✓</span>
-            Запомнить меня
-          </label>
-          <button class="auth-link" type="button">Забыли пароль?</button>
+          <UiCheckbox v-model="form.remember">Запомнить меня</UiCheckbox>
+          <UiButton size="sm" variant="ghost">Забыли пароль?</UiButton>
         </div>
 
-        <button class="mc-button mc-button--primary mc-button--lg auth-submit" type="submit" :disabled="isSubmitting">
+        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">
           {{ isSubmitting ? 'Входим...' : 'Войти' }}
-        </button>
+        </UiButton>
 
-        <div class="auth-divider"><span>или продолжить через</span></div>
-        <div class="auth-socials" aria-label="Социальный вход">
-          <button type="button" aria-label="Google">G</button>
-          <button type="button" aria-label="GitHub">⌘</button>
-          <button type="button" aria-label="Yandex">Я</button>
+        <div class="auth-secondary-actions">
+          <UiButton to="/sign-up" variant="outline">Зарегистрироваться</UiButton>
+          <UiButton to="/sign-in-seed" variant="ghost">Войти по SeedPhrase</UiButton>
         </div>
-
-        <p class="auth-switch">Нет аккаунта? <NuxtLink to="/sign-up">Зарегистрироваться</NuxtLink></p>
-      </form>
+      </UiForm>
     </section>
 
     <AuthVisual

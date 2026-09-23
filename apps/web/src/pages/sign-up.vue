@@ -4,6 +4,7 @@ import {reactive, ref} from "vue";
 import {useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signUp} from "@/auth/session.js";
+import {UiButton, UiCheckbox, UiForm, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -54,53 +55,32 @@ async function submit() {
         <strong>Mecorion</strong>
       </NuxtLink>
 
-      <form class="auth-card" @submit.prevent="submit">
+      <UiForm class="auth-card" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось создать аккаунт" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Регистрация</p>
           <h1>Начните с одного аккаунта.</h1>
           <p>Создайте профиль, чтобы пользоваться сервисами Mecorion.</p>
         </div>
 
-        <label class="mc-field">
-          <span class="mc-field__label">Имя</span>
-          <input v-model="form.name" class="mc-field__control" type="text" autocomplete="name" placeholder="Иван" />
-        </label>
+        <UiInput v-model="form.name" label="Имя" type="text" autocomplete="name" placeholder="Иван" />
 
-        <label class="mc-field">
-          <span class="mc-field__label">Email</span>
-          <input v-model="form.email" class="mc-field__control" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
-        </label>
+        <UiInput v-model="form.email" label="Email" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
 
-        <label class="mc-field">
-          <span class="mc-field__label">Пароль</span>
-          <span class="auth-password-field">
-            <input
-              v-model="form.password"
-              class="mc-field__control"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              placeholder="Минимум 8 символов"
-            />
-            <button type="button" :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="showPassword = !showPassword">
-              {{ showPassword ? '◉' : '◌' }}
-            </button>
-          </span>
-        </label>
+        <UiInput v-model="form.password" label="Пароль" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" placeholder="Минимум 8 символов">
+          <template #suffix><UiButton size="sm" variant="ghost" :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="showPassword = !showPassword">{{ showPassword ? 'Скрыть' : 'Показать' }}</UiButton></template>
+        </UiInput>
 
-        <label class="mc-checkbox auth-terms">
-          <input v-model="form.terms" type="checkbox" />
-          <span>✓</span>
-          Я принимаю правила Mecorion
-        </label>
+        <UiCheckbox v-model="form.terms" class="auth-terms">Я принимаю правила Mecorion</UiCheckbox>
 
-        <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
-
-        <button class="mc-button mc-button--primary mc-button--lg auth-submit" type="submit" :disabled="isSubmitting">
+        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">
           {{ isSubmitting ? 'Создаем...' : 'Создать аккаунт' }}
-        </button>
+        </UiButton>
 
-        <p class="auth-switch">Уже есть аккаунт? <NuxtLink to="/sign-in">Войти</NuxtLink></p>
-      </form>
+        <div class="auth-secondary-actions">
+          <UiButton to="/sign-up-seed" variant="outline">Регистрация по SeedPhrase</UiButton>
+          <UiButton to="/sign-in" variant="ghost">Войти</UiButton>
+        </div>
+      </UiForm>
     </section>
   </main>
 </template>

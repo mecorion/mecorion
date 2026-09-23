@@ -24,9 +24,6 @@ const selectedPlaylistId = ref(null);
 const onlineFilters = ref({sort: "title"});
 const libraryFilters = ref({sort: "title"});
 
-const featuredPlaylist = musicPlaylists[0];
-const featuredTracks = getTracksByIds(featuredPlaylist.trackIds);
-
 const filteredTracks = computed(() => {
   const normalized = query.value.trim().toLocaleLowerCase("ru");
   const matchesQuery = !normalized ? musicTracks : musicTracks.filter((track) =>
@@ -43,10 +40,14 @@ const selectedPlaylist = computed(() => musicPlaylists.find((playlist) => playli
 const selectedPlaylistTracks = computed(() => selectedPlaylist.value ? getTracksByIds(selectedPlaylist.value.trackIds) : []);
 const librarySourceTracks = computed(() => selectedPlaylist.value ? selectedPlaylistTracks.value : player.likedTracks);
 const filteredLibraryTracks = computed(() => filterAndSortTracks(librarySourceTracks.value, libraryFilters.value));
-const recentTracks = computed(() => {
-  const history = getTracksByIds(player.recentlyPlayedIds);
-  return history.length ? history : musicTracks;
-});
+const catalogTrackIds = musicTracks.map((track) => track.id);
+const catalogArtists = computed(() => [...new Map(musicTracks.map((track) => [track.artist, {
+  name: track.artist,
+  cover: track.cover,
+  trackId: track.id,
+  available: track.available,
+}])).values()]);
+const catalogAlbums = computed(() => [...new Map(musicTracks.map((track) => [track.album, track])).values()]);
 
 function navigate(section) {
   activeSection.value = section;
@@ -91,57 +92,106 @@ watch(selectedPlaylistId, () => {
     <section class="memusic-workspace" :inert="player.isPlayerModeOpen">
       <main class="memusic-content">
         <template v-if="activeSection === 'home'">
-          <section class="memusic-welcome">
-            <div><p class="memusic-kicker">Добрый вечер</p><h1>Что включим?</h1></div>
-            <span>{{ musicTracks.length }} трека в медиатеке</span>
-          </section>
-
-          <section class="memusic-quick-grid" aria-label="Быстрый выбор">
-            <UiButton unstyled
-              v-for="track in musicTracks"
-              :key="track.id"
-              type="button"
-              :disabled="!track.available"
-              @click="player.playTrack(track.id, musicTracks.map((item) => item.id))"
-            >
-              <MusicArtwork :track="track" />
-              <span><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
-              <i aria-hidden="true"><SvgIcon name="play" /></i>
-            </UiButton>
-          </section>
-
-          <UiCard raw unstyled class="memusic-featured">
-            <img :src="featuredPlaylist.cover" :alt="`Обложка ${featuredPlaylist.title}`" />
-            <div class="memusic-featured__copy">
-              <p class="memusic-kicker">Персональная подборка</p>
-              <h2>{{ featuredPlaylist.title }}</h2>
-              <p>{{ featuredPlaylist.description }}. Обновляется по мере прослушивания.</p>
-              <div>
-                <UiButton unstyled class="memusic-primary-action" @click="player.playCollection(featuredPlaylist.trackIds)"><SvgIcon name="play" /> Слушать</UiButton>
-                <UiButton unstyled class="memusic-icon-action" aria-label="Добавить подборку в библиотеку"><SvgIcon name="plus" /></UiButton>
+          <section class="memusic-collection-heading">
+            <div class="memusic-collection-heading__copy">
+              <p class="memusic-kicker">Ваша коллекция / Mecorion Music</p>
+              <h1>Музыка<br /><em>под ваш ритм.</em></h1>
+              <p>Любимые треки, новые открытия и подборки — всё в одном месте.</p>
+              <div class="memusic-collection-heading__actions">
+                <UiButton variant="primary" @click="navigate('search')"><SvgIcon name="search" /> Исследовать музыку</UiButton>
+                <UiButton variant="outline" @click="navigate('local')"><SvgIcon name="folder" /> Мои файлы</UiButton>
               </div>
             </div>
-            <div class="memusic-featured__list">
-              <UiButton v-for="(track, index) in featuredTracks" :key="track.id" unstyled @click="player.playTrack(track.id, featuredPlaylist.trackIds)">
-                <span>{{ String(index + 1).padStart(2, '0') }}</span><strong>{{ track.title }}</strong><small>{{ track.durationLabel }}</small>
-              </UiButton>
-            </div>
-          </UiCard>
-
-          <section class="memusic-carousel-section">
-            <div class="memusic-section-heading"><h2>Собрано для вас</h2><UiButton unstyled @click="activeSection = 'library'">Смотреть всё</UiButton></div>
-            <div class="memusic-media-grid">
-              <MusicMediaCard v-for="playlist in musicPlaylists" :key="playlist.id" :playlist="playlist" />
+            <div class="memusic-collection-heading__art" aria-hidden="true">
+              <img v-for="playlist in musicPlaylists" :key="playlist.id" :src="playlist.cover" alt="" />
+              <span class="memusic-collection-heading__art-note">MUSIC / MECORION</span>
             </div>
           </section>
 
-          <MusicTrackList :tracks="recentTracks" title="Недавно слушали" />
+          <section class="memusic-library-section" aria-labelledby="liked-title">
+            <div class="memusic-library-section__head">
+              <UiButton unstyled class="memusic-library-title" @click="navigate('library')">
+                <span class="memusic-library-title__cover"><SvgIcon name="heart" /></span>
+                <span><strong id="liked-title">Мне нравится</strong><small>{{ player.likedTrackIds.length }} в избранном</small></span>
+                <SvgIcon name="chevron-right" />
+              </UiButton>
+              <span class="memusic-library-section__eyebrow">Ваша коллекция начинается здесь</span>
+            </div>
+
+            <div class="memusic-collection-subhead"><h3>Откройте для себя</h3><span>Добавляйте треки в избранное</span></div>
+
+            <div class="memusic-collection-tracks">
+              <div
+                v-for="track in musicTracks"
+                :key="track.id"
+                class="memusic-collection-track"
+              >
+                <UiButton unstyled class="memusic-collection-track__main" :disabled="!track.available" :title="track.available ? `Слушать ${track.title}` : 'Аудио пока недоступно'" @click="player.playTrack(track.id, catalogTrackIds)">
+                  <MusicArtwork :track="track" />
+                  <span><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
+                </UiButton>
+                <UiButton
+                  unstyled
+                  class="memusic-collection-track__like"
+                  :class="{'is-active': player.likedTrackIds.includes(track.id)}"
+                  :aria-label="player.likedTrackIds.includes(track.id) ? 'Убрать из любимых' : 'Добавить в любимые'"
+                  @click.stop="player.toggleLike(track.id)"
+                ><SvgIcon name="heart" /></UiButton>
+                <small>{{ track.durationLabel }}</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="memusic-library-section" aria-labelledby="artists-title">
+            <div class="memusic-collection-section-title"><div><p class="memusic-kicker">Знакомьтесь ближе</p><h2 id="artists-title">Исполнители</h2></div><span>{{ catalogArtists.length }} в каталоге</span></div>
+            <div class="memusic-artist-grid">
+              <UiCard v-for="artist in catalogArtists" :key="artist.name" raw unstyled class="memusic-artist-card">
+                <div class="memusic-artist-card__art"><img :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" /></div>
+                <strong>{{ artist.name }}</strong>
+                <small>Исполнитель</small>
+              </UiCard>
+            </div>
+          </section>
+
+          <section class="memusic-library-section" aria-labelledby="albums-title">
+            <div class="memusic-collection-section-title">
+              <div><p class="memusic-kicker">Откройте звучание</p><h2 id="albums-title">Альбомы и релизы</h2></div>
+              <span>{{ catalogAlbums.length }} в каталоге</span>
+            </div>
+            <div class="memusic-album-strip">
+              <UiButton
+                v-for="track in catalogAlbums"
+                :key="track.album"
+                unstyled
+                class="memusic-album-card"
+                :disabled="!track.available"
+                :title="track.available ? `Слушать ${track.album}` : 'Аудио пока недоступно'"
+                @click="player.playTrack(track.id, catalogTrackIds)"
+              >
+                <span class="memusic-album-card__cover"><img :src="track.cover" :alt="`Обложка альбома ${track.album}`" /><span aria-hidden="true"><SvgIcon name="play" /></span></span>
+                <strong>{{ track.album }}</strong>
+                <small>{{ track.artist }}</small>
+              </UiButton>
+            </div>
+          </section>
+
+          <section class="memusic-library-section memusic-playlist-section" aria-labelledby="playlists-title">
+            <div class="memusic-collection-section-title"><div><p class="memusic-kicker">Для любого настроения</p><h2 id="playlists-title">Подборки</h2></div><span>{{ musicPlaylists.length }} плейлиста</span></div>
+            <div class="memusic-playlist-strip">
+              <UiCard v-for="playlist in musicPlaylists" :key="playlist.id" raw unstyled class="memusic-playlist-tile">
+                <img :src="playlist.cover" :alt="`Обложка ${playlist.title}`" />
+                <div><strong>{{ playlist.title }}</strong><small>{{ playlist.description }}</small></div>
+                <UiButton unstyled :aria-label="`Открыть плейлист ${playlist.title}`" @click="openPlaylist(playlist.id)"><SvgIcon name="chevron-right" /></UiButton>
+              </UiCard>
+            </div>
+          </section>
         </template>
 
         <template v-else-if="activeSection === 'search'">
           <section class="memusic-page-heading">
             <p class="memusic-kicker">Поиск</p>
             <h1>{{ query ? `Результаты для «${query}»` : 'Исследуйте музыку' }}</h1>
+            <p>{{ query ? `Найдено треков: ${filteredTracks.length}` : 'Используйте поиск или фильтры, чтобы найти музыку для любого момента.' }}</p>
           </section>
 
           <MusicFilters v-model="onlineFilters" :tracks="musicTracks" context="online" />

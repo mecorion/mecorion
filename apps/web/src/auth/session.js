@@ -57,10 +57,34 @@ async function requestAuth(path, options = {}) {
 
 function persistAuthResponse(data) {
   return writeAuthSession({
-    token: data.token,
+    token: data.tokens?.accessToken ?? data.token,
+    refreshToken: data.tokens?.refreshToken,
     user: data.user,
     createdAt: new Date().toISOString(),
   });
+}
+
+export async function signInWithSeed(words) {
+  const seedPhrase = words.map((word) => word.trim().toLowerCase()).join(" ");
+  const data = await requestAuth("/api/v1/auth/seed/sign-in", {
+    method: "POST",
+    body: JSON.stringify({seedPhrase}),
+  });
+
+  return persistAuthResponse(data);
+}
+
+export async function signUpWithSeed({displayName, username}) {
+  const data = await requestAuth("/api/v1/auth/seed/register", {
+    method: "POST",
+    body: JSON.stringify({displayName, username, wordCount: 12}),
+  });
+
+  return data;
+}
+
+export function completeSeedSignUp(data) {
+  return persistAuthResponse(data);
 }
 
 export async function signIn({email, password}) {

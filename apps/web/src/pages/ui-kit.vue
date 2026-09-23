@@ -4,7 +4,7 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
 import ComponentDocumentation from "@/components/ui-kit/ComponentDocumentation.vue";
 import {componentDocumentation} from "@/ui-kit/componentDocumentation.js";
-import {UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {toast, UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const activeCategory = ref("buttons");
@@ -82,7 +82,7 @@ const categories = [
   {value: "slider", label: "Slider", count: 6},
   {value: "progress", label: "Progress", count: 7},
   {value: "spinner", label: "Spinner", count: 13},
-  {value: "cards", label: "Card", count: 8},
+  {value: "cards", label: "Card", count: 8}, {value: "toast", label: "Toast", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
   {value: "icons", label: "Icon", count: 21}, {value: "typography", label: "Typography", count: 6},
 ];
@@ -98,6 +98,18 @@ const dropdownCheckboxes = [{type: "label", label: "Отображение"}, {i
 const dropdownRadio = [{type: "label", label: "Положение панели"}, {id: "radio-top", type: "radio", group: "panel", label: "Сверху", checked: false}, {id: "radio-bottom", type: "radio", group: "panel", label: "Снизу", checked: true}, {id: "radio-right", type: "radio", group: "panel", label: "Справа", checked: false}];
 const dropdownDestructive = [{id: "edit", label: "Редактировать", icon: "settings"}, {id: "share", label: "Поделиться", icon: "users"}, {type: "separator"}, {id: "delete", label: "Удалить", icon: "exit", variant: "danger"}];
 const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "open", label: "Открыть", icon: "grid", shortcut: "↵"}, {id: "favorite", type: "checkbox", label: "В избранном", icon: "star", checked: true}, {type: "submenu", label: "Переместить в сервис", icon: "boxes", items: [{id: "music-service", label: "Music", icon: "music"}, {id: "book-service", label: "Books", icon: "book"}, {id: "cloud-service", label: "Cloud", icon: "cloud"}]}, {type: "separator"}, {id: "complex-delete", label: "Удалить проект", icon: "exit", variant: "danger"}];
+
+function showToast(type = "default") {
+  toast.add({type, title: type === "default" ? "Уведомление" : `Состояние: ${type}`, description: "Короткое сообщение о результате действия."});
+}
+
+function showActionToast() {
+  toast.add({title: "Проект удалён", description: "Действие можно отменить в течение пяти секунд.", action: {label: "Отменить", onClick: () => toast.add({type: "success", title: "Проект восстановлен"})}});
+}
+
+function showPromiseToast() {
+  toast.promise(new Promise((resolve) => setTimeout(() => resolve("Cloud"), 1400)), {loading: "Сохраняем изменения...", success: (service) => `${service}: изменения сохранены`, error: "Не удалось сохранить изменения"});
+}
 </script>
 
 <template>
@@ -938,6 +950,20 @@ const dropdownComplex = [{type: "label", label: "Проект Mecorion"}, {id: "
             <template #header><h3 class="mc-title-3">Действия</h3></template>
             <UiAlert title="Действие справа">Для аккаунта доступно обновление.<template #action><UiButton size="sm">Обновить</UiButton></template></UiAlert>
             <UiAlert action-position="bottom" title="Действие снизу">Сессия скоро завершится.<template #action><UiButton size="sm">Продолжить</UiButton></template></UiAlert>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'toast'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Состояния</h3></template>
+            <div class="mc-row"><UiButton @click="showToast()">Default</UiButton><UiButton variant="success" @click="showToast('success')">Success</UiButton><UiButton @click="showToast('info')">Info</UiButton><UiButton variant="warning" @click="showToast('warning')">Warning</UiButton><UiButton variant="danger" @click="showToast('error')">Error</UiButton><UiButton variant="outline" @click="showToast('loading')">Loading</UiButton></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Действие и Promise</h3></template>
+            <div class="mc-row"><UiButton @click="showActionToast">Toast с действием</UiButton><UiButton variant="outline" @click="showPromiseToast">Promise toast</UiButton></div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Поведение</h3></template>
+            <p class="mc-text-sm">До пяти уведомлений в стеке, автоматическое закрытие, ручное закрытие и свайп вправо. На узком экране Toast занимает доступную ширину.</p>
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'badges'" class="uikit-demo-grid">

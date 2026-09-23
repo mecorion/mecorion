@@ -32,3 +32,5 @@ export {default as UiTabs} from "./UiTabs.vue";
 export {default as UiTextarea} from "./UiTextarea.vue";
 export {default as UiToggle} from "./UiToggle.vue";
 export {default as UiTooltip} from "./UiTooltip.vue";
+export {default as UiToaster} from "./UiToaster.vue";
+export {toast, useToast} from "./toast.js";
