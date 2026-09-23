@@ -8,9 +8,10 @@ import {toast, toastState} from "./toast.js";
 const startX = ref(0);
 const offsets = ref({});
 
-const iconNames = {success: "badge-check", info: "bell", warning: "shield", error: "x"};
+const iconNames = {success: "badge-check", info: "bell", warning: "circle-alert", error: "x"};
 
 function pointerDown(event, id) {
+  if (event.target.closest("button, a")) return;
   startX.value = event.clientX;
   event.currentTarget.setPointerCapture?.(event.pointerId);
   offsets.value[id] = 0;
