@@ -4,7 +4,7 @@ import {reactive, ref} from "vue";
 import {useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signUp} from "@/auth/session.js";
-import {UiButton, UiInput} from "@/components/ui/index.js";
+import {UiButton, UiCheckbox, UiForm, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -55,7 +55,7 @@ async function submit() {
         <strong>Mecorion</strong>
       </NuxtLink>
 
-      <form class="auth-card" @submit.prevent="submit">
+      <UiForm class="auth-card" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось создать аккаунт" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Регистрация</p>
           <h1>Начните с одного аккаунта.</h1>
@@ -66,29 +66,11 @@ async function submit() {
 
         <UiInput v-model="form.email" label="Email" type="email" autocomplete="email" placeholder="hello@mecorion.com" />
 
-        <label class="mc-field">
-          <span class="mc-field__label">Пароль</span>
-          <span class="auth-password-field">
-            <input
-              v-model="form.password"
-              class="mc-field__control"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              placeholder="Минимум 8 символов"
-            />
-            <button type="button" :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="showPassword = !showPassword">
-              {{ showPassword ? '◉' : '◌' }}
-            </button>
-          </span>
-        </label>
+        <UiInput v-model="form.password" label="Пароль" :type="showPassword ? 'text' : 'password'" autocomplete="new-password" placeholder="Минимум 8 символов">
+          <template #suffix><UiButton size="sm" variant="ghost" :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'" @click="showPassword = !showPassword">{{ showPassword ? 'Скрыть' : 'Показать' }}</UiButton></template>
+        </UiInput>
 
-        <label class="mc-checkbox auth-terms">
-          <input v-model="form.terms" type="checkbox" />
-          <span>✓</span>
-          Я принимаю правила Mecorion
-        </label>
-
-        <p v-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
+        <UiCheckbox v-model="form.terms" class="auth-terms">Я принимаю правила Mecorion</UiCheckbox>
 
         <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">
           {{ isSubmitting ? 'Создаем...' : 'Создать аккаунт' }}
@@ -98,7 +80,7 @@ async function submit() {
           <UiButton to="/sign-up-seed" variant="outline">Регистрация по SeedPhrase</UiButton>
           <UiButton to="/sign-in" variant="ghost">Войти</UiButton>
         </div>
-      </form>
+      </UiForm>
     </section>
   </main>
 </template>

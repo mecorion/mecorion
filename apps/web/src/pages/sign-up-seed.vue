@@ -5,7 +5,7 @@ import {useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import SecureSeedPhrase from "@/components/auth/SecureSeedPhrase.vue";
 import {completeSeedSignUp, signUpWithSeed} from "@/auth/session.js";
-import {UiButton, UiInput} from "@/components/ui/index.js";
+import {UiButton, UiCheckbox, UiForm, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const form = reactive({displayName: "", username: ""});
@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
     <section class="auth-form-side">
       <NuxtLink class="auth-logo" to="/" aria-label="Mecorion"><span class="workspace-brand__mark">M</span><strong>Mecorion</strong></NuxtLink>
 
-      <form v-if="!seedWords.length" class="auth-card" @submit.prevent="submit">
+      <UiForm v-if="!seedWords.length" class="auth-card" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось зарегистрироваться" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Регистрация</p>
           <h1>Создать аккаунт по SeedPhrase</h1>
@@ -60,13 +60,12 @@ onBeforeUnmount(() => {
         </div>
         <UiInput v-model="form.displayName" label="Ваше имя (необязательно)" autocomplete="name" placeholder="Иван" :error="nameError" />
         <UiInput v-model="form.username" label="Ваш логин" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="user_name" :error="usernameError" hint="От 3 до 32 символов" />
-        <p v-if="errorMessage" class="auth-error" role="alert">{{ errorMessage }}</p>
         <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting" :disabled="!canSubmit">Зарегистрироваться</UiButton>
         <div class="auth-secondary-actions">
           <UiButton to="/sign-up" variant="outline">Регистрация по почте</UiButton>
           <UiButton to="/sign-in" variant="ghost">Войти по почте</UiButton>
         </div>
-      </form>
+      </UiForm>
 
       <div v-else class="auth-card auth-card--seed-result">
         <div class="auth-card__heading">
@@ -75,9 +74,7 @@ onBeforeUnmount(() => {
           <p>Она показывается только сейчас. Mecorion не сможет восстановить её за вас.</p>
         </div>
         <SecureSeedPhrase :words="seedWords" />
-        <label class="mc-checkbox auth-seed-confirm">
-          <input v-model="confirmed" type="checkbox" /><span>✓</span>Я записал SeedPhrase и понимаю, что без неё потеряю доступ
-        </label>
+        <UiCheckbox v-model="confirmed" class="auth-seed-confirm">Я записал SeedPhrase и понимаю, что без неё потеряю доступ</UiCheckbox>
         <UiButton variant="primary" size="lg" :disabled="!confirmed" @click="finish">Продолжить</UiButton>
       </div>
     </section>

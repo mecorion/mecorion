@@ -4,7 +4,7 @@ import {computed, reactive, ref} from "vue";
 import {useRoute, useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import {signInWithSeed} from "@/auth/session.js";
-import {UiButton, UiInput} from "@/components/ui/index.js";
+import {UiButton, UiForm, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -36,7 +36,7 @@ async function submit() {
   <main class="auth-page auth-page--signin">
     <section class="auth-form-side">
       <NuxtLink class="auth-logo" to="/" aria-label="Mecorion"><span class="workspace-brand__mark">M</span><strong>Mecorion</strong></NuxtLink>
-      <form class="auth-card" autocomplete="off" @submit.prevent="submit">
+      <UiForm class="auth-card" autocomplete="off" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось войти" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Без пароля</p>
           <h1>Вход по SeedPhrase</h1>
@@ -48,13 +48,12 @@ async function submit() {
             <UiInput v-model="words[index]" :label="`Слово ${String(index + 1).padStart(2, '0')}`" :aria-label="`Слово ${index + 1}`" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="seed word" />
           </div>
         </div>
-        <p v-if="errorMessage" class="auth-error" role="alert">{{ errorMessage }}</p>
         <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting" :disabled="!isComplete">Войти</UiButton>
         <div class="auth-secondary-actions">
           <UiButton to="/sign-in" variant="outline">Войти по почте</UiButton>
           <UiButton to="/sign-up" variant="ghost">Зарегистрироваться</UiButton>
         </div>
-      </form>
+      </UiForm>
     </section>
     <AuthVisual mode="signin" title="Ваш ключ — только у вас" description="SeedPhrase открывает аккаунт без почты и пароля. Никому не сообщайте её слова." />
   </main>
