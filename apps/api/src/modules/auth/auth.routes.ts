@@ -40,7 +40,7 @@ const RefreshSchema = z.object({
 });
 
 const SeedRegisterSchema = z.object({
-  displayName: z.string().trim().max(128).regex(/^[A-Za-zА-Яа-яЁё\s-]*$/).optional(),
+  displayName: z.string().trim().max(128).regex(/^[A-Za-zА-Яа-яЁё]*$/).optional(),
   username: z.string().trim().min(3).max(32).regex(/^[A-Za-z0-9_]+$/),
   wordCount: z.union([z.literal(12), z.literal(24)]).default(12),
 });

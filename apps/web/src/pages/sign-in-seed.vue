@@ -11,12 +11,20 @@ const route = useRoute();
 const words = reactive(["", "", "", ""]);
 const isSubmitting = ref(false);
 const errorMessage = ref("");
-const isComplete = computed(() => words.every((word) => word.trim().length > 0));
+const submitted = ref(false);
+const touched = reactive([false, false, false, false]);
+const wordErrors = computed(() => words.map((word) => {
+  const normalized = word.trim();
+  if (!normalized) return "Введите слово";
+  if (!/^[A-Za-z]+$/.test(normalized)) return "Только латинские буквы";
+  return "";
+}));
+const isComplete = computed(() => wordErrors.value.every((error) => !error));
 
 async function submit() {
   errorMessage.value = "";
+  submitted.value = true;
   if (!isComplete.value) {
-    errorMessage.value = "Введите все четыре слова SeedPhrase";
     return;
   }
   isSubmitting.value = true;
@@ -36,7 +44,7 @@ async function submit() {
   <main class="auth-page auth-page--signin">
     <section class="auth-form-side">
       <NuxtLink class="auth-logo" to="/" aria-label="Mecorion"><span class="workspace-brand__mark">M</span><strong>Mecorion</strong></NuxtLink>
-      <UiForm class="auth-card" autocomplete="off" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось войти" @submit="submit">
+      <UiForm class="auth-card" autocomplete="off" novalidate :loading="isSubmitting" :error="errorMessage" error-title="Не удалось войти" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Без пароля</p>
           <h1>Вход по SeedPhrase</h1>
@@ -45,10 +53,10 @@ async function submit() {
         <div class="seed-entry-grid">
           <div v-for="(_, index) in words" :key="index" class="seed-entry">
             <span aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-            <UiInput v-model="words[index]" :label="`Слово ${String(index + 1).padStart(2, '0')}`" :aria-label="`Слово ${index + 1}`" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="seed word" />
+            <UiInput v-model="words[index]" :label="`Слово ${String(index + 1).padStart(2, '0')}`" :aria-label="`Слово ${index + 1}`" autocomplete="off" autocapitalize="none" spellcheck="false" required pattern="[A-Za-z]+" placeholder="seed word" :error="submitted || touched[index] ? wordErrors[index] : ''" @blur="touched[index] = true" />
           </div>
         </div>
-        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting" :disabled="!isComplete">Войти</UiButton>
+        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">Войти</UiButton>
         <div class="auth-secondary-actions">
           <UiButton to="/sign-in" variant="outline">Войти по почте</UiButton>
           <UiButton to="/sign-up" variant="ghost">Зарегистрироваться</UiButton>
