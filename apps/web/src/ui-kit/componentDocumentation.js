@@ -149,6 +149,12 @@ export const componentDocumentation = {
     types: ["Варианты: default, success, warning и danger.", "Поддерживает отображение с иконкой и без неё.", "Действие размещается справа или под описанием."],
     usage: '<UiAlert variant="success" title="Готово">Изменения сохранены.</UiAlert>',
   },
+  toast: {
+    title: "Toast",
+    description: "Временно сообщает о результате фонового или пользовательского действия, не блокируя интерфейс.",
+    types: ["Типы: default, success, info, warning, error и loading.", "Поддерживает описание, действие, ручное закрытие и очередь до пяти сообщений.", "toast.promise обновляет одно уведомление при выполнении асинхронной операции."],
+    usage: 'toast.add({type: "success", title: "Готово", description: "Изменения сохранены."})',
+  },
   badges: {
     title: "Badge",
     description: "Компактно обозначает статус, категорию, количество или короткую метку.",
