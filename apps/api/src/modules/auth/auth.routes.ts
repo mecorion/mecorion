@@ -1,6 +1,7 @@
 import type {FastifyInstance} from "fastify";
 import {z} from "zod";
 import {config} from "../../core/config.js";
+import {ApiError} from "../../core/http/api-error.js";
 import {requireAuth} from "../../core/http/auth-context.js";
 import {sendLoginCode} from "../mail/mail.service.js";
 import {
@@ -12,6 +13,7 @@ import {
   confirmEmailChallenge,
   createAccount,
   createEmailChallenge,
+  findAccountByEmail,
   getOrCreateEmailAccount,
   logoutSession,
   normalizeEmail,
@@ -61,6 +63,33 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       email,
       ...(input.displayName ? {displayName: input.displayName.trim()} : {}),
     });
+    const code = createEmailCode();
+    const challengeId = await createEmailChallenge({
+      accountId: account.accountId,
+      identityId: account.identityId,
+      code,
+    });
+    await sendLoginCode(email, code);
+
+    return {
+      ok: true,
+      challengeId,
+      expiresIn: config.AUTH_CODE_TTL_SECONDS,
+      ...(config.MAIL_DEV_MODE ? {devCode: code} : {}),
+    };
+  });
+
+  app.post("/api/v1/auth/email/sign-in/start", async (request) => {
+    const input = EmailStartSchema.pick({email: true}).parse(request.body);
+    const email = normalizeEmail(input.email);
+    const account = await findAccountByEmail(email);
+
+    if (!account || !account.isVerified || !account.isLoginAllowed) {
+      // This endpoint is intentionally sign-in only: unlike email/start it
+      // never creates an account from an unknown address.
+      throw new ApiError(403, "ACCOUNT_NOT_AVAILABLE", "Аккаунт не найден или вход для него недоступен");
+    }
+
     const code = createEmailCode();
     const challengeId = await createEmailChallenge({
       accountId: account.accountId,
@@ -127,7 +156,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     const input = SeedRegisterSchema.parse(request.body);
     const seedPhrase = createRecoverySeed(input.wordCount);
     const account = await createAccount({
-      displayName: input.displayName?.trim() || input.username,
+      displayName: input.displayName?.trim() || 'New user',
       usernameBase: normalizeUsername(input.username),
       seedPhrase,
       emailVerified: true,
