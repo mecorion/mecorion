@@ -39,6 +39,25 @@ async function requireAdminOrBootstrap(request: FastifyRequest) {
 }
 
 export async function registerAdminAccountRoutes(app: FastifyInstance) {
+  app.get("/api/v1/admin/access", async (request) => {
+    const context = await requireAdminOrBootstrap(request);
+    if (!context) {
+      throw new ApiError(401, "ADMIN_SESSION_REQUIRED", "Для панели администратора нужна пользовательская сессия");
+    }
+
+    return {
+      allowed: true,
+      user: {
+        id: context.accountPublicId,
+        username: context.username,
+        displayName: context.displayName,
+        email: context.email,
+        roles: context.roles,
+        permissions: context.permissions,
+      },
+    };
+  });
+
   app.get("/api/v1/admin/accounts", async (request) => {
     await requirePermission(request, "platform.admin");
     const result = await query(`
