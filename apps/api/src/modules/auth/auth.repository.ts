@@ -6,7 +6,15 @@ import {ApiError} from "../../core/http/api-error.js";
 import {config} from "../../core/config.js";
 import type {AccessTokenPayload} from "./auth.tokens.js";
 import {createAccessToken} from "./auth.tokens.js";
-import {createOpaqueToken, hashSecret, sha256Buffer, verifySecret} from "./auth.crypto.js";
+import {
+  createOpaqueToken,
+  createSeedChallengePositions,
+  createSeedWordVerifiers,
+  hashSecret,
+  sha256Buffer,
+  verifySecret,
+  verifySeedWord,
+} from "./auth.crypto.js";
 
 export interface PublicAccount {
   id: string;
@@ -23,6 +31,18 @@ export interface AuthTokens {
   refreshToken: string;
   tokenType: "Bearer";
   expiresIn: number;
+}
+
+interface SeedCredentialParameters {
+  wordlist?: string;
+  wordCount?: number;
+  wordVerifiers?: string[];
+  environment?: string;
+}
+
+function seedCredentialParameters(seedPhrase: string): SeedCredentialParameters {
+  const wordVerifiers = createSeedWordVerifiers(seedPhrase, config.AUTH_SEED_PEPPER);
+  return {wordlist: "english", wordCount: wordVerifiers.length, wordVerifiers};
 }
 
 export function normalizeEmail(email: string) {
@@ -187,8 +207,8 @@ export async function createAccount(input: {
         INSERT INTO auth."tCredential" (
           "accountId", "credentialTypeId", "credentialIdentifier", "secretHash", "algorithm", "algorithmParameters"
         )
-        VALUES ($1, $2, 'bip39', $3, 'SHA256', '{"wordlist":"english"}'::JSONB)
-      `, [account.id, credentialTypeId, hashSecret(input.seedPhrase)]);
+        VALUES ($1, $2, 'bip39', $3, 'SHA256', $4::JSONB)
+      `, [account.id, credentialTypeId, hashSecret(input.seedPhrase), JSON.stringify(seedCredentialParameters(input.seedPhrase))]);
     }
 
     await grantRole(client, {accountId: account.id, roleCode: "BASE", assignByAccountId: input.actorAccountId ?? null});
@@ -583,6 +603,249 @@ export async function signInWithSeed(seedPhrase: string) {
   });
 }
 
+async function findSeedCredentialByLogin(client: DatabaseClient, login: string) {
+  const result = await client.query<{
+    accountId: string;
+    identityId: string | null;
+    parameters: SeedCredentialParameters;
+  }>(`
+    SELECT
+      account."id" AS "accountId",
+      primaryIdentity."id" AS "identityId",
+      credential."algorithmParameters" AS "parameters"
+    FROM account."tAccount" account
+    JOIN account."tAccountStatus" accountStatus ON accountStatus."id" = account."accountStatusId"
+    JOIN account."tProfile" profile ON profile."accountId" = account."id"
+    JOIN auth."tCredential" credential ON credential."accountId" = account."id"
+    JOIN auth."tCredentialType" credentialType ON credentialType."id" = credential."credentialTypeId"
+    LEFT JOIN auth."tIdentity" primaryIdentity
+      ON primaryIdentity."accountId" = account."id"
+     AND primaryIdentity."isPrimary" = TRUE
+     AND primaryIdentity."revokeDtm" IS NULL
+    WHERE credentialType."code" = 'RECOVERY_SEED'
+      AND credential."revokeDtm" IS NULL
+      AND (credential."expireDtm" IS NULL OR credential."expireDtm" > CURRENT_TIMESTAMP)
+      AND accountStatus."isLoginAllowed" = TRUE
+      AND (
+        LOWER(profile."username"::TEXT) = $1
+        OR EXISTS (
+          SELECT 1
+          FROM auth."tIdentity" loginIdentity
+          WHERE loginIdentity."accountId" = account."id"
+            AND loginIdentity."normalizedValue" = $1
+            AND loginIdentity."revokeDtm" IS NULL
+        )
+      )
+    LIMIT 1
+  `, [login]);
+  return result.rows[0] ?? null;
+}
+
+export async function createSeedWordChallenge(login: string) {
+  return withTransaction(async (client) => {
+    const credential = await findSeedCredentialByLogin(client, login);
+    const verifiers = credential?.parameters?.wordVerifiers;
+    const wordCount = credential?.parameters?.wordCount ?? verifiers?.length ?? 0;
+    if (!credential || !Array.isArray(verifiers) || verifiers.length !== wordCount || wordCount < 4) {
+      throw new ApiError(
+        401,
+        "SEED_WORD_AUTH_UNAVAILABLE",
+        "Аккаунт не найден или вход по четырём словам ещё не настроен",
+      );
+    }
+
+    const challengeTypeId = await lookupId(client, 'auth."tChallengeType"', "RECOVERY_SEED");
+    await client.query(`
+      UPDATE auth."tChallenge"
+      SET "consumeDtm" = CURRENT_TIMESTAMP
+      WHERE "accountId" = $1
+        AND "challengeTypeId" = $2
+        AND "consumeDtm" IS NULL
+    `, [credential.accountId, challengeTypeId]);
+
+    const challengeToken = createOpaqueToken();
+    const positions = createSeedChallengePositions(challengeToken, wordCount);
+    const expireAt = new Date(Date.now() + config.AUTH_CODE_TTL_SECONDS * 1000);
+    const challenge = await client.query<{publicId: string}>(`
+      INSERT INTO auth."tChallenge" (
+        "accountId", "identityId", "challengeTypeId", "secretHash", "maxAttemptCount", "expireDtm"
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING "publicId"::TEXT AS "publicId"
+    `, [
+      credential.accountId,
+      credential.identityId,
+      challengeTypeId,
+      hashSecret(challengeToken),
+      config.AUTH_CODE_MAX_ATTEMPTS,
+      expireAt,
+    ]);
+
+    return {
+      challengeId: challenge.rows[0]?.publicId,
+      challengeToken,
+      positions,
+      expiresIn: config.AUTH_CODE_TTL_SECONDS,
+    };
+  });
+}
+
+export async function createSeedRegistrationChallenge(accountId: string) {
+  return withTransaction(async (client) => {
+    const credentialResult = await client.query<{
+      identityId: string | null;
+      parameters: SeedCredentialParameters;
+    }>(`
+      SELECT primaryIdentity."id" AS "identityId", credential."algorithmParameters" AS "parameters"
+      FROM auth."tCredential" credential
+      JOIN auth."tCredentialType" credentialType ON credentialType."id" = credential."credentialTypeId"
+      LEFT JOIN auth."tIdentity" primaryIdentity
+        ON primaryIdentity."accountId" = credential."accountId"
+       AND primaryIdentity."isPrimary" = TRUE
+       AND primaryIdentity."revokeDtm" IS NULL
+      WHERE credential."accountId" = $1
+        AND credentialType."code" = 'RECOVERY_SEED'
+        AND credential."revokeDtm" IS NULL
+      LIMIT 1
+    `, [accountId]);
+    const credential = credentialResult.rows[0];
+    const wordCount = credential?.parameters?.wordCount ?? credential?.parameters?.wordVerifiers?.length ?? 0;
+    if (!credential || wordCount < 4) throw new Error("Seed credential не подготовлен");
+
+    const challengeTypeId = await lookupId(client, 'auth."tChallengeType"', "RECOVERY_SEED");
+    const challengeToken = createOpaqueToken();
+    const positions = createSeedChallengePositions(challengeToken, wordCount);
+    const challenge = await client.query<{publicId: string}>(`
+      INSERT INTO auth."tChallenge" (
+        "accountId", "identityId", "challengeTypeId", "secretHash", "maxAttemptCount", "expireDtm"
+      ) VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING "publicId"::TEXT AS "publicId"
+    `, [
+      accountId,
+      credential.identityId,
+      challengeTypeId,
+      hashSecret(challengeToken),
+      config.AUTH_CODE_MAX_ATTEMPTS,
+      new Date(Date.now() + config.AUTH_CODE_TTL_SECONDS * 1000),
+    ]);
+    return {
+      challengeId: challenge.rows[0]?.publicId,
+      challengeToken,
+      positions,
+      expiresIn: config.AUTH_CODE_TTL_SECONDS,
+    };
+  });
+}
+
+export async function confirmSeedWordChallenge(input: {
+  login: string;
+  challengeId: string;
+  challengeToken: string;
+  words: string[];
+  activatePending?: boolean;
+}) {
+  const outcome = await withTransaction(async (client) => {
+    const result = await client.query<{
+      id: string;
+      accountId: string;
+      secretHash: Buffer;
+      parameters: SeedCredentialParameters;
+      accountStatus: string;
+      isLoginAllowed: boolean;
+    }>(`
+      SELECT
+        challenge."id",
+        challenge."accountId" AS "accountId",
+        challenge."secretHash",
+        credential."algorithmParameters" AS "parameters",
+        accountStatus."code"::TEXT AS "accountStatus",
+        accountStatus."isLoginAllowed" AS "isLoginAllowed"
+      FROM auth."tChallenge" challenge
+      JOIN auth."tChallengeType" challengeType ON challengeType."id" = challenge."challengeTypeId"
+      JOIN account."tAccount" account ON account."id" = challenge."accountId"
+      JOIN account."tAccountStatus" accountStatus ON accountStatus."id" = account."accountStatusId"
+      JOIN account."tProfile" profile ON profile."accountId" = challenge."accountId"
+      JOIN auth."tCredential" credential ON credential."accountId" = challenge."accountId"
+      JOIN auth."tCredentialType" credentialType ON credentialType."id" = credential."credentialTypeId"
+      WHERE challenge."publicId" = $1
+        AND challengeType."code" = 'RECOVERY_SEED'
+        AND credentialType."code" = 'RECOVERY_SEED'
+        AND credential."revokeDtm" IS NULL
+        AND challenge."consumeDtm" IS NULL
+        AND challenge."expireDtm" > CURRENT_TIMESTAMP
+        AND challenge."attemptCount" < challenge."maxAttemptCount"
+        AND (
+          LOWER(profile."username"::TEXT) = $2
+          OR EXISTS (
+            SELECT 1
+            FROM auth."tIdentity" loginIdentity
+            WHERE loginIdentity."accountId" = challenge."accountId"
+              AND loginIdentity."normalizedValue" = $2
+              AND loginIdentity."revokeDtm" IS NULL
+          )
+        )
+      LIMIT 1
+      FOR UPDATE OF challenge
+    `, [input.challengeId, input.login]);
+    const challenge = result.rows[0];
+    const verifiers = challenge?.parameters?.wordVerifiers;
+    const wordCount = challenge?.parameters?.wordCount ?? verifiers?.length ?? 0;
+    const tokenIsValid = challenge ? verifySecret(input.challengeToken, challenge.secretHash) : false;
+    const positions = tokenIsValid ? createSeedChallengePositions(input.challengeToken, wordCount) : [];
+    const answersAreValid = Boolean(
+      challenge
+      && tokenIsValid
+      // Registration may confirm only a pending account. A normal sign-in may
+      // confirm only a status explicitly allowed to log in by the database.
+      && (input.activatePending ? challenge.accountStatus === "PENDING" : challenge.isLoginAllowed)
+      && Array.isArray(verifiers)
+      && input.words.length === positions.length
+      && positions.every((position, index) => verifySeedWord(
+        input.words[index] ?? "",
+        verifiers[position - 1] ?? "",
+        config.AUTH_SEED_PEPPER,
+      )),
+    );
+
+    if (!challenge || !answersAreValid) {
+      if (challenge) {
+        await client.query(`
+          UPDATE auth."tChallenge"
+          SET "attemptCount" = LEAST("attemptCount" + 1, "maxAttemptCount")
+          WHERE "id" = $1
+        `, [challenge.id]);
+      }
+      return {ok: false as const};
+    }
+
+    await client.query(`
+      UPDATE auth."tChallenge"
+      SET "consumeDtm" = CURRENT_TIMESTAMP
+      WHERE "id" = $1
+    `, [challenge.id]);
+    await client.query(`
+      UPDATE auth."tCredential"
+      SET "lastUseDtm" = CURRENT_TIMESTAMP
+      WHERE "accountId" = $1
+        AND "credentialTypeId" = (SELECT "id" FROM auth."tCredentialType" WHERE "code" = 'RECOVERY_SEED')
+        AND "revokeDtm" IS NULL
+    `, [challenge.accountId]);
+    if (input.activatePending) {
+      await client.query(`
+        UPDATE account."tAccount"
+        SET "accountStatusId" = (SELECT "id" FROM account."tAccountStatus" WHERE "code" = 'ACTIVE'),
+            "statusChangeDtm" = CURRENT_TIMESTAMP
+        WHERE "id" = $1
+          AND "accountStatusId" = (SELECT "id" FROM account."tAccountStatus" WHERE "code" = 'PENDING')
+      `, [challenge.accountId]);
+    }
+    return {ok: true as const, result: await issueSessionTokens(client, challenge.accountId)};
+  });
+
+  if (!outcome.ok) throw new ApiError(401, "INVALID_SEED_WORDS", "Слова seed phrase указаны неверно или запрос истёк");
+  return outcome.result;
+}
+
 export async function replaceRecoverySeed(accountId: string, seedPhrase: string) {
   return withTransaction(async (client) => {
     const credentialTypeId = await lookupId(client, 'auth."tCredentialType"', "RECOVERY_SEED");
@@ -597,8 +860,8 @@ export async function replaceRecoverySeed(accountId: string, seedPhrase: string)
       INSERT INTO auth."tCredential" (
         "accountId", "credentialTypeId", "credentialIdentifier", "secretHash", "algorithm", "algorithmParameters"
       )
-      VALUES ($1, $2, 'bip39', $3, 'SHA256', '{"wordlist":"english"}'::JSONB)
-    `, [accountId, credentialTypeId, hashSecret(seedPhrase)]);
+      VALUES ($1, $2, 'bip39', $3, 'SHA256', $4::JSONB)
+    `, [accountId, credentialTypeId, hashSecret(seedPhrase), JSON.stringify(seedCredentialParameters(seedPhrase))]);
   });
 }
 

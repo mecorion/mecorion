@@ -3,6 +3,7 @@ import {query} from "../database.js";
 import {ApiError} from "./api-error.js";
 import {validateAccessTokenSession} from "../../modules/auth/auth.repository.js";
 import {verifyAccessToken} from "../../modules/auth/auth.tokens.js";
+import {readAccessCookie} from "../../modules/auth/auth.cookies.js";
 
 export interface AuthContext {
   accountId: string;
@@ -32,7 +33,7 @@ export async function requireAuth(request: FastifyRequest): Promise<AuthContext>
   const cached = requestAuthContext.get(request);
   if (cached) return cached;
 
-  const token = readBearerToken(request);
+  const token = readBearerToken(request) ?? readAccessCookie(request);
   if (!token) {
     throw new ApiError(401, "UNAUTHENTICATED", "Требуется вход в Mecorion");
   }

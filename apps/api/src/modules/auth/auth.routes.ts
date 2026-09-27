@@ -4,6 +4,7 @@ import {config} from "../../core/config.js";
 import {ApiError} from "../../core/http/api-error.js";
 import {requireAuth} from "../../core/http/auth-context.js";
 import {sendLoginCode} from "../mail/mail.service.js";
+import {clearAuthCookies, publicTokens, readRefreshCookie, setAuthCookies} from "./auth.cookies.js";
 import {
   assertValidRecoverySeed,
   createEmailCode,
@@ -11,8 +12,11 @@ import {
 } from "./auth.crypto.js";
 import {
   confirmEmailChallenge,
+  confirmSeedWordChallenge,
   createAccount,
   createEmailChallenge,
+  createSeedRegistrationChallenge,
+  createSeedWordChallenge,
   findAccountByEmail,
   getOrCreateEmailAccount,
   logoutSession,
@@ -38,7 +42,7 @@ const EmailConfirmSchema = z.object({
 });
 
 const RefreshSchema = z.object({
-  refreshToken: z.string().min(32),
+  refreshToken: z.string().min(32).optional(),
 });
 
 const SeedRegisterSchema = z.object({
@@ -49,6 +53,17 @@ const SeedRegisterSchema = z.object({
 
 const SeedSignInSchema = z.object({
   seedPhrase: z.string().min(1),
+});
+
+const SeedChallengeStartSchema = z.object({
+  login: z.string().trim().min(3).max(254),
+});
+
+const SeedChallengeConfirmSchema = z.object({
+  login: z.string().trim().min(3).max(254),
+  challengeId: z.uuid(),
+  challengeToken: z.string().min(32).max(256),
+  words: z.array(z.string().trim().min(1).max(32).regex(/^[a-zA-Z]+$/)).length(4),
 });
 
 const SeedRegenerateSchema = z.object({
@@ -106,7 +121,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     };
   });
 
-  app.post("/api/v1/auth/email/confirm", async (request) => {
+  app.post("/api/v1/auth/email/confirm", async (request, reply) => {
     const input = EmailConfirmSchema.parse(request.body);
     const email = normalizeEmail(input.email);
     const seedPhrase = input.createSeedPhrase ? createRecoverySeed(input.seedWordCount) : null;
@@ -115,19 +130,23 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       await replaceRecoverySeed(result.accountInternalId, seedPhrase);
     }
     await writeLoginAttempt({identity: email, successful: true});
+    setAuthCookies(reply, result.tokens);
     return {
       user: publicAccountResponse(result.account),
-      tokens: result.tokens,
+      tokens: publicTokens(result.tokens),
       ...(seedPhrase ? {seedPhrase} : {}),
     };
   });
 
-  app.post("/api/v1/auth/refresh", async (request) => {
-    const input = RefreshSchema.parse(request.body);
-    const result = await rotateRefreshToken(input.refreshToken);
+  app.post("/api/v1/auth/refresh", async (request, reply) => {
+    const input = RefreshSchema.parse(request.body ?? {});
+    const refreshToken = input.refreshToken ?? readRefreshCookie(request);
+    if (!refreshToken) throw new ApiError(401, "INVALID_REFRESH_TOKEN", "Refresh token отсутствует");
+    const result = await rotateRefreshToken(refreshToken);
+    setAuthCookies(reply, result.tokens);
     return {
       user: publicAccountResponse(result.account),
-      tokens: result.tokens,
+      tokens: publicTokens(result.tokens),
     };
   });
 
@@ -146,9 +165,10 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     };
   });
 
-  app.post("/api/v1/auth/logout", async (request) => {
+  app.post("/api/v1/auth/logout", async (request, reply) => {
     const context = await requireAuth(request);
     await logoutSession(context.sessionPublicId);
+    clearAuthCookies(reply);
     return {ok: true};
   });
 
@@ -159,26 +179,58 @@ export async function registerAuthRoutes(app: FastifyInstance) {
       displayName: input.displayName?.trim() || 'New user',
       usernameBase: normalizeUsername(input.username),
       seedPhrase,
-      emailVerified: true,
-      statusCode: "ACTIVE",
+      emailVerified: false,
+      statusCode: "PENDING",
     });
-    const result = await signInWithSeed(seedPhrase);
+    const challenge = await createSeedRegistrationChallenge(account.accountId);
     return {
-      user: publicAccountResponse(result.account),
-      tokens: result.tokens,
       seedPhrase,
       accountId: account.accountPublicId,
+      username: account.username,
+      ...challenge,
     };
   });
 
-  app.post("/api/v1/auth/seed/sign-in", async (request) => {
+  app.post("/api/v1/auth/seed/register/confirm", async (request, reply) => {
+    const input = SeedChallengeConfirmSchema.parse(request.body);
+    const login = input.login.trim().toLowerCase();
+    const result = await confirmSeedWordChallenge({...input, login, activatePending: true});
+    await writeLoginAttempt({identity: login, successful: true});
+    setAuthCookies(reply, result.tokens);
+    return {user: publicAccountResponse(result.account), tokens: publicTokens(result.tokens)};
+  });
+
+  app.post("/api/v1/auth/seed/sign-in", async (request, reply) => {
     const input = SeedSignInSchema.parse(request.body);
     const seedPhrase = assertValidRecoverySeed(input.seedPhrase);
     const result = await signInWithSeed(seedPhrase);
+    setAuthCookies(reply, result.tokens);
     return {
       user: publicAccountResponse(result.account),
-      tokens: result.tokens,
+      tokens: publicTokens(result.tokens),
     };
+  });
+
+  app.post("/api/v1/auth/seed/challenge/start", async (request) => {
+    const input = SeedChallengeStartSchema.parse(request.body);
+    return createSeedWordChallenge(input.login.trim().toLowerCase());
+  });
+
+  app.post("/api/v1/auth/seed/challenge/confirm", async (request, reply) => {
+    const input = SeedChallengeConfirmSchema.parse(request.body);
+    const login = input.login.trim().toLowerCase();
+    try {
+      const result = await confirmSeedWordChallenge({...input, login});
+      await writeLoginAttempt({identity: login, successful: true});
+      setAuthCookies(reply, result.tokens);
+      return {
+        user: publicAccountResponse(result.account),
+        tokens: publicTokens(result.tokens),
+      };
+    } catch (error) {
+      await writeLoginAttempt({identity: login, successful: false, failureCode: "INVALID_SEED_WORDS"});
+      throw error;
+    }
   });
 
   app.post("/api/v1/account/seed/regenerate", async (request) => {
