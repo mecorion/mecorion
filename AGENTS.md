@@ -350,7 +350,11 @@ Health route:
   `READY`.
 - В Admin реализован этап 5: очередь workflow-заявок, detail с revisions,
   targets, reviews и историей, а также контролируемые переходы статусов.
-  Следующий этап — жалобы, ограничения и апелляции.
+- В Admin реализован этап 6: жалобы с отправителем и целевым resource,
+  ограничения аккаунтов и апелляции. `OVERTURNED` атомарно отзывает связанную
+  санкцию. `requirePermission` применяет активные global/service restrictions;
+  resource-scoped enforcement ещё не реализован. Следующий этап — legal,
+  library, audit и outbox.
 
 ### Частично сделано
 
@@ -386,7 +390,7 @@ Health route:
   ffmpeg, обработки метаданных, генерации preview и связи со storage.
 - `packages/contracts` содержит только версию, реальных контрактов API пока нет.
 - `packages/config` и `packages/ui` пока не несут прикладной нагрузки.
-- Admin пока не управляет модерацией, legal, library, audit и outbox.
+- Admin пока не управляет legal, library, audit и outbox.
   Media/storage управляется на уровне метаданных; реальная передача файлов и
   выполнение transcode jobs пока отсутствуют.
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.

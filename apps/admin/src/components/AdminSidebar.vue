@@ -23,7 +23,7 @@ const groups = [
   {
     label: "Контроль",
     items: [
-      {label: "Модерация", icon: "badge-check", to: "/moderation", ready: false},
+      {label: "Модерация", icon: "badge-check", to: "/moderation", ready: true},
       {label: "Правовые статусы", icon: "circle-alert", to: "/legal", ready: false},
       {label: "Аудит", icon: "list-music", to: "/audit", ready: false},
       {label: "Системные события", icon: "cloud", to: "/outbox", ready: false},
@@ -68,7 +68,7 @@ function isActive(path: string) {
 
     <div class="admin-sidebar__footer">
       <span class="admin-environment"><i></i>API: apps/api</span>
-      <span class="text-caption">Этап 5 · workflow</span>
+      <span class="text-caption">Этап 6 · модерация</span>
     </div>
   </aside>
 </template>

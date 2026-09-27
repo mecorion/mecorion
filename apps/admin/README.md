@@ -5,7 +5,7 @@
 
 ## Текущий этап
 
-Реализованы этапы 1–5:
+Реализованы этапы 1–6:
 
 - отдельный workspace `@mecorion/admin`;
 - вход зарегистрированного пользователя по email-коду;
@@ -35,6 +35,9 @@
 - очередь редакционных заявок с фильтрами и детальной карточкой;
 - revisions, связанные ресурсы, reviews и история смены статусов;
 - контролируемые переходы состояний и применение решения review.
+- очередь жалоб с отображением отправителя и целевого ресурса;
+- создание и управление ограничениями аккаунтов;
+- рассмотрение апелляций с атомарным отзывом отменённой санкции.
 
 Обычная регистрация не выдаёт административный доступ. Роль и permission
 назначаются через bootstrap/admin API и хранятся в схемах `access` и `account`.
@@ -314,6 +317,68 @@ review без автоматического перехода.
 5. Повторно открыть detail и проверить `APPROVED`, новую review и запись в
    status history.
 
+## API этапа 6
+
+Moderation связывает пользовательскую жалобу с универсальным
+`core.tResource`. Целевым ресурсом может быть профиль, контент, contributor или
+публикация. Ограничение применяется к аккаунту целиком, к scope либо к
+конкретному permission внутри scope.
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| `GET` | `/api/v1/moderation/report-reasons` | Доступные причины жалоб |
+| `POST` | `/api/v1/moderation/reports` | Отправить жалобу на resource |
+| `POST` | `/api/v1/moderation/restrictions/:id/appeals` | Обжаловать собственное активное ограничение |
+| `GET` | `/api/v1/admin/moderation/references` | Справочники статусов, scopes и permissions |
+| `GET` | `/api/v1/admin/moderation/reports` | Очередь жалоб с фильтрами `q`, `status`, `reason` |
+| `PATCH` | `/api/v1/admin/moderation/reports/:id/status` | Triage, расследование или финальное решение |
+| `GET` | `/api/v1/admin/moderation/restrictions` | Ограничения пользователей |
+| `POST` | `/api/v1/admin/moderation/restrictions` | Создать ограничение, включая связь с report |
+| `PATCH` | `/api/v1/admin/moderation/restrictions/:id/status` | Активировать, приостановить, завершить или отозвать |
+| `GET` | `/api/v1/admin/moderation/appeals` | Очередь апелляций |
+| `PATCH` | `/api/v1/admin/moderation/appeals/:id/status` | Принять в работу или вынести решение |
+
+Основные таблицы: `moderation.tReport`, `moderation.tRestriction` и
+`moderation.tAppeal`. Справочники находятся в `tReportReason`,
+`tReportStatus`, `tRestrictionStatus` и `tAppealStatus`.
+
+Разрешённые переходы:
+
+```text
+Report: OPEN -> TRIAGE -> INVESTIGATING -> RESOLVED | REJECTED | DUPLICATE
+Restriction: PENDING -> ACTIVE; ACTIVE <-> SUSPENDED; затем EXPIRED | REVOKED
+Appeal: SUBMITTED -> REVIEWING -> UPHELD | OVERTURNED | CANCELLED
+```
+
+Для `sourceType = COMPLAINT` API требует `sourceReportId`, как требует
+ограничение целостности БД. Решение апелляции `OVERTURNED` в одной транзакции
+переводит appeal в финальное состояние и restriction в `REVOKED`.
+
+`requirePermission` проверяет эффективные ограничения централизованно. Global
+scope может заблокировать все или конкретное permission; service scope — все
+или конкретное permission соответствующего сервиса. Resource-scoped проверка
+потребует отдельного resource context и остаётся следующим расширением модели.
+
+### Проверка модерации через Postman
+
+1. Получить public ID ресурса и с пользовательским token создать жалобу:
+
+```json
+{
+  "resourceId": "<resource-uuid>",
+  "reasonCode": "ABUSE",
+  "description": "Описание нарушения",
+  "evidence": {"source": "manual-test"}
+}
+```
+
+2. С admin token перевести report в `TRIAGE`, затем `INVESTIGATING`.
+3. Создать restriction с `sourceType: "COMPLAINT"` и public ID жалобы.
+4. С token ограниченного пользователя вызвать endpoint создания appeal.
+5. С admin token перевести appeal в `REVIEWING`, затем в `OVERTURNED`.
+6. Проверить через список restrictions, что статус стал `REVOKED`, а
+   `revokeDtm` заполнен.
+
 ## Дорожная карта
 
 1. Основа Admin и защита доступа — выполнено.
@@ -323,7 +388,8 @@ review без автоматического перехода.
    метаданных и Admin; физическая загрузка и worker остаются отдельной задачей.
 5. Workflow и редакционный процесс — выполнено на уровне очереди, revisions,
    reviews и контролируемых переходов.
-6. Жалобы, ограничения и апелляции.
+6. Жалобы, ограничения и апелляции — выполнено на уровне очередей, решений и
+   контролируемых переходов.
 7. Legal, Library, Audit и Outbox.
 8. Стабилизация, тесты и полная Postman-документация.
 9. Разделение результата на логические коммиты и несколько PR при необходимости.
