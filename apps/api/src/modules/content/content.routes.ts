@@ -35,6 +35,33 @@ const PublicationCreateSchema = z.object({
   contentIds: z.array(z.uuid()).default([]),
 });
 
+const ContentUpdateSchema = z.object({
+  statusCode: z.string().trim().min(2).max(32),
+  originalTitle: z.string().trim().min(1).max(512),
+  releaseDate: z.string().date().nullable().optional(),
+  durationMs: z.number().int().positive().nullable().optional(),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
+const ContributorUpdateSchema = z.object({
+  primaryName: z.string().trim().min(1).max(512),
+  normalizedName: z.string().trim().min(1).max(512),
+  description: z.string().trim().max(5000).nullable().optional(),
+});
+
+const ContributorLinkSchema = z.object({
+  contributorId: z.uuid(),
+  roleCode: z.string().trim().min(2).max(64),
+  characterName: z.string().trim().max(256).nullable().optional(),
+  ordinal: z.number().int().positive().nullable().optional(),
+});
+
+const PublicationUpdateSchema = z.object({
+  title: z.string().trim().min(1).max(512),
+  summary: z.string().trim().max(5000).nullable().optional(),
+  statusCode: z.string().trim().min(2).max(32),
+});
+
 async function createResource(resourceTypeCode: string) {
   const result = await query<{id: string; publicId: string}>(`
     INSERT INTO core."tResource" ("resourceTypeId")
@@ -47,6 +74,19 @@ async function createResource(resourceTypeCode: string) {
 }
 
 export async function registerContentRoutes(app: FastifyInstance) {
+  app.get("/api/v1/admin/content/references", async (request) => {
+    await requirePermission(request, "platform.admin");
+    const [types, statuses, contributorKinds, contributorRoles, publicationStatuses, languages] = await Promise.all([
+      query(`SELECT "code", "name" FROM content."tContentType" WHERE "isActive" = TRUE ORDER BY "name"`),
+      query(`SELECT "code", "name" FROM content."tContentStatus" ORDER BY "id"`),
+      query(`SELECT "code", "name" FROM content."tContributorKind" ORDER BY "id"`),
+      query(`SELECT "code", "name" FROM content."tContributorRole" WHERE "isActive" = TRUE ORDER BY "name"`),
+      query(`SELECT "code", "name" FROM content."tPublicationStatus" ORDER BY "id"`),
+      query(`SELECT "code", "name" FROM core."tLanguage" WHERE "isActive" = TRUE ORDER BY "name"`),
+    ]);
+    return {types: types.rows, statuses: statuses.rows, contributorKinds: contributorKinds.rows, contributorRoles: contributorRoles.rows, publicationStatuses: publicationStatuses.rows, languages: languages.rows};
+  });
+
   app.get("/api/v1/content/types", async () => {
     const result = await query(`
       SELECT "code", "name", "isContainer", "isPlayable"
@@ -110,6 +150,15 @@ export async function registerContentRoutes(app: FastifyInstance) {
     return reply.status(201).send(row);
   });
 
+  app.patch("/api/v1/admin/contributors/:contributorPublicId", async (request) => {
+    await requirePermission(request, "content.submit");
+    const params = z.object({contributorPublicId: z.uuid()}).parse(request.params);
+    const input = ContributorUpdateSchema.parse(request.body);
+    const result = await query(`UPDATE content."tContributor" SET "primaryName" = $2, "normalizedName" = $3, "description" = $4, "updateDtm" = CURRENT_TIMESTAMP WHERE "publicId" = $1 AND "retireDtm" IS NULL RETURNING "publicId"`, [params.contributorPublicId, input.primaryName, input.normalizedName, input.description ?? null]);
+    if (!result.rowCount) throw new ApiError(404, "CONTRIBUTOR_NOT_FOUND", "Участник контента не найден");
+    return {ok: true};
+  });
+
   app.get("/api/v1/content", async (request) => {
     const filters = PaginationSchema.parse(request.query);
     const result = await query(`
@@ -168,6 +217,38 @@ export async function registerContentRoutes(app: FastifyInstance) {
     return reply.status(201).send(row);
   });
 
+  app.patch("/api/v1/admin/content/:contentPublicId", async (request) => {
+    await requirePermission(request, "content.submit");
+    const params = z.object({contentPublicId: z.uuid()}).parse(request.params);
+    const input = ContentUpdateSchema.parse(request.body);
+    const result = await query(`
+      UPDATE content."tContent" contentItem
+      SET "contentStatusId" = status."id", "originalTitle" = $2, "releaseDt" = $3,
+        "durationMs" = $4, "metadata" = contentItem."metadata" || $5::JSONB, "updateDtm" = CURRENT_TIMESTAMP
+      FROM content."tContentStatus" status
+      WHERE contentItem."publicId" = $1 AND contentItem."retireDtm" IS NULL AND status."code" = $6
+      RETURNING contentItem."publicId"
+    `, [params.contentPublicId, input.originalTitle, input.releaseDate ?? null, input.durationMs ?? null, JSON.stringify(input.metadata), input.statusCode]);
+    if (!result.rowCount) throw new ApiError(404, "CONTENT_NOT_FOUND", "Контент или статус не найден");
+    return {ok: true};
+  });
+
+  app.post("/api/v1/admin/content/:contentPublicId/contributors", async (request) => {
+    await requirePermission(request, "content.submit");
+    const params = z.object({contentPublicId: z.uuid()}).parse(request.params);
+    const input = ContributorLinkSchema.parse(request.body);
+    const result = await query(`
+      INSERT INTO content."tContentContributor" ("contentId", "contributorId", "contributorRoleId", "characterName", "ordinal")
+      SELECT contentItem."id", contributor."id", role."id", $4, $5
+      FROM content."tContent" contentItem, content."tContributor" contributor, content."tContributorRole" role
+      WHERE contentItem."publicId" = $1 AND contributor."publicId" = $2 AND role."code" = $3
+      ON CONFLICT ("contentId", "contributorId", "contributorRoleId", "characterName") DO UPDATE SET "ordinal" = EXCLUDED."ordinal"
+      RETURNING "id"
+    `, [params.contentPublicId, input.contributorId, input.roleCode, input.characterName ?? null, input.ordinal ?? null]);
+    if (!result.rowCount) throw new ApiError(400, "CONTENT_CONTRIBUTOR_REFERENCE_NOT_FOUND", "Контент, участник или роль не найдены");
+    return {ok: true};
+  });
+
   app.get("/api/v1/publications", async (request) => {
     const filters = PaginationSchema.parse(request.query);
     const result = await query(`
@@ -177,11 +258,14 @@ export async function registerContentRoutes(app: FastifyInstance) {
         publication."title",
         publication."summary",
         publicationStatus."code" AS "status",
-        publication."publishDtm" AS "publishDtm"
+        publication."publishDtm" AS "publishDtm",
+        COUNT(publicationContent."contentId")::INTEGER AS "contentCount"
       FROM content."tPublication" publication
       JOIN content."tPublicationStatus" publicationStatus ON publicationStatus."id" = publication."publicationStatusId"
+      LEFT JOIN content."tPublicationContent" publicationContent ON publicationContent."publicationId" = publication."id"
       WHERE publication."retireDtm" IS NULL
         AND ($3::TEXT IS NULL OR publication."title" ILIKE '%' || $3 || '%' OR publication."slug"::TEXT ILIKE '%' || $3 || '%')
+      GROUP BY publication."id", publicationStatus."code"
       ORDER BY publication."createDtm" DESC
       LIMIT $1 OFFSET $2
     `, [filters.limit, filters.offset, filters.q ?? null]);
@@ -202,9 +286,9 @@ export async function registerContentRoutes(app: FastifyInstance) {
 
       const created = await client.query<{id: string; internalId: string}>(`
         INSERT INTO content."tPublication" (
-          "resourceId", "publicationStatusId", "slug", "title", "summary", "createByAccountId"
+          "resourceId", "publicationStatusId", "slug", "title", "summary", "createByAccountId", "publishDtm"
         )
-        SELECT $1, status."id", $2, $3, $4, $5
+        SELECT $1, status."id", $2, $3, $4, $5, CASE WHEN status."isPublic" THEN CURRENT_TIMESTAMP ELSE NULL END
         FROM content."tPublicationStatus" status
         WHERE status."code" = $6
         RETURNING "publicId"::TEXT AS "id", "id" AS "internalId"
@@ -224,5 +308,22 @@ export async function registerContentRoutes(app: FastifyInstance) {
     });
 
     return reply.status(201).send(publication);
+  });
+
+  app.patch("/api/v1/admin/publications/:publicationPublicId", async (request) => {
+    await requirePermission(request, "content.submit");
+    const params = z.object({publicationPublicId: z.uuid()}).parse(request.params);
+    const input = PublicationUpdateSchema.parse(request.body);
+    const result = await query(`
+      UPDATE content."tPublication" publication
+      SET "publicationStatusId" = status."id", "title" = $2, "summary" = $3,
+        "publishDtm" = CASE WHEN status."isPublic" THEN COALESCE(publication."publishDtm", CURRENT_TIMESTAMP) ELSE NULL END,
+        "updateDtm" = CURRENT_TIMESTAMP
+      FROM content."tPublicationStatus" status
+      WHERE publication."publicId" = $1 AND publication."retireDtm" IS NULL AND status."code" = $4
+      RETURNING publication."publicId"
+    `, [params.publicationPublicId, input.title, input.summary ?? null, input.statusCode]);
+    if (!result.rowCount) throw new ApiError(404, "PUBLICATION_NOT_FOUND", "Публикация или статус не найдены");
+    return {ok: true};
   });
 }

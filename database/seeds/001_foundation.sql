@@ -219,6 +219,7 @@ FROM (VALUES
     ('ENTITLEMENT', 'SPONSOR', 'Sponsor', 'Привилегии спонсора.', FALSE),
     ('SYSTEM', 'DEVELOPER', 'Developer', 'Функции разработки платформы.', TRUE),
     ('SYSTEM', 'ADMIN', 'Admin', 'Администрирование платформы.', TRUE),
+    ('SYSTEM', 'FOUNDER', 'Founder', 'Основатель платформы с полным доступом.', TRUE),
     ('SYSTEM', 'OWNER', 'Owner', 'Высший системный уровень.', TRUE)
 ) AS seed("roleTypeCode", "code", "name", "description", "requiresGovernanceIdentity")
 JOIN access."tRoleType" roleType ON roleType."code" = seed."roleTypeCode"
@@ -260,6 +261,10 @@ FROM (VALUES
     ('DEVELOPER', 'platform.develop'),
     ('ADMIN', 'platform.admin'),
     ('ADMIN', 'role.assign'),
+    ('FOUNDER', 'platform.owner'),
+    ('FOUNDER', 'platform.admin'),
+    ('FOUNDER', 'role.assign'),
+    ('FOUNDER', 'agent.manage'),
     ('OWNER', 'platform.owner'),
     ('OWNER', 'platform.admin'),
     ('OWNER', 'role.assign'),
@@ -267,6 +272,13 @@ FROM (VALUES
 ) AS seed("roleCode", "permissionCode")
 JOIN access."tRole" role ON role."code" = seed."roleCode"
 JOIN access."tPermission" permission ON permission."code" = seed."permissionCode"
+ON CONFLICT ("roleId", "permissionId") DO NOTHING;
+
+INSERT INTO access."tRolePermission" ("roleId", "permissionId")
+SELECT role."id", permission."id"
+FROM access."tRole" role
+CROSS JOIN access."tPermission" permission
+WHERE role."code" IN ('FOUNDER', 'OWNER')
 ON CONFLICT ("roleId", "permissionId") DO NOTHING;
 
 COMMIT;

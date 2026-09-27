@@ -7,15 +7,15 @@ const groups = [
     label: "Платформа",
     items: [
       {label: "Обзор", icon: "home", to: "/", ready: true},
-      {label: "Пользователи", icon: "users", to: "/users", ready: false},
-      {label: "Роли и доступ", icon: "shield", to: "/access", ready: false},
+      {label: "Пользователи", icon: "users", to: "/users", ready: true},
+      {label: "Роли и доступ", icon: "shield", to: "/access", ready: true},
     ],
   },
   {
     label: "Контент",
     items: [
-      {label: "Каталог", icon: "boxes", to: "/content", ready: false},
-      {label: "Публикации", icon: "book", to: "/publications", ready: false},
+      {label: "Каталог", icon: "boxes", to: "/content", ready: true},
+      {label: "Публикации", icon: "book", to: "/publications", ready: true},
       {label: "Медиа", icon: "play", to: "/media", ready: false},
       {label: "Заявки", icon: "git-pull-request", to: "/workflow", ready: false},
     ],
@@ -68,7 +68,7 @@ function isActive(path: string) {
 
     <div class="admin-sidebar__footer">
       <span class="admin-environment"><i></i>API: apps/api</span>
-      <span class="text-caption">Этап 1 · защищённый контур</span>
+      <span class="text-caption">Этап 3 · каталог и публикации</span>
     </div>
   </aside>
 </template>

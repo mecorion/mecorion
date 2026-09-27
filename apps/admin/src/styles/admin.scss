@@ -6,6 +6,7 @@
 @use '../../../web/src/styles/v2/components/mcrn-card';
 @use '../../../web/src/styles/v2/components/mcrn-button';
 @use '../../../web/src/styles/v2/components/mcrn-input';
+@use '../../../web/src/styles/v2/components/mcrn-layout';
 @use '../../../web/src/styles/v2/components/mcrn-ui-library';
 
 @layer admin {
@@ -318,6 +319,31 @@
 
   .admin-shell__overlay { display: none; }
 
+  // Only admin data composition lives here; controls come from Mecorion V2.
+  .admin-toolbar,
+  .admin-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--mc-space-3); }
+  .admin-toolbar > .mc-field { flex: 1 1 180px; }
+  .admin-list { display: grid; gap: var(--mc-space-3); }
+  .admin-list-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(120px, .7fr) auto;
+    align-items: center;
+    gap: var(--mc-space-4);
+    min-width: 0;
+    padding: var(--mc-space-4);
+  }
+  .admin-list-item__main { min-width: 0; }
+  .admin-list-item__main h3 { overflow-wrap: anywhere; font-size: var(--mc-font-md); }
+  .admin-list-item__main p { margin-top: var(--mc-space-1); }
+  .admin-meta { display: flex; flex-wrap: wrap; gap: var(--mc-space-2); margin-top: var(--mc-space-2); }
+  .admin-detail-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); gap: var(--mc-space-4); }
+  .admin-data-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--mc-space-3); padding-block: var(--mc-space-3); border-bottom: 1px solid var(--mc-border-soft); }
+  .admin-data-row:last-child { border-bottom: 0; }
+  .admin-data-row > div { min-width: 0; }
+  .admin-check-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mc-space-2); max-height: 320px; overflow: auto; }
+  .admin-pagination { display: flex; align-items: center; justify-content: space-between; gap: var(--mc-space-3); }
+  .admin-error { color: var(--mc-danger); }
+
   .admin-auth-layout { min-height: 100dvh; background: var(--mc-bg); }
   .admin-sign-in {
     display: grid;
@@ -422,6 +448,7 @@
     .admin-sign-in__visual { min-height: 300px; padding: 1.5rem; }
     .admin-sign-in__visual-copy h1 { font-size: clamp(2rem, 9vw, 3.75rem); }
     .admin-sign-in__signal { margin-top: 3rem; }
+    .admin-detail-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 640px) {
@@ -440,6 +467,10 @@
     .admin-sign-in__form-side { padding: 1.25rem .75rem 2rem; }
     .admin-sign-in__form .ui-form__actions { align-items: stretch; flex-direction: column-reverse; }
     .admin-sign-in__form .ui-form__actions .mc-button { width: 100%; }
+    .admin-list-item { grid-template-columns: 1fr; align-items: flex-start; }
+    .admin-list-item > .mc-button { width: 100%; }
+    .admin-check-grid { grid-template-columns: 1fr; }
+    .admin-pagination { align-items: stretch; flex-direction: column; }
   }
 
   @media (max-width: 300px) {

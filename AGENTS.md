@@ -338,6 +338,12 @@ Health route:
 - Есть миграции `identity` и `music`.
 - Есть seed с dev-admin и несколькими тестовыми артистами/альбомами/треками.
 - `packages/storage` уже содержит интерфейс `StorageDriver`.
+- `apps/admin` — отдельное Nuxt 4 приложение под `/admin/` с обязательной
+  проверкой роли `ADMIN` и разрешения `platform.admin` через общий API.
+- В Admin завершены этапы основы и управления доступом: список и создание
+  аккаунтов, профиль, статусы, история, роли, permissions и сессии.
+- В Admin реализован базовый CRUD этапа 3: каталог контента, contributors,
+  связи участников с контентом и публикации. Следующий этап — media/storage.
 
 ### Частично сделано
 
@@ -373,8 +379,8 @@ Health route:
   ffmpeg, обработки метаданных, генерации preview и связи со storage.
 - `packages/contracts` содержит только версию, реальных контрактов API пока нет.
 - `packages/config` и `packages/ui` пока не несут прикладной нагрузки.
-- Нет полноценной админ-панели для управления артистами, треками, плейлистами,
-  пространствами и пользователями.
+- Admin пока не управляет media/storage, workflow, модерацией, legal, library,
+  audit и outbox. Эти модули остаются следующими этапами.
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.
 - Нет настоящего S3/local-storage abstraction implementation, есть только
   интерфейс.
