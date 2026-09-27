@@ -347,7 +347,10 @@ Health route:
 - В Admin реализован этап 4 для media pipeline: upload-сессии, storage objects,
   source assets, привязка к контенту и очередь transcode jobs. Успешное
   завершение job атомарно создаёт output object/variant и переводит asset в
-  `READY`. Следующий этап — workflow и редакционный процесс.
+  `READY`.
+- В Admin реализован этап 5: очередь workflow-заявок, detail с revisions,
+  targets, reviews и историей, а также контролируемые переходы статусов.
+  Следующий этап — жалобы, ограничения и апелляции.
 
 ### Частично сделано
 
@@ -383,7 +386,7 @@ Health route:
   ffmpeg, обработки метаданных, генерации preview и связи со storage.
 - `packages/contracts` содержит только версию, реальных контрактов API пока нет.
 - `packages/config` и `packages/ui` пока не несут прикладной нагрузки.
-- Admin пока не управляет workflow, модерацией, legal, library, audit и outbox.
+- Admin пока не управляет модерацией, legal, library, audit и outbox.
   Media/storage управляется на уровне метаданных; реальная передача файлов и
   выполнение transcode jobs пока отсутствуют.
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.

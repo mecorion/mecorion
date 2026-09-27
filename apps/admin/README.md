@@ -5,7 +5,7 @@
 
 ## Текущий этап
 
-Реализованы этапы 1–4:
+Реализованы этапы 1–5:
 
 - отдельный workspace `@mecorion/admin`;
 - вход зарегистрированного пользователя по email-коду;
@@ -32,6 +32,9 @@
 - привязка assets к каноническому контенту;
 - постановка задач транскодирования, смена рабочего статуса и атомарная
   регистрация результата обработки.
+- очередь редакционных заявок с фильтрами и детальной карточкой;
+- revisions, связанные ресурсы, reviews и история смены статусов;
+- контролируемые переходы состояний и применение решения review.
 
 Обычная регистрация не выдаёт административный доступ. Роль и permission
 назначаются через bootstrap/admin API и хранятся в схемах `access` и `account`.
@@ -241,6 +244,76 @@ Authorization: Bearer <accessToken>
 7. Проверить, что job получил `SUCCEEDED`, asset — `READY`, а в списках
    storage objects и variants появились выходные записи.
 
+## API этапа 5
+
+Workflow отделяет пользовательское предложение от канонического контента.
+Автор создаёт request и отправляет revision, после чего администратор или иной
+проверяющий добавляет review. Решение review может атомарно изменить статус
+заявки.
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| `GET` | `/api/v1/workflow/requests` | Заявки текущего пользователя |
+| `POST` | `/api/v1/workflow/requests` | Создать draft или сразу отправить заявку |
+| `POST` | `/api/v1/workflow/requests/:id/submit` | Отправить draft/исправленную заявку и создать revision |
+| `GET` | `/api/v1/admin/workflow/references` | Типы заявок, статусы и виды review |
+| `GET` | `/api/v1/admin/workflow/requests` | Административная очередь с `q`, `status`, `type`, `limit`, `offset` |
+| `GET` | `/api/v1/admin/workflow/requests/:id` | Request, revisions, targets, reviews и status history |
+| `POST` | `/api/v1/admin/workflow/requests/:id/reviews` | Добавить review и опционально применить решение |
+| `PATCH` | `/api/v1/admin/workflow/requests/:id/status` | Выполнить допустимый служебный переход |
+
+Основные таблицы: `workflow.tRequest`, `workflow.tRequestRevision`,
+`workflow.tRequestTarget`, `workflow.tReview` и
+`workflow.tRequestStatusHistory`. Справочники находятся в
+`workflow.tRequestType`, `workflow.tRequestStatus` и `workflow.tReviewType`.
+
+Поддерживаемые переходы:
+
+```text
+DRAFT -> SUBMITTED | CANCELLED
+SUBMITTED -> AUTO_CHECK | COMMUNITY_REVIEW | NEEDS_CHANGES | APPROVED | REJECTED | CANCELLED
+AUTO_CHECK -> COMMUNITY_REVIEW | NEEDS_CHANGES | APPROVED | REJECTED | CANCELLED
+COMMUNITY_REVIEW -> NEEDS_CHANGES | APPROVED | REJECTED | CANCELLED
+NEEDS_CHANGES -> SUBMITTED | CANCELLED
+```
+
+Финальные состояния `APPROVED`, `REJECTED`, `CANCELLED` повторно не
+открываются. Решения `APPROVE`, `REJECT`, `NEEDS_CHANGES` могут автоматически
+применить соответствующий статус. `ABSTAIN` и `POSSIBLE_DUPLICATE` сохраняют
+review без автоматического перехода.
+
+### Проверка workflow через Postman
+
+1. С пользовательским token вызвать `POST /api/v1/workflow/requests`:
+
+```json
+{
+  "typeCode": "CREATE_CONTENT",
+  "title": "Тестовая заявка",
+  "payload": {"originalTitle": "Пример"},
+  "submit": false
+}
+```
+
+2. Отправить полученный request через `POST /api/v1/workflow/requests/:id/submit`.
+3. С admin token открыть `GET /api/v1/admin/workflow/requests/:id`.
+4. Добавить review:
+
+```json
+{
+  "reviewTypeCode": "MODERATOR",
+  "reviewerRoleCode": "ADMIN",
+  "decisionCode": "APPROVE",
+  "score": 1,
+  "comment": "Метаданные проверены",
+  "evidence": {},
+  "applyDecision": true
+}
+```
+
+5. Повторно открыть detail и проверить `APPROVED`, новую review и запись в
+   status history.
+
 ## Дорожная карта
 
 1. Основа Admin и защита доступа — выполнено.
@@ -248,7 +321,8 @@ Authorization: Bearer <accessToken>
 3. Контент, contributors и публикации — выполнено на уровне базового CRUD.
 4. Upload, storage objects, assets и transcode jobs — выполнено на уровне API
    метаданных и Admin; физическая загрузка и worker остаются отдельной задачей.
-5. Workflow и редакционный процесс.
+5. Workflow и редакционный процесс — выполнено на уровне очереди, revisions,
+   reviews и контролируемых переходов.
 6. Жалобы, ограничения и апелляции.
 7. Legal, Library, Audit и Outbox.
 8. Стабилизация, тесты и полная Postman-документация.
