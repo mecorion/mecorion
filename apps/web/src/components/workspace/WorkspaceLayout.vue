@@ -1,20 +1,24 @@
 <script setup>
 import {computed, onBeforeUnmount, ref, unref, watch} from "vue";
-import {useRoute} from "#imports";
+import {useRoute, useRouter} from "#imports";
 import {NuxtLink} from "#components";
 import SvgIcon from "@/components/SvgIcon.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
+import {readAuthSession, signOut} from "@/auth/session.js";
 
 const route = useRoute();
+const router = useRouter();
 const app = useAppStore();
 const isSidebarOpen = ref(false);
 const isSidebarCollapsed = ref(false);
 
+const authenticatedUser = readAuthSession()?.user;
 const currentUser = {
-  name: "Иван",
-  initials: "ИИ",
-  id: "000000",
+  name: authenticatedUser?.displayName || authenticatedUser?.username || "User",
+  initials: (authenticatedUser?.displayName || authenticatedUser?.username || "User")
+    .split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase(),
+  id: authenticatedUser?.id?.slice(0, 8).toUpperCase() || "00000000",
 };
 
 const primaryNavigation = [
@@ -111,6 +115,11 @@ function toggleSidebar() {
   }
 
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
+}
+
+async function logout() {
+  await signOut();
+  await router.replace("/sign-in-seed");
 }
 
 watch(() => route.path, closeSidebar);
@@ -220,6 +229,9 @@ onBeforeUnmount(() => {
               <small>Mecorion ID: {{ currentUser.id }}</small>
             </span>
           </NuxtLink>
+          <button class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Выйти из аккаунта" title="Выйти" @click="logout">
+            <SvgIcon name="exit" />
+          </button>
         </div>
       </header>
 

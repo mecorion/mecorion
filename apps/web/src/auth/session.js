@@ -1,132 +1,102 @@
-const SESSION_KEY = "mecorion.auth.session";
 let apiBaseUrl = "http://127.0.0.1:4000";
+let currentSession = null;
+let initializationPromise = null;
 
-// Configured by the Nuxt client plugin before any page can send a request.
 export function configureAuthApi(baseUrl) {
   apiBaseUrl = baseUrl.replace(/\/+$/, "");
+  // Earlier prototypes persisted refresh tokens in localStorage. The current
+  // flow uses HttpOnly cookies, so remove the obsolete browser-readable copy.
+  globalThis.localStorage?.removeItem("mecorion.auth.session");
 }
 
 export function readAuthSession() {
-  try {
-    return JSON.parse(localStorage.getItem(SESSION_KEY)) ?? null;
-  } catch {
-    return null;
-  }
+  return currentSession;
 }
 
 export function isAuthenticated() {
-  return Boolean(readAuthSession()?.token);
-}
-
-function writeAuthSession(session) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  return session;
+  return Boolean(currentSession?.user);
 }
 
 export function clearAuthSession() {
-  localStorage.removeItem(SESSION_KEY);
+  currentSession = null;
 }
 
 export function getAuthToken() {
-  return readAuthSession()?.token ?? null;
+  return currentSession?.token ?? null;
 }
 
-function authHeaders() {
-  const token = getAuthToken();
-  return token ? {Authorization: `Bearer ${token}`} : {};
-}
-
-async function requestAuth(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
+async function rawRequest(path, options = {}) {
+  return fetch(`${apiBaseUrl}${path}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-      ...options.headers,
-    },
+    credentials: "include",
+    headers: {"Content-Type": "application/json", ...options.headers},
   });
+}
 
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw new Error(data?.message ?? "Mecorion API временно недоступен");
+async function requestAuth(path, options = {}, retry = true) {
+  let response;
+  try {
+    response = await rawRequest(path, options);
+  } catch {
+    throw new Error("Не удалось подключиться к Mecorion API");
   }
 
+  if (response.status === 401 && retry && !path.startsWith("/api/v1/auth/refresh")) {
+    const refreshed = await rawRequest("/api/v1/auth/refresh", {method: "POST", body: "{}"});
+    if (refreshed.ok) response = await rawRequest(path, options);
+  }
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data?.message ?? "Mecorion API временно недоступен");
   return data;
 }
 
-function persistAuthResponse(data) {
-  return writeAuthSession({
-    token: data.tokens?.accessToken ?? data.token,
-    refreshToken: data.tokens?.refreshToken,
-    user: data.user,
-    createdAt: new Date().toISOString(),
-  });
+function rememberAuthResponse(data) {
+  currentSession = {token: data.tokens?.accessToken ?? null, user: data.user, createdAt: new Date().toISOString()};
+  return currentSession;
 }
 
-export async function signInWithSeed(words) {
-  const seedPhrase = words.map((word) => word.trim().toLowerCase()).join(" ");
-  const data = await requestAuth("/api/v1/auth/seed/sign-in", {
-    method: "POST",
-    body: JSON.stringify({seedPhrase}),
-  });
-
-  return persistAuthResponse(data);
+export function startSeedSignIn(login) {
+  return requestAuth("/api/v1/auth/seed/challenge/start", {method: "POST", body: JSON.stringify({login})});
 }
 
-export async function signUpWithSeed({displayName, username}) {
-  const data = await requestAuth("/api/v1/auth/seed/register", {
+export async function confirmSeedSignIn(input) {
+  const data = await requestAuth("/api/v1/auth/seed/challenge/confirm", {method: "POST", body: JSON.stringify(input)});
+  return rememberAuthResponse(data);
+}
+
+export function signUpWithSeed({displayName, username}) {
+  return requestAuth("/api/v1/auth/seed/register", {
     method: "POST",
     body: JSON.stringify({displayName, username, wordCount: 12}),
   });
-
-  return data;
 }
 
-export function completeSeedSignUp(data) {
-  return persistAuthResponse(data);
-}
-
-export async function signIn({email, password}) {
-  const data = await requestAuth("/api/v1/auth/sign-in", {
-    method: "POST",
-    body: JSON.stringify({email, password}),
-  });
-
-  return persistAuthResponse(data);
-}
-
-export async function signUp({displayName, email, password}) {
-  const data = await requestAuth("/api/v1/auth/sign-up", {
-    method: "POST",
-    body: JSON.stringify({displayName, email, password}),
-  });
-
-  return persistAuthResponse(data);
+export async function confirmSeedSignUp(input) {
+  const data = await requestAuth("/api/v1/auth/seed/register/confirm", {method: "POST", body: JSON.stringify(input)});
+  return rememberAuthResponse(data);
 }
 
 export async function fetchCurrentUser() {
-  if (!getAuthToken()) return null;
-
   try {
     const data = await requestAuth("/api/v1/auth/me");
-    const current = readAuthSession();
-
-    // Токен остаётся тем же, но данные пользователя обновляем из API:
-    // роль могла измениться, а guard должен работать с актуальным состоянием.
-    return writeAuthSession({...current, user: data.user});
+    return rememberAuthResponse(data);
   } catch {
     clearAuthSession();
     return null;
   }
+}
+
+export function initializeAuthSession() {
+  initializationPromise ??= fetchCurrentUser();
+  return initializationPromise;
 }
 
 export async function signOut() {
   try {
-    if (getAuthToken()) {
-      await requestAuth("/api/v1/auth/logout", {method: "POST"});
-    }
+    await requestAuth("/api/v1/auth/logout", {method: "POST"}, false);
   } finally {
     clearAuthSession();
+    initializationPromise = null;
   }
 }

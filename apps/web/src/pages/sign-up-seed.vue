@@ -4,13 +4,15 @@ import {computed, onBeforeUnmount, reactive, ref} from "vue";
 import {useRouter} from "#imports";
 import AuthVisual from "@/components/auth/AuthVisual.vue";
 import SecureSeedPhrase from "@/components/auth/SecureSeedPhrase.vue";
-import {completeSeedSignUp, signUpWithSeed} from "@/auth/session.js";
+import {confirmSeedSignUp, signUpWithSeed} from "@/auth/session.js";
 import {UiButton, UiCheckbox, UiForm, UiInput} from "@/components/ui/index.js";
 
 const router = useRouter();
 const form = reactive({displayName: "", username: ""});
 const seedWords = ref([]);
-const pendingSession = ref(null);
+const phase = ref("form");
+const pendingRegistration = ref(null);
+const verificationWords = reactive(["", "", "", ""]);
 const confirmed = ref(false);
 const isSubmitting = ref(false);
 const errorMessage = ref("");
@@ -38,7 +40,13 @@ async function submit() {
   try {
     const result = await signUpWithSeed({displayName: normalizedName.value, username: normalizedUsername.value});
     seedWords.value = result.seedPhrase.split(/\s+/);
-    pendingSession.value = result;
+    pendingRegistration.value = {
+      login: result.username,
+      challengeId: result.challengeId,
+      challengeToken: result.challengeToken,
+      positions: result.positions,
+    };
+    phase.value = "display";
   } catch (error) {
     errorMessage.value = error.message;
   } finally {
@@ -46,16 +54,35 @@ async function submit() {
   }
 }
 
-async function finish() {
-  completeSeedSignUp(pendingSession.value);
-  pendingSession.value = null;
+function beginVerification() {
+  if (!confirmed.value) return;
   seedWords.value = [];
-  await router.replace("/dashboard");
+  verificationWords.fill("");
+  phase.value = "verify";
+}
+
+async function finish() {
+  errorMessage.value = "";
+  isSubmitting.value = true;
+  try {
+    await confirmSeedSignUp({
+      ...pendingRegistration.value,
+      words: verificationWords.map((word) => word.trim().toLowerCase()),
+    });
+    pendingRegistration.value = null;
+    verificationWords.fill("");
+    await router.replace("/dashboard");
+  } catch (error) {
+    errorMessage.value = error.message;
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 onBeforeUnmount(() => {
   seedWords.value = [];
-  pendingSession.value = null;
+  pendingRegistration.value = null;
+  verificationWords.fill("");
 });
 </script>
 
@@ -65,7 +92,7 @@ onBeforeUnmount(() => {
     <section class="auth-form-side">
       <NuxtLink class="auth-logo" to="/" aria-label="Mecorion"><span class="workspace-brand__mark">M</span><strong>Mecorion</strong></NuxtLink>
 
-      <UiForm v-if="!seedWords.length" class="auth-card" novalidate :loading="isSubmitting" :error="errorMessage" error-title="Не удалось зарегистрироваться" @submit="submit">
+      <UiForm v-if="phase === 'form'" class="auth-card" novalidate :loading="isSubmitting" :error="errorMessage" error-title="Не удалось зарегистрироваться" @submit="submit">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Регистрация</p>
           <h1>Создать аккаунт по SeedPhrase</h1>
@@ -80,7 +107,7 @@ onBeforeUnmount(() => {
         </div>
       </UiForm>
 
-      <div v-else class="auth-card auth-card--seed-result">
+      <div v-else-if="phase === 'display'" class="auth-card auth-card--seed-result">
         <div class="auth-card__heading">
           <p class="workspace-eyebrow">Ваш ключ доступа</p>
           <h1>Сохраните SeedPhrase</h1>
@@ -88,8 +115,23 @@ onBeforeUnmount(() => {
         </div>
         <SecureSeedPhrase :words="seedWords" />
         <UiCheckbox v-model="confirmed" class="auth-seed-confirm">Я записал SeedPhrase и понимаю, что без неё потеряю доступ</UiCheckbox>
-        <UiButton variant="primary" size="lg" :disabled="!confirmed" @click="finish">Продолжить</UiButton>
+        <UiButton variant="primary" size="lg" :disabled="!confirmed" @click="beginVerification">Я сохранил фразу</UiButton>
       </div>
+
+      <UiForm v-else class="auth-card" autocomplete="off" :loading="isSubmitting" :error="errorMessage" error-title="Не удалось подтвердить SeedPhrase" @submit="finish">
+        <div class="auth-card__heading">
+          <p class="workspace-eyebrow">Контрольная проверка</p>
+          <h1>Подтвердите SeedPhrase</h1>
+          <p>Фраза больше не показывается. Введите слова с четырёх случайных позиций.</p>
+        </div>
+        <div class="seed-entry-grid">
+          <div v-for="(position, index) in pendingRegistration.positions" :key="position" class="seed-entry">
+            <span aria-hidden="true">{{ String(position).padStart(2, '0') }}</span>
+            <UiInput v-model="verificationWords[index]" type="password" :label="`Слово №${position}`" autocomplete="off" autocapitalize="none" spellcheck="false" required pattern="[A-Za-z]+" placeholder="seed word" />
+          </div>
+        </div>
+        <UiButton class="auth-submit" type="submit" variant="primary" size="lg" :loading="isSubmitting">Создать аккаунт</UiButton>
+      </UiForm>
     </section>
   </main>
 </template>

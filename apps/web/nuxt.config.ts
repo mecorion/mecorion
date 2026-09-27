@@ -31,7 +31,17 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      mecorionApiUrl: 'http://127.0.0.1:4000',
+      // Browser requests stay on the current origin. In development Nuxt
+      // proxies /api to Fastify; production must route /api the same way.
+      mecorionApiUrl: '/',
+    },
+  },
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'http://127.0.0.1:4000/api',
+        changeOrigin: true,
+      },
     },
   },
   postcss: {
