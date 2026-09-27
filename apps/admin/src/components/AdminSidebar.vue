@@ -24,9 +24,10 @@ const groups = [
     label: "Контроль",
     items: [
       {label: "Модерация", icon: "badge-check", to: "/moderation", ready: true},
-      {label: "Правовые статусы", icon: "circle-alert", to: "/legal", ready: false},
-      {label: "Аудит", icon: "list-music", to: "/audit", ready: false},
-      {label: "Системные события", icon: "cloud", to: "/outbox", ready: false},
+      {label: "Правовые статусы", icon: "circle-alert", to: "/legal", ready: true},
+      {label: "Библиотека", icon: "book", to: "/library", ready: true},
+      {label: "Аудит", icon: "list-music", to: "/audit", ready: true},
+      {label: "Системные события", icon: "cloud", to: "/outbox", ready: true},
     ],
   },
 ];
@@ -68,7 +69,7 @@ function isActive(path: string) {
 
     <div class="admin-sidebar__footer">
       <span class="admin-environment"><i></i>API: apps/api</span>
-      <span class="text-caption">Этап 6 · модерация</span>
+      <span class="text-caption">Этап 7 · операции</span>
     </div>
   </aside>
 </template>

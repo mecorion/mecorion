@@ -1,7 +1,5 @@
 import {AdminApiError} from "./useAdminApi";
 
-const SESSION_KEY = "mecorion.auth.session";
-
 export interface AdminUser {
   id: string;
   username: string;
@@ -12,20 +10,19 @@ export interface AdminUser {
 }
 
 interface AdminSession {
-  token: string;
-  refreshToken?: string;
+  token?: string;
   user: AdminUser;
   createdAt: string;
 }
 
-interface EmailStartResponse {
-  ok: boolean;
+interface SeedChallengeStartResponse {
   challengeId: string;
+  challengeToken: string;
+  positions: number[];
   expiresIn: number;
-  devCode?: string;
 }
 
-interface EmailConfirmResponse {
+interface SignInResponse {
   user: AdminUser;
   tokens: {accessToken: string; refreshToken?: string};
 }
@@ -43,40 +40,38 @@ export function useAdminAuth() {
 
   function hydrate() {
     if (initialized.value || !import.meta.client) return;
+    // Remove the legacy session that exposed tokens to browser JavaScript.
+    localStorage.removeItem("mecorion.auth.session");
     initialized.value = true;
-    try {
-      session.value = JSON.parse(localStorage.getItem(SESSION_KEY) ?? "null");
-    } catch {
-      localStorage.removeItem(SESSION_KEY);
-      session.value = null;
-    }
   }
 
   function persist(nextSession: AdminSession) {
     session.value = nextSession;
-    if (import.meta.client) localStorage.setItem(SESSION_KEY, JSON.stringify(nextSession));
   }
 
   function clear() {
     session.value = null;
-    if (import.meta.client) localStorage.removeItem(SESSION_KEY);
   }
 
-  async function startEmailSignIn(email: string) {
-    return request<EmailStartResponse>("/api/v1/auth/email/sign-in/start", {
+  async function startSeedChallenge(login: string) {
+    return request<SeedChallengeStartResponse>("/api/v1/auth/seed/challenge/start", {
       method: "POST",
-      body: JSON.stringify({email}),
+      body: JSON.stringify({login}),
     });
   }
 
-  async function confirmEmailSignIn(email: string, code: string) {
-    const response = await request<EmailConfirmResponse>("/api/v1/auth/email/confirm", {
+  async function confirmSeedChallenge(input: {
+    login: string;
+    challengeId: string;
+    challengeToken: string;
+    words: string[];
+  }) {
+    const response = await request<SignInResponse>("/api/v1/auth/seed/challenge/confirm", {
       method: "POST",
-      body: JSON.stringify({email, code}),
+      body: JSON.stringify(input),
     });
     const nextSession: AdminSession = {
       token: response.tokens.accessToken,
-      refreshToken: response.tokens.refreshToken,
       user: response.user,
       createdAt: new Date().toISOString(),
     };
@@ -86,16 +81,14 @@ export function useAdminAuth() {
 
   async function validateAccess() {
     hydrate();
-    if (!session.value?.token) return "unauthenticated" as const;
-
     validating.value = true;
     try {
       const response = await request<AdminAccessResponse>(
         "/api/v1/admin/access",
         {},
-        session.value.token,
+        session.value?.token,
       );
-      persist({...session.value, user: response.user});
+      persist({token: session.value?.token, user: response.user, createdAt: session.value?.createdAt ?? new Date().toISOString()});
       return "allowed" as const;
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 403) return "forbidden" as const;
@@ -110,9 +103,8 @@ export function useAdminAuth() {
   }
 
   async function signOut() {
-    const token = session.value?.token;
     try {
-      if (token) await request("/api/v1/auth/logout", {method: "POST"}, token);
+      await request("/api/v1/auth/logout", {method: "POST"}, session.value?.token);
     } finally {
       clear();
     }
@@ -123,8 +115,8 @@ export function useAdminAuth() {
     validating: readonly(validating),
     hydrate,
     clear,
-    startEmailSignIn,
-    confirmEmailSignIn,
+    startSeedChallenge,
+    confirmSeedChallenge,
     validateAccess,
     signOut,
   };
