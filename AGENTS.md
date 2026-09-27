@@ -343,7 +343,11 @@ Health route:
 - В Admin завершены этапы основы и управления доступом: список и создание
   аккаунтов, профиль, статусы, история, роли, permissions и сессии.
 - В Admin реализован базовый CRUD этапа 3: каталог контента, contributors,
-  связи участников с контентом и публикации. Следующий этап — media/storage.
+  связи участников с контентом и публикации.
+- В Admin реализован этап 4 для media pipeline: upload-сессии, storage objects,
+  source assets, привязка к контенту и очередь transcode jobs. Успешное
+  завершение job атомарно создаёт output object/variant и переводит asset в
+  `READY`. Следующий этап — workflow и редакционный процесс.
 
 ### Частично сделано
 
@@ -379,8 +383,9 @@ Health route:
   ffmpeg, обработки метаданных, генерации preview и связи со storage.
 - `packages/contracts` содержит только версию, реальных контрактов API пока нет.
 - `packages/config` и `packages/ui` пока не несут прикладной нагрузки.
-- Admin пока не управляет media/storage, workflow, модерацией, legal, library,
-  audit и outbox. Эти модули остаются следующими этапами.
+- Admin пока не управляет workflow, модерацией, legal, library, audit и outbox.
+  Media/storage управляется на уровне метаданных; реальная передача файлов и
+  выполнение transcode jobs пока отсутствуют.
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.
 - Нет настоящего S3/local-storage abstraction implementation, есть только
   интерфейс.

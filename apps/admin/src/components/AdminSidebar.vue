@@ -16,7 +16,7 @@ const groups = [
     items: [
       {label: "Каталог", icon: "boxes", to: "/content", ready: true},
       {label: "Публикации", icon: "book", to: "/publications", ready: true},
-      {label: "Медиа", icon: "play", to: "/media", ready: false},
+      {label: "Медиа", icon: "play", to: "/media", ready: true},
       {label: "Заявки", icon: "git-pull-request", to: "/workflow", ready: false},
     ],
   },
@@ -68,7 +68,7 @@ function isActive(path: string) {
 
     <div class="admin-sidebar__footer">
       <span class="admin-environment"><i></i>API: apps/api</span>
-      <span class="text-caption">Этап 3 · каталог и публикации</span>
+      <span class="text-caption">Этап 4 · media pipeline</span>
     </div>
   </aside>
 </template>

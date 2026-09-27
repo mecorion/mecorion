@@ -5,7 +5,7 @@
 
 ## Текущий этап
 
-Реализованы этапы 1–3:
+Реализованы этапы 1–4:
 
 - отдельный workspace `@mecorion/admin`;
 - вход зарегистрированного пользователя по email-коду;
@@ -27,6 +27,11 @@
 - создание и редактирование контента и contributors;
 - привязка участника к контенту с доменной ролью;
 - создание публикаций, выбор состава и управление статусом публикации.
+- управление upload-сессиями и регистрацией объектов в storage;
+- создание исходных media assets и вариантов;
+- привязка assets к каноническому контенту;
+- постановка задач транскодирования, смена рабочего статуса и атомарная
+  регистрация результата обработки.
 
 Обычная регистрация не выдаёт административный доступ. Роль и permission
 назначаются через bootstrap/admin API и хранятся в схемах `access` и `account`.
@@ -183,12 +188,66 @@ Authorization: Bearer <accessToken>
 `content.tPublicationContent`. Переход публикации в публичный статус выставляет
 `publishDtm`; это обязательное условие триггера `trgPublicationValidateState`.
 
+## API этапа 4
+
+Все операции ниже требуют административную сессию и permission
+`content.upload`. API управляет метаданными и очередью. Передачу бинарного файла
+в S3/local storage и работу FFmpeg должен выполнять storage adapter и
+`apps/media-worker`; эти части пока не реализованы.
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| `GET` | `/api/v1/admin/media/references` | Справочники media, storage, языков и территорий |
+| `GET` | `/api/v1/admin/media/uploads` | Последние upload-сессии |
+| `POST` | `/api/v1/admin/media/uploads` | Создать upload-сессию на два часа |
+| `PATCH` | `/api/v1/admin/media/uploads/:id/complete` | Подтвердить файл и создать storage object |
+| `GET` | `/api/v1/admin/media/storage-objects` | Зарегистрированные объекты хранилища |
+| `GET` | `/api/v1/admin/media/assets` | Логические media assets |
+| `POST` | `/api/v1/admin/media/source-assets` | Создать asset и SOURCE-вариант из storage object |
+| `GET` | `/api/v1/admin/media/asset-variants` | Исходные и производные варианты assets |
+| `POST` | `/api/v1/admin/media/content-assets` | Привязать asset к контенту с ролью |
+| `GET` | `/api/v1/admin/media/transcode-jobs` | Очередь обработки |
+| `POST` | `/api/v1/admin/media/transcode-jobs` | Поставить SOURCE-вариант в очередь |
+| `PATCH` | `/api/v1/admin/media/transcode-jobs/:id` | Перевести задачу в `RUNNING`, `FAILED` или `CANCELLED` |
+| `POST` | `/api/v1/admin/media/transcode-jobs/:id/complete` | Атомарно создать output object/variant и завершить задачу |
+
+Основные таблицы: `media.tUpload`, `media.tStorageObject`, `media.tAsset`,
+`media.tAssetVariant`, `media.tContentAsset` и `media.tTranscodeJob` вместе с
+их справочниками статусов и ролей.
+
+### Проверка media pipeline через Postman
+
+1. Получить admin access token по инструкции этапа 2.
+2. Создать сессию: `POST {{api}}/api/v1/admin/media/uploads`.
+3. После условной загрузки файла вызвать
+   `PATCH {{api}}/api/v1/admin/media/uploads/:id/complete`:
+
+```json
+{
+  "providerCode": "primary-s3",
+  "bucketName": "mecorion",
+  "objectKey": "video/source/example.mp4",
+  "sizeByte": 1048576,
+  "contentType": "video/mp4",
+  "sha256Hex": "0000000000000000000000000000000000000000000000000000000000000000"
+}
+```
+
+4. Передать полученный `storageObjectId` в
+   `POST {{api}}/api/v1/admin/media/source-assets`.
+5. Взять `assetVariantId` и создать transcode job.
+6. Перевести job в `RUNNING`, затем завершить через endpoint `/complete`,
+   передав location, checksum и код выходного варианта.
+7. Проверить, что job получил `SUCCEEDED`, asset — `READY`, а в списках
+   storage objects и variants появились выходные записи.
+
 ## Дорожная карта
 
 1. Основа Admin и защита доступа — выполнено.
 2. Пользователи, роли, permissions и сессии — выполнено.
 3. Контент, contributors и публикации — выполнено на уровне базового CRUD.
-4. Upload, storage objects, assets и transcode jobs.
+4. Upload, storage objects, assets и transcode jobs — выполнено на уровне API
+   метаданных и Admin; физическая загрузка и worker остаются отдельной задачей.
 5. Workflow и редакционный процесс.
 6. Жалобы, ограничения и апелляции.
 7. Legal, Library, Audit и Outbox.
