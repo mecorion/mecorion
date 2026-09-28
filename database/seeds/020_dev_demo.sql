@@ -127,18 +127,24 @@ BEGIN
         SELECT *
         FROM (VALUES
             ('base@mecorion.local', 'dev-base', 'Dev Base User', 'BASE',
+             'option raccoon focus modify shine letter sweet wall tag job twin input',
              '711adf841beddc2e508d7a6c471e47295b4dbbd0d02076f9a6d800a41e6b9e7a'),
             ('agent@mecorion.local', 'dev-agent', 'Dev Agent User', 'AGENT',
+             'scale stadium chicken flush rate between rely make invest install mistake river',
              'cf3be50af1e302ec978223c534fa02454f66b9bfe9efc77d82de723309be8c22'),
             ('moderator@mecorion.local', 'dev-moderator', 'Dev Moderator User', 'MODERATOR',
+             'evolve copper answer online donate swing dragon memory measure whale stone expire',
              'bd7c51e5d5ca0288eb8596a9de5e24923174a8c5209016416299d47097c64465'),
             ('admin@mecorion.local', 'dev-admin', 'Dev Admin User', 'ADMIN',
+             'hole behind arrange attitude person group merit swim custom announce loop mammal',
              '4e474b18bfae3c6ed5a71561fbfca6f6780fd44c11d2ec9e4ce5261139353bab'),
             ('owner@mecorion.local', 'dev-owner', 'Dev Owner User', 'OWNER',
+             'evoke copy fury offer plate scorpion lottery outside grunt index claw olive',
              'eb7c24ae6bca8464eec930b9b13c1d22315da27561c94220132926bf7c075394'),
             ('founder@mecorion.local', 'dev-founder', 'Dev Founder User', 'FOUNDER',
+             'cruel shiver vacuum wheat timber sword wisdom soon play purchase east jealous',
              '901339c778641c523725bb38782dd452b06020ee5a338e3635dbc9883d000e76')
-        ) seed("email", "username", "displayName", "roleCode", "seedHashHex")
+        ) seed("email", "username", "displayName", "roleCode", "seedPhrase", "seedHashHex")
     LOOP
         SELECT identity."accountId", identity."id"
           INTO vAccountId, vIdentityId
@@ -214,6 +220,26 @@ BEGIN
                 vCredentialHash, 'SHA256', '{"wordlist":"english","environment":"dev"}'::JSONB
             );
         END IF;
+
+        -- Верификаторы позволяют проверить запрошенные позиции, не сохраняя
+        -- отдельные слова seed phrase в auth-схеме.
+        UPDATE auth."tCredential" credential
+           SET "algorithmParameters" = jsonb_build_object(
+               'wordlist', 'english',
+               'environment', 'dev',
+               'wordCount', array_length(regexp_split_to_array(vUser."seedPhrase", '\s+'), 1),
+               'wordVerifiers', (
+                   SELECT jsonb_agg(
+                       encode(hmac(seedWord."word", 'mecorion-dev-seed-pepper', 'sha256'), 'hex')
+                       ORDER BY seedWord."position"
+                   )
+                   FROM unnest(regexp_split_to_array(vUser."seedPhrase", '\s+'))
+                        WITH ORDINALITY AS seedWord("word", "position")
+               )
+           )
+         WHERE credential."accountId" = vAccountId
+           AND credential."credentialTypeId" = vRecoverySeedCredentialTypeId
+           AND credential."revokeDtm" IS NULL;
 
         SELECT "id" INTO STRICT vRoleId FROM access."tRole" WHERE "code" = 'BASE';
         INSERT INTO access."tRoleAssignment" (

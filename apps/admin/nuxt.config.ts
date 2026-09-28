@@ -37,7 +37,17 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      mecorionApiUrl: "http://127.0.0.1:4000",
+      // Keep authentication first-party. Both Web and Admin call /api on the
+      // current host, while Nuxt proxies development traffic to Fastify.
+      mecorionApiUrl: "/",
+    },
+  },
+  nitro: {
+    devProxy: {
+      "/api": {
+        target: "http://127.0.0.1:4000/api",
+        changeOrigin: true,
+      },
     },
   },
   alias: {
