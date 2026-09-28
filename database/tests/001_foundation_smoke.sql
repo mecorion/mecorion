@@ -73,7 +73,7 @@ BEGIN
         "accountId", "resourceId", "username", "displayName"
     ) VALUES (
         vAccountId, vProfileResourceId,
-        'foundation_smoke_user', 'Foundation Smoke User'
+        'foundation_smoke_user', 'Test User'
     );
 
     INSERT INTO account."tPersonAnchor" (

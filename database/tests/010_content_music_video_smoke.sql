@@ -76,10 +76,10 @@ BEGIN
 
     INSERT INTO core."tResource" ("resourceTypeId") VALUES (vContributorResourceTypeId) RETURNING "id" INTO vContributorResourceId;
     INSERT INTO content."tContributor" ("resourceId", "contributorKindId", "primaryName", "normalizedName", "createByAccountId")
-    VALUES (vContributorResourceId, vContributorKindId, 'Snoop Dog', 'snoop dog', vAccountId)
+    VALUES (vContributorResourceId, vContributorKindId, 'Test Artist', 'test artist', vAccountId)
     RETURNING "id" INTO vContributorId;
     INSERT INTO content."tContributorName" ("contributorId", "nameType", "name", "normalizedName")
-    VALUES (vContributorId, 'ALIAS', 'Snoop dog', 'snoop dog');
+    VALUES (vContributorId, 'ALIAS', 'Test Artist Alias', 'test artist alias');
     INSERT INTO content."tContentContributor" ("contentId", "contributorId", "contributorRoleId")
     VALUES (vTrackContentId, vContributorId, vArtistRoleId);
 

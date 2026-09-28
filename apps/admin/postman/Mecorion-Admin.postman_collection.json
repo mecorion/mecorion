@@ -1,0 +1,120 @@
+{
+  "info": {
+    "name": "Mecorion Admin API",
+    "description": "Проверка аутентификации и основных административных сценариев Mecorion API. Перед запросами заполните переменные коллекции.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{"key": "token", "value": "{{accessToken}}", "type": "string"}]
+  },
+  "variable": [
+    {"key": "api", "value": "http://127.0.0.1:4000"},
+    {"key": "accessToken", "value": ""},
+    {"key": "login", "value": "admin@mecorion.local"},
+    {"key": "challengeId", "value": ""},
+    {"key": "challengeToken", "value": ""},
+    {"key": "seedWord1", "value": ""},
+    {"key": "seedWord2", "value": ""},
+    {"key": "seedWord3", "value": ""},
+    {"key": "seedWord4", "value": ""},
+    {"key": "accountId", "value": ""},
+    {"key": "contentId", "value": ""},
+    {"key": "resourceId", "value": ""},
+    {"key": "publicationId", "value": ""},
+    {"key": "requestId", "value": ""},
+    {"key": "reportId", "value": ""},
+    {"key": "restrictionId", "value": ""},
+    {"key": "licenseId", "value": ""},
+    {"key": "takedownId", "value": ""},
+    {"key": "collectionId", "value": ""},
+    {"key": "deviceId", "value": ""},
+    {"key": "outboxEventId", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "01 · Авторизация",
+      "item": [
+        {"name": "Запросить позиции seed phrase", "auth": {"type": "noauth"}, "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"login\": \"{{login}}\"\n}"}, "url": "{{api}}/api/v1/auth/seed/challenge/start"}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["const payload = pm.response.json();", "pm.collectionVariables.set('challengeId', payload.challengeId);", "pm.collectionVariables.set('challengeToken', payload.challengeToken);", "console.log('Введите слова с позиций:', payload.positions.join(', '));"]}}]},
+        {"name": "Подтвердить четыре слова", "auth": {"type": "noauth"}, "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"login\": \"{{login}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"challengeToken\": \"{{challengeToken}}\",\n  \"words\": [\"{{seedWord1}}\", \"{{seedWord2}}\", \"{{seedWord3}}\", \"{{seedWord4}}\"]\n}"}, "url": "{{api}}/api/v1/auth/seed/challenge/confirm"}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["const payload = pm.response.json();", "if (payload.tokens?.accessToken) pm.collectionVariables.set('accessToken', payload.tokens.accessToken);"]}}]},
+        {"name": "Проверить Admin-доступ", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/access"}}
+      ]
+    },
+    {
+      "name": "02 · Пользователи и доступ",
+      "item": [
+        {"name": "Список пользователей", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/accounts?page=1&pageSize=20"}},
+        {"name": "Карточка пользователя", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/accounts/{{accountId}}"}},
+        {"name": "Роли", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/roles"}},
+        {"name": "Разрешения", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/permissions"}}
+      ]
+    },
+    {
+      "name": "03 · Контент и публикации",
+      "item": [
+        {"name": "Справочники контента", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/content/references"}},
+        {"name": "Каталог", "request": {"method": "GET", "url": "{{api}}/api/v1/content?limit=50"}},
+        {"name": "Публикации", "request": {"method": "GET", "url": "{{api}}/api/v1/publications?limit=50"}},
+        {"name": "Создать контент", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"typeCode\": \"TRACK\",\n  \"statusCode\": \"DRAFT\",\n  \"originalTitle\": \"Test Content\",\n  \"metadata\": {}\n}"}, "url": "{{api}}/api/v1/admin/content"}}
+      ]
+    },
+    {
+      "name": "04 · Media и Workflow",
+      "item": [
+        {"name": "Media references", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/media/references"}},
+        {"name": "Upload sessions", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/media/uploads?limit=50"}},
+        {"name": "Transcode jobs", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/media/transcode-jobs?limit=50"}},
+        {"name": "Workflow queue", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/workflow/requests?limit=50"}},
+        {"name": "Workflow detail", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/workflow/requests/{{requestId}}"}}
+      ]
+    },
+    {
+      "name": "05 · Модерация",
+      "item": [
+        {"name": "Справочники", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/moderation/references"}},
+        {"name": "Жалобы", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/moderation/reports?limit=50"}},
+        {"name": "Ограничения", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/moderation/restrictions?limit=50"}},
+        {"name": "Апелляции", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/moderation/appeals?limit=50"}},
+        {"name": "Перевести жалобу в triage", "request": {"method": "PATCH", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"statusCode\": \"TRIAGE\",\n  \"resolutionNote\": \"Принято в работу\"\n}"}, "url": "{{api}}/api/v1/admin/moderation/reports/{{reportId}}/status"}}
+      ]
+    },
+    {
+      "name": "06 · Legal",
+      "item": [
+        {"name": "Справочники", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/legal/references"}},
+        {"name": "Статусы ресурсов", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/legal/resource-statuses?active=all"}},
+        {"name": "Назначить статус", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"resourceId\": \"{{resourceId}}\",\n  \"legalStatusCode\": \"DECLARED\",\n  \"territoryCode\": \"WORLD\",\n  \"sourceType\": \"LEGAL_REVIEW\",\n  \"evidence\": {\"source\": \"postman\"}\n}"}, "url": "{{api}}/api/v1/admin/legal/resource-statuses"}},
+        {"name": "Лицензии", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/legal/licenses"}},
+        {"name": "Создать лицензию", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"resourceId\": \"{{resourceId}}\",\n  \"licenseTypeCode\": \"DIRECT\",\n  \"licenseReference\": \"POSTMAN-TEST\",\n  \"territoryCodes\": [\"WORLD\"]\n}"}, "url": "{{api}}/api/v1/admin/legal/licenses"}},
+        {"name": "Takedowns", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/legal/takedowns"}},
+        {"name": "Создать takedown", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"resourceId\": \"{{resourceId}}\",\n  \"territoryCode\": \"WORLD\",\n  \"reasonCode\": \"POSTMAN_TEST\"\n}"}, "url": "{{api}}/api/v1/admin/legal/takedowns"}},
+        {"name": "Версии политик", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/legal/policy-versions"}}
+      ]
+    },
+    {
+      "name": "07 · Library",
+      "item": [
+        {"name": "Устройства", "request": {"method": "GET", "url": "{{api}}/api/v1/library/devices"}},
+        {"name": "Мои коллекции", "request": {"method": "GET", "url": "{{api}}/api/v1/library/collections"}},
+        {"name": "Создать коллекцию", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"typeCode\": \"MIXED\",\n  \"name\": \"Test Collection\",\n  \"visibility\": \"PRIVATE\"\n}"}, "url": "{{api}}/api/v1/library/collections"}},
+        {"name": "Прогресс", "request": {"method": "GET", "url": "{{api}}/api/v1/library/playback-progress"}},
+        {"name": "Записать прогресс", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"contentId\": \"{{contentId}}\",\n  \"eventType\": \"PROGRESS\",\n  \"positionMs\": 60000,\n  \"durationMs\": 600000\n}"}, "url": "{{api}}/api/v1/library/playback-events"}},
+        {"name": "Offline grants", "request": {"method": "GET", "url": "{{api}}/api/v1/library/offline-grants"}},
+        {"name": "Admin collections", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/library/collections"}},
+        {"name": "Admin offline grants", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/library/offline-grants"}}
+      ]
+    },
+    {
+      "name": "08 · Audit и Outbox",
+      "item": [
+        {"name": "Audit references", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/audit/references"}},
+        {"name": "Audit events", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/audit/events?limit=100"}},
+        {"name": "Outbox events", "request": {"method": "GET", "url": "{{api}}/api/v1/admin/outbox/events?state=all"}},
+        {"name": "Создать событие", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"ownerServiceCode\": \"core\",\n  \"eventType\": \"postman.test.created\",\n  \"payload\": {\"source\": \"postman\"}\n}"}, "url": "{{api}}/api/v1/admin/outbox/events"}},
+        {"name": "Зафиксировать ошибку", "request": {"method": "PATCH", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"error\": \"Тестовая ошибка доставки\"\n}"}, "url": "{{api}}/api/v1/admin/outbox/events/{{outboxEventId}}/fail"}},
+        {"name": "Повторить событие", "request": {"method": "PATCH", "url": "{{api}}/api/v1/admin/outbox/events/{{outboxEventId}}/retry"}},
+        {"name": "Зафиксировать доставку", "request": {"method": "PATCH", "url": "{{api}}/api/v1/admin/outbox/events/{{outboxEventId}}/publish"}}
+      ]
+    }
+  ]
+}
