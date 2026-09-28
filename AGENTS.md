@@ -46,6 +46,10 @@ API:
 npm run api:dev
 npm run api:build
 npm run api:typecheck
+npm run auth:keys
+npm run api:dev:auth
+npm run api:dev:no-auth
+npm run api:dev:no-auth:base
 ```
 
 PostgreSQL через Docker:
@@ -94,10 +98,15 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
   большой буквы, например `tUser`, `tPerson`;
 - не создавать отдельные базы вроде `mecorion_music`.
 
-Текущие миграции:
+Текущие миграции находятся в `database/migrations` и применяются по порядку:
+от `000_bootstrap.sql` до `130_audit.sql`. Состояние runner хранит в
+`public.mecorion_api_migrations`.
 
-- `apps/api/database/migrations/001_initial_music_schema.sql`;
-- `apps/api/database/migrations/002_identity_auth_schema.sql`.
+Если таблицы были импортированы из дампа без заполненного журнала, мигратор
+намеренно остановится до повторного `CREATE`. Не добавлять записи в журнал
+автоматически: сначала нужно сверить структуру импортированной базы. Команда
+`npm run db:test` проверяет фактические таблицы и может безопасно работать с
+такой базой, потому что smoke-тесты завершаются через `ROLLBACK`.
 
 ## Frontend
 
@@ -108,6 +117,8 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
 - `/` — landing;
 - `/sign-in` — авторизация;
 - `/sign-up` — регистрация;
+- `/sign-in-seed` — рабочий вход по логину и четырём словам seed phrase;
+- `/sign-up-seed` — рабочая регистрация с однократной выдачей seed phrase;
 - `/dashboard` — общий dashboard экосистемы;
 - `/profile` — профиль пользователя с mock API ролей;
 - `/spaces` — корневое пространство/каталог контента;
@@ -130,9 +141,10 @@ apps/web/src/components/workspace/WorkspaceLayout.vue
 Контекст сервиса также передаёт его `accent`, `accentStrong` и при необходимости
 `accentContrast`, чтобы общий layout сохранял фирменный primary-цвет сервиса.
 
-Проверка авторизации при навигации отключена для удобной разработки.
-Метаданные `requiresAuth` / `guestOnly` сохранены в `definePageMeta`, но
-middleware их не применяет. Не включать проверку без отдельной задачи.
+Глобальный middleware применяет `requiresAuth` / `guestOnly`. Сессию он
+восстанавливает через `/auth/me`, а при истёкшем access token выполняет
+ротацию refresh token. Email-страницы пока показывают сообщение «Скоро»;
+рабочий пользовательский сценарий использует seed phrase.
 
 ### Обязательное правило для нового интерфейса
 
@@ -271,10 +283,39 @@ apps/api/src/
 
 Auth routes:
 
-- `POST /api/v1/auth/sign-up`;
-- `POST /api/v1/auth/sign-in`;
+- `POST /api/v1/auth/seed/register` — создать `PENDING`-аккаунт и один раз
+  показать BIP39 seed phrase;
+- `POST /api/v1/auth/seed/register/confirm` — проверить четыре слова,
+  активировать аккаунт и создать сессию;
+- `POST /api/v1/auth/seed/challenge/start` — запрос четырёх случайных позиций;
+- `POST /api/v1/auth/seed/challenge/confirm` — вход по словам с этих позиций;
+- `POST /api/v1/auth/refresh` — ротация refresh token;
 - `GET /api/v1/auth/me`;
 - `POST /api/v1/auth/logout`.
+
+Web и Admin используют одну HttpOnly cookie-сессию API, поэтому повторный вход
+между сервисами не нужен. Admin поверх общей авторизации проверяет `ADMIN` и
+`platform.admin`. Клиент поддерживает один текущий аккаунт и не хранит refresh
+token в `localStorage`. RS256-ключи создаются `npm run auth:keys`; приватный
+PEM игнорируется Git. `JWT_SECRET` оставлен только для тестового HS256, refresh
+token является отдельным случайным секретом и хранится в БД в виде digest.
+В браузере API вызывается по относительному `/api`: Nuxt devProxy направляет
+его в Fastify. Не возвращать прямой cross-origin URL без отдельной cookie/CORS
+архитектуры, иначе общий вход Web/Admin сломается из-за SameSite.
+
+Для локальной разработки API поддерживает два режима. `AUTH_MODE=required`
+использует обычные JWT/cookie-сессии. `AUTH_MODE=dev-bypass` пропускает только
+проверку JWT и загружает реальный seeded-аккаунт `DEV_AUTH_ACCOUNT` из БД;
+RBAC, restrictions и Admin gate продолжают работать. Bypass разрешён только
+при `NODE_ENV=development`, loopback `HOST` и локальном hostname PostgreSQL.
+Основные команды: `npm run api:dev:auth`, `npm run api:dev:no-auth` для
+`dev-admin`, `npm run api:dev:no-auth:base` для `dev-base`.
+
+Seed challenge использует логин и четыре слова. Позиционные проверки хранятся
+в `auth.tCredential.algorithmParameters` как HMAC с `AUTH_SEED_PEPPER`; открытые
+слова в БД не сохраняются. После обновления локальных dev-аккаунтов выполнять
+`npm run db:seed`. Тестовые фразы перечислены только в
+`database/seeds/DEV_USERS.md`.
 
 Health route:
 
@@ -353,17 +394,28 @@ Health route:
 - В Admin реализован этап 6: жалобы с отправителем и целевым resource,
   ограничения аккаунтов и апелляции. `OVERTURNED` атомарно отзывает связанную
   санкцию. `requirePermission` применяет активные global/service restrictions;
-  resource-scoped enforcement ещё не реализован. Следующий этап — legal,
-  library, audit и outbox.
+  resource-scoped enforcement ещё не реализован.
+- В Admin реализован этап 7: правовые статусы, лицензии, takedown, версии
+  политик, пользовательские коллекции, offline grants, playback progress,
+  неизменяемый аудит и диагностика transactional outbox.
+- В Admin добавлен `/admin/platform` для управления глобальным Sidebar:
+  группами, названиями, иконками, порядком, видимостью и route-доступом по
+  ролям. Правила хранятся в `core.tUiNavigation*`; Web получает их через
+  `/api/v1/platform/navigation` и возвращает `404` для запрещённых страниц.
+  По умолчанию несистемные роли видят только Главную, Профиль и Настройки.
+  Полный доступ имеют `ADMIN`, `OWNER`, `FOUNDER`, `DEVELOPER`.
+- Для стабилизации добавлены `npm run api:test`, `npm run db:test` и
+  `npm run admin:check`. Postman-коллекция лежит в
+  `apps/admin/postman/Mecorion-Admin.postman_collection.json`. SQL smoke-тесты
+  транзакционные и не оставляют фикстуры. Все проверки этапа 8 проходят.
+  Следующий этап — логическое разделение результата на коммиты/PR.
 
 ### Частично сделано
 
-- Авторизация:
-  - backend auth routes реализованы;
-  - frontend sign-in/sign-up умеют обращаться к API;
-  - frontend session хранится в `localStorage`;
-  - auth middleware отключено для удобной разработки. Это осознанное
-    состояние, не включать без отдельной задачи.
+- Авторизация по seed phrase работает end-to-end с RS256, ротацией refresh,
+  HttpOnly cookie, route guard и общей Web/Admin-сессией. Email-auth пока не
+  включён в Web; страницы сохранены как «Скоро». Для production ещё нужны
+  внешний secret manager, TLS/reverse proxy и распределённый rate limiter.
 - Music backend:
   - есть таблицы artists/albums/tracks/genres/playlists/likes/history/lyrics;
   - есть `GET /api/v1/artists`, `GET /api/v1/albums`;
@@ -390,9 +442,11 @@ Health route:
   ffmpeg, обработки метаданных, генерации preview и связи со storage.
 - `packages/contracts` содержит только версию, реальных контрактов API пока нет.
 - `packages/config` и `packages/ui` пока не несут прикладной нагрузки.
-- Admin пока не управляет legal, library, audit и outbox.
-  Media/storage управляется на уровне метаданных; реальная передача файлов и
+- Media/storage управляется на уровне метаданных; реальная передача файлов и
   выполнение transcode jobs пока отсутствуют.
+- Для `core.tOutboxEvent` пока нет фонового dispatcher/broker. Admin умеет
+  диагностировать события и вручную фиксировать publish/failure/retry, но это
+  не заменяет автоматическую доставку.
 - Нет backend-модулей для Video, Book, Course, Cloud, Mail, VPN, Spaces.
 - Нет настоящего S3/local-storage abstraction implementation, есть только
   интерфейс.
@@ -409,11 +463,11 @@ Health route:
    - привести все новые страницы к `WorkspaceLayout` или осознанно выделить
      отдельный layout для сервисов.
 
-2. Вернуть контролируемую авторизацию:
-   - включить route guard только после проверки sign-in/sign-up с API;
-   - добавить понятные состояния ошибок API на формах;
-   - добавить logout в общий layout;
-   - решить, где хранить user-role и как обновлять профиль после `/auth/me`.
+2. Усилить production-авторизацию:
+   - подключить внешний secret manager для RS256 private key и seed pepper;
+   - добавить распределённый rate limiter для auth endpoints;
+   - реализовать email-auth после готовности почтовой инфраструктуры;
+   - добавить управление доверенными устройствами и сессиями пользователя.
 
 3. Подключить Music frontend к API:
    - заменить часть `catalog.js` на загрузку `/api/v1/tracks`;

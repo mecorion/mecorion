@@ -5,10 +5,11 @@
 
 ## Текущий этап
 
-Реализованы этапы 1–6:
+Реализованы этапы 1–7:
 
 - отдельный workspace `@mecorion/admin`;
-- вход зарегистрированного пользователя по email-коду;
+- вход зарегистрированного пользователя по логину и четырём случайно
+  выбранным словам seed phrase;
 - обязательная роль `ADMIN`;
 - обязательное разрешение `platform.admin`;
 - повторная серверная проверка каждого `/api/v1/admin/*` запроса;
@@ -38,16 +39,23 @@
 - очередь жалоб с отображением отправителя и целевого ресурса;
 - создание и управление ограничениями аккаунтов;
 - рассмотрение апелляций с атомарным отзывом отменённой санкции.
+- управление правовыми статусами, лицензиями, takedown и версиями политик;
+- операционный обзор пользовательских коллекций, offline grants и прогресса;
+- фильтруемый неизменяемый журнал аудита;
+- диагностика transactional outbox, ручная фиксация доставки и повтор события.
 
 Обычная регистрация не выдаёт административный доступ. Роль и permission
 назначаются через bootstrap/admin API и хранятся в схемах `access` и `account`.
-Форма использует sign-in-only endpoint `/api/v1/auth/email/sign-in/start`:
-неизвестный email не создаёт новый аккаунт.
+Форма использует sign-in-only endpoints `/api/v1/auth/seed/challenge/start` и
+`/api/v1/auth/seed/challenge/confirm`: неизвестный логин не создаёт аккаунт.
+API возвращает только номера четырёх позиций, а не правильные слова. Challenge
+одноразовый, живёт 10 минут и блокируется после пяти неверных попыток.
 
 ## Локальный запуск
 
 ```bash
 npm install
+npm run auth:keys
 npm run db:up
 npm run db:migrate
 npm run db:seed
@@ -60,15 +68,29 @@ npm run admin:dev
 - Admin: `http://127.0.0.1:5174/admin/`
 - API: `http://127.0.0.1:4000`
 
-В `.env` API должны быть разрешены оба frontend origin:
+Frontend обращается к относительному `/api`. В development Nuxt проксирует
+этот путь в Fastify; прямой cross-origin URL здесь использовать нельзя, иначе
+`SameSite` cookie не будет общей с Web. В `.env` API origins остаются нужны для
+прямых инструментальных запросов и возможной отдельной deployment-схемы:
 
 ```env
-CORS_ORIGIN=http://127.0.0.1:5173,http://127.0.0.1:5174
+CORS_ORIGIN=http://127.0.0.1:5173,http://127.0.0.1:5174,http://localhost:5173,http://localhost:5174
 ```
 
-При `MAIL_DEV_MODE=true` API возвращает тестовый код подтверждения. Admin
-показывает его только в локальной форме входа. В production `MAIL_DEV_MODE`
-должен быть `false`.
+Для dev-admin используется seed phrase из `database/seeds/DEV_USERS.md`.
+После изменения seed-логики или первой настройки локальной базы повторно
+выполните `npm run db:seed`, чтобы создать позиционные HMAC-проверки. В БД не
+хранятся открытые слова. Production должен задавать отдельный секрет
+`AUTH_SEED_PEPPER` длиной не менее 16 символов.
+
+Отдельно входить в Admin не требуется, если пользователь уже вошёл в основной
+Web на том же домене: оба приложения используют HttpOnly cookie Mecorion API.
+`GET /api/v1/admin/access` всё равно проверяет роль и permission на сервере.
+Если аккаунт обычный, общая авторизация сохранится, но Admin вернёт `403`.
+Для локальной разработки открывайте оба приложения через один hostname:
+например, только `localhost`, а не смесь `localhost` и `127.0.0.1`, потому что
+для браузера это разные cookie-домены. Порты могут отличаться: cookie к порту
+не привязана.
 
 ## Контроль доступа
 
@@ -100,6 +122,27 @@ Admin не импортирует общий `apps/web/src/styles/main.scss`. В
 разделяет страницы на route chunks, CSS также собирается раздельно. В shell нет
 растровых изображений и внешних шрифтов. Списки следующих этапов будут получать
 данные только через серверную пагинацию.
+
+## Автоматические проверки
+
+```bash
+npm run api:typecheck
+npm run api:test
+npm run db:test
+npm run admin:build
+```
+
+Или одной командой для быстрых проверок без PostgreSQL:
+
+```bash
+npm run admin:check
+```
+
+`db:test` требует запущенный PostgreSQL с полной схемой и справочниками. Обычно
+они создаются через `db:migrate` и `db:seed`; проверенная база из дампа также
+поддерживается. Тестовые SQL-сценарии выполняются в транзакциях с `ROLLBACK` и
+не оставляют фикстуры. Postman-коллекция находится в
+`apps/admin/postman/Mecorion-Admin.postman_collection.json`.
 
 ## API этапа 2
 
@@ -143,13 +186,16 @@ Authorization: Bearer <accessToken>
 
 ### Проверка через Postman
 
-1. Выполнить `POST /api/v1/auth/email/sign-in/start` с email администратора.
-2. Выполнить `POST /api/v1/auth/email/confirm` и сохранить `tokens.accessToken`.
-3. Создать переменные окружения `api = http://127.0.0.1:4000` и
+1. Выполнить `POST /api/v1/auth/seed/challenge/start` с email или username
+   администратора.
+2. По массиву `positions` найти четыре слова в seed phrase и передать их в том
+   же порядке в `POST /api/v1/auth/seed/challenge/confirm`.
+3. Сохранить `tokens.accessToken`.
+4. Создать переменные окружения `api = http://127.0.0.1:4000` и
    `token = <accessToken>`.
-4. Добавить к административным запросам `Authorization: Bearer {{token}}`.
-5. Проверить список: `GET {{api}}/api/v1/admin/accounts?page=1&pageSize=20`.
-6. Взять `items[0].id` и вызвать `GET {{api}}/api/v1/admin/accounts/:id`.
+5. Добавить к административным запросам `Authorization: Bearer {{token}}`.
+6. Проверить список: `GET {{api}}/api/v1/admin/accounts?page=1&pageSize=20`.
+7. Взять `items[0].id` и вызвать `GET {{api}}/api/v1/admin/accounts/:id`.
 
 Пример изменения статуса:
 
@@ -379,6 +425,163 @@ scope может заблокировать все или конкретное p
 6. Проверить через список restrictions, что статус стал `REVOKED`, а
    `revokeDtm` заполнен.
 
+## API этапа 7
+
+Этап объединяет четыре операционных контура. Legal определяет возможность
+публикации ресурса, Library хранит пользовательское состояние, Audit является
+append-only журналом, а Outbox хранит события для доставки между доменами.
+
+### Legal
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| `GET` | `/api/v1/legal/policies` | Действующие публичные политики |
+| `POST` | `/api/v1/legal/policies/:versionId/accept` | Принять версию политики |
+| `GET` | `/api/v1/admin/legal/references` | Ресурсы и правовые справочники для форм |
+| `GET` | `/api/v1/admin/legal/resource-statuses` | История статусов; фильтры `q`, `active` |
+| `POST` | `/api/v1/admin/legal/resource-statuses` | Атомарно заменить активный статус территории |
+| `GET` | `/api/v1/admin/legal/licenses` | Лицензии и их территории |
+| `POST` | `/api/v1/admin/legal/licenses` | Зарегистрировать лицензию |
+| `PATCH` | `/api/v1/admin/legal/licenses/:id/revoke` | Отозвать лицензию |
+| `GET` | `/api/v1/admin/legal/takedowns` | Требования об ограничении ресурса |
+| `POST` | `/api/v1/admin/legal/takedowns` | Создать takedown |
+| `PATCH` | `/api/v1/admin/legal/takedowns/:id/revoke` | Отозвать takedown |
+| `GET` | `/api/v1/admin/legal/policy-versions` | Версии документов и число принятий |
+| `POST` | `/api/v1/admin/legal/policy-versions` | Создать версию документа |
+
+Основные таблицы: `legal.tResourceLegalStatus`, `legal.tLegalStatus`,
+`legal.tLicense`, `legal.tLicenseTerritory`, `legal.tTakedown`,
+`legal.tPolicyDocument`, `legal.tPolicyVersion` и
+`legal.tAccountPolicyAcceptance`. Статус уникален для пары
+`resource + territory`, пока не заполнен `revokeDtm`. История не удаляется.
+
+Пример назначения статуса:
+
+```json
+{
+  "resourceId": "<resource-uuid>",
+  "legalStatusCode": "LICENSED",
+  "territoryCode": "WORLD",
+  "sourceType": "LEGAL_REVIEW",
+  "evidence": {"case": "manual-check"}
+}
+```
+
+Пример лицензии:
+
+```json
+{
+  "resourceId": "<resource-uuid>",
+  "licenseTypeCode": "DIRECT",
+  "evidenceStorageObjectId": "<storage-object-uuid>",
+  "licenseReference": "CONTRACT-2026-001",
+  "territoryCodes": ["WORLD"],
+  "validFromDt": "2026-01-01"
+}
+```
+
+Пример takedown:
+
+```json
+{
+  "resourceId": "<resource-uuid>",
+  "territoryCode": "WORLD",
+  "reasonCode": "COPYRIGHT_CLAIM"
+}
+```
+
+### Library
+
+Пользовательские endpoints требуют обычную активную сессию. Административные
+списки и операции требуют роль `ADMIN` вместе с `platform.admin`.
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| `GET` | `/api/v1/library/devices` | Активные устройства для выдачи offline grant |
+| `GET/POST` | `/api/v1/library/collections` | Список и создание своих коллекций |
+| `GET` | `/api/v1/library/collections/:collectionId` | Коллекция вместе с активными элементами |
+| `POST` | `/api/v1/library/collections/:collectionId/items` | Добавить resource в коллекцию |
+| `DELETE` | `/api/v1/library/collections/:collectionId/items/:resourceId` | Мягко удалить элемент |
+| `GET` | `/api/v1/library/favorites` | Избранные ресурсы пользователя |
+| `PUT/DELETE` | `/api/v1/library/favorites/:resourceId` | Добавить или удалить избранное |
+| `POST` | `/api/v1/library/playback-events` | Записать событие и обновить прогресс |
+| `GET` | `/api/v1/library/playback-progress` | Последний прогресс пользователя |
+| `GET/POST` | `/api/v1/library/offline-grants` | Список и создание offline grants |
+| `DELETE` | `/api/v1/library/offline-grants/:id` | Отозвать свой grant |
+| `GET` | `/api/v1/admin/library/collections` | Все активные коллекции |
+| `DELETE` | `/api/v1/admin/library/collections/:id` | Мягко удалить коллекцию |
+| `GET` | `/api/v1/admin/library/offline-grants` | Все offline grants |
+| `PATCH` | `/api/v1/admin/library/offline-grants/:id/revoke` | Отозвать grant администратором |
+| `GET` | `/api/v1/admin/library/playback-progress` | Диагностика последнего прогресса |
+
+Основные таблицы: `library.tCollection`, `library.tCollectionItem`,
+`library.tFavorite`, `library.tPlaybackProgress`, `library.tPlaybackEvent`,
+`library.tOfflineGrant` и `library.tOfflineGrantAsset`. Удаление коллекций и
+их элементов мягкое. Playback events не заменяют progress: первые нужны для
+аналитики, второй — для быстрого продолжения просмотра или чтения.
+
+Пример события воспроизведения:
+
+```json
+{
+  "contentId": "<content-uuid>",
+  "eventType": "PROGRESS",
+  "positionMs": 180000,
+  "durationMs": 3600000
+}
+```
+
+Для offline grant передаётся public ID активного устройства текущего аккаунта:
+
+```json
+{
+  "deviceId": "<device-uuid>",
+  "contentId": "<content-uuid>",
+  "ttlHours": 72
+}
+```
+
+К grant автоматически привязываются только варианты media asset с
+`isOfflineAllowed = true`, уже связанные с выбранным content.
+
+### Audit и Outbox
+
+| Метод | Endpoint | Назначение |
+| --- | --- | --- |
+| `GET` | `/api/v1/admin/audit/references` | Категории, сервисы и исходы |
+| `GET` | `/api/v1/admin/audit/events` | Аудит; `q`, `category`, `service`, `outcome`, `limit` |
+| `GET` | `/api/v1/admin/outbox/events` | События; `q`, `service`, `state` |
+| `POST` | `/api/v1/admin/outbox/events` | Вручную поставить событие в outbox |
+| `PATCH` | `/api/v1/admin/outbox/events/:id/publish` | Зафиксировать успешную доставку |
+| `PATCH` | `/api/v1/admin/outbox/events/:id/fail` | Записать неудачную попытку |
+| `PATCH` | `/api/v1/admin/outbox/events/:id/retry` | Очистить ошибку и вернуть в ожидание |
+
+`audit.tAuditEvent` запрещено редактировать и удалять: это обеспечивается
+триггером базы данных. `core.tOutboxEvent` является transactional outbox, но
+реальный dispatcher/broker пока не реализован. Кнопки Admin изменяют состояние
+для диагностики и аварийного восстановления, а не заменяют будущий worker.
+
+Пример ручного события:
+
+```json
+{
+  "ownerServiceCode": "content",
+  "eventType": "content.publication.changed",
+  "aggregatePublicId": "<publication-uuid>",
+  "payload": {"source": "postman"}
+}
+```
+
+Проверка этапа через Postman:
+
+1. Получить admin token по сценарию этапа 2 и запросить legal references.
+2. Взять `resources[0].id`, назначить ему статус и создать лицензию.
+3. Создать takedown, проверить список, затем отозвать его.
+4. С пользовательским token создать коллекцию, добавить resource и удалить его.
+5. Записать playback event и проверить playback progress.
+6. Создать outbox event, записать ошибку, выполнить retry и отметить доставку.
+7. Открыть audit events и убедиться, что административные операции записаны.
+
 ## Дорожная карта
 
 1. Основа Admin и защита доступа — выполнено.
@@ -390,9 +593,42 @@ scope может заблокировать все или конкретное p
    reviews и контролируемых переходов.
 6. Жалобы, ограничения и апелляции — выполнено на уровне очередей, решений и
    контролируемых переходов.
-7. Legal, Library, Audit и Outbox.
-8. Стабилизация, тесты и полная Postman-документация.
-9. Разделение результата на логические коммиты и несколько PR при необходимости.
+7. Legal, Library, Audit и Outbox — выполнено на уровне API и Admin.
+8. Стабилизация, тестовый runner и Postman-документация — выполнено; SQL
+   integration test запускается при доступном Docker/PostgreSQL.
+9. UI Registry — выполнен первый модуль управления Mecorion: группы Sidebar,
+   пункты, названия, иконки, порядок, видимость и доступ к страницам по ролям.
+10. Разделение результата на логические коммиты и несколько PR при необходимости.
 
 README расширяется после каждого этапа. Финальная версия будет содержать карту
 SQL-сценариев, таблиц, endpoints, тел запросов, ответов и проверки через Postman.
+
+## Управление Mecorion
+
+Раздел `/admin/platform` управляет глобальным Sidebar основного Web-приложения.
+Конфигурация хранится в `core.tUiNavigationGroup`,
+`core.tUiNavigationItem` и `core.tUiNavigationItemRole`.
+
+- `VISIBILITY` определяет, какие роли видят ссылку в Sidebar;
+- `ROUTE` определяет, какие роли могут открыть страницу напрямую;
+- пустой список ролей означает доступ для всех авторизованных пользователей;
+- отключённая группа или пункт скрываются и запрещают переход для всех ролей;
+- изменение сохраняется через API и записывается в аудит.
+
+Стартовая конфигурация оставляет `BASE`, `SPONSOR` и другим несистемным ролям
+только `Главная`, `Профиль` и `Настройки`. Полная навигация доступна ролям
+`ADMIN`, `OWNER`, `FOUNDER` и `DEVELOPER`.
+
+API:
+
+```text
+GET   /api/v1/admin/platform/navigation
+PATCH /api/v1/admin/platform/navigation/items/:itemPublicId
+PATCH /api/v1/admin/platform/navigation/groups/:groupPublicId
+```
+
+`componentKey` выбирается из серверного allowlist зарегистрированных страниц.
+Администратор не может передать путь к произвольному `.vue`-файлу: загрузка
+исполняемого кода из БД была бы критической уязвимостью. На текущем этапе ключ
+является безопасным идентификатором страницы; подключение динамического
+рендерера компонентов будет отдельным этапом UI Registry.

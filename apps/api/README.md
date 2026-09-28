@@ -120,6 +120,26 @@ Domain permission проверяется повторно внутри обра�
 и `platform.owner` являются разрешённым override, но не отменяют активное
 ограничение модерации.
 
+### DEV-режимы авторизации
+
+API поддерживает два локальных профиля:
+
+```bash
+npm run api:dev:auth          # настоящие JWT, cookie и seed phrase
+npm run api:dev:no-auth       # dev-admin без JWT
+npm run api:dev:no-auth:base  # dev-base без JWT
+```
+
+В режиме `AUTH_MODE=dev-bypass` функция `requireAuth()` загружает настоящий
+seeded-аккаунт `DEV_AUTH_ACCOUNT` из PostgreSQL. Роли, permissions,
+moderation restrictions и Admin gate не отключаются; пропускается только
+проверка access/refresh token. Поэтому bypass подходит для проверки разных
+ролей, но не подходит для разработки самого auth flow.
+
+Bypass запрещён конфигурацией при `NODE_ENV` не равном `development`, внешнем
+`HOST` или нелокальном hostname в `DATABASE_URL`. В production всегда
+использовать `AUTH_MODE=required`.
+
 ## База данных
 
 Версионируемые файлы находятся в корневом `database`:
@@ -230,3 +250,34 @@ Admin авторизуется через двухшаговый seed challenge:
 - Outbox dispatcher/broker не реализован; Admin предоставляет диагностику и
   ручные recovery-действия.
 - Полный end-to-end тест требует запущенный PostgreSQL 18 и применённые seed.
+
+## Platform UI Registry
+
+Публичная конфигурация навигации запрашивается авторизованным Web-клиентом:
+
+```text
+GET /api/v1/platform/navigation
+```
+
+API возвращает только разрешённые текущим ролям группы и пункты, а также
+`allowedPageCodes` для route middleware. Поэтому одно правило из БД управляет
+и отображением ссылки, и прямым доступом к странице. Недоступная страница в
+Web возвращает `404`, чтобы не раскрывать наличие закрытого раздела.
+
+Административные операции:
+
+```text
+GET   /api/v1/admin/platform/navigation
+PATCH /api/v1/admin/platform/navigation/items/:itemPublicId
+PATCH /api/v1/admin/platform/navigation/groups/:groupPublicId
+```
+
+Они требуют permission `platform.admin`. Таблицы находятся в схеме `core`:
+
+- `tUiNavigationGroup` — группы и их положение в Sidebar;
+- `tUiNavigationItem` — название, route, иконка, component key и порядок;
+- `tUiNavigationItemRole` — правила `VISIBILITY` и `ROUTE` по ролям.
+
+Пустой набор правил соответствующего типа означает доступ для всех
+авторизованных пользователей. Все изменения административного API пишутся в
+неизменяемый аудит.
