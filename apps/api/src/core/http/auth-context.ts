@@ -1,15 +1,16 @@
 import type {FastifyRequest} from "fastify";
+import {config} from "../config.js";
 import {query} from "../database.js";
 import {ApiError} from "./api-error.js";
-import {validateAccessTokenSession} from "../../modules/auth/auth.repository.js";
+import {loadDevelopmentAuthContext, validateAccessTokenSession} from "../../modules/auth/auth.repository.js";
 import {verifyAccessToken} from "../../modules/auth/auth.tokens.js";
 import {readAccessCookie} from "../../modules/auth/auth.cookies.js";
 
 export interface AuthContext {
   accountId: string;
   accountPublicId: string;
-  sessionId: string;
-  sessionPublicId: string;
+  sessionId: string | null;
+  sessionPublicId: string | null;
   displayName: string;
   username: string;
   email: string | null;
@@ -32,6 +33,19 @@ export function readBearerToken(request: FastifyRequest) {
 export async function requireAuth(request: FastifyRequest): Promise<AuthContext> {
   const cached = requestAuthContext.get(request);
   if (cached) return cached;
+
+  if (config.AUTH_MODE === "dev-bypass") {
+    const context = await loadDevelopmentAuthContext(config.DEV_AUTH_ACCOUNT);
+    if (!context) {
+      throw new ApiError(
+        503,
+        "DEV_ACCOUNT_NOT_FOUND",
+        `Dev-аккаунт ${config.DEV_AUTH_ACCOUNT} не найден или недоступен. Выполните npm run db:seed.`,
+      );
+    }
+    requestAuthContext.set(request, context);
+    return context;
+  }
 
   const token = readBearerToken(request) ?? readAccessCookie(request);
   if (!token) {

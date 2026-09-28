@@ -4,6 +4,13 @@ import {createApp} from "./core/http/app.js";
 
 const app = await createApp();
 
+if (config.AUTH_MODE === "dev-bypass") {
+  app.log.warn(
+    {devAccount: config.DEV_AUTH_ACCOUNT},
+    "DEV AUTH BYPASS включён: JWT не проверяется, используется локальный seeded-аккаунт",
+  );
+}
+
 async function shutdown(signal: string) {
   app.log.info({signal}, "Mecorion API завершает работу");
   await app.close();

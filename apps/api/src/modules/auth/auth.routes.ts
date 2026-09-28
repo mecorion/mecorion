@@ -167,7 +167,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
 
   app.post("/api/v1/auth/logout", async (request, reply) => {
     const context = await requireAuth(request);
-    await logoutSession(context.sessionPublicId);
+    if (context.sessionPublicId) await logoutSession(context.sessionPublicId);
     clearAuthCookies(reply);
     return {ok: true};
   });

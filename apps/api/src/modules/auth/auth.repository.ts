@@ -581,6 +581,56 @@ export async function validateAccessTokenSession(payload: AccessTokenPayload): P
   };
 }
 
+// DEV bypass resolves a real seeded account instead of fabricating roles in
+// memory. RBAC, moderation restrictions and audit actor IDs therefore behave
+// exactly like the authenticated application; only JWT/session verification is
+// skipped. This function is reachable only after config's loopback safeguards.
+export async function loadDevelopmentAuthContext(username: string): Promise<AuthContext | null> {
+  const result = await query<{
+    accountId: string;
+    accountPublicId: string;
+    displayName: string;
+    username: string;
+    email: string | null;
+    accountStatus: string;
+  }>(`
+    SELECT
+      account."id" AS "accountId",
+      account."publicId"::TEXT AS "accountPublicId",
+      profile."displayName" AS "displayName",
+      profile."username"::TEXT AS "username",
+      emailIdentity."displayValue" AS "email",
+      accountStatus."code" AS "accountStatus"
+    FROM account."tAccount" account
+    JOIN account."tAccountStatus" accountStatus
+      ON accountStatus."id" = account."accountStatusId" AND accountStatus."isLoginAllowed" = TRUE
+    JOIN account."tProfile" profile ON profile."accountId" = account."id"
+    LEFT JOIN auth."tIdentity" emailIdentity
+      ON emailIdentity."accountId" = account."id"
+     AND emailIdentity."isPrimary" = TRUE
+     AND emailIdentity."revokeDtm" IS NULL
+     AND emailIdentity."identityTypeId" = (SELECT "id" FROM auth."tIdentityType" WHERE "code" = 'EMAIL')
+    WHERE LOWER(profile."username") = LOWER($1)
+    LIMIT 1
+  `, [username]);
+  const row = result.rows[0];
+  if (!row) return null;
+
+  const account = await loadPublicAccount({query}, row.accountId);
+  return {
+    accountId: row.accountId,
+    accountPublicId: row.accountPublicId,
+    sessionId: null,
+    sessionPublicId: null,
+    displayName: row.displayName,
+    username: row.username,
+    email: row.email,
+    accountStatus: row.accountStatus,
+    roles: account.roles,
+    permissions: account.permissions,
+  };
+}
+
 export async function signInWithSeed(seedPhrase: string) {
   return withTransaction(async (client) => {
     const result = await client.query<{accountId: string}>(`

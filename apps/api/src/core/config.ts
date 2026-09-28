@@ -20,6 +20,8 @@ const schema = z.object({
   CORS_ORIGIN: z.string().default(
     "http://127.0.0.1:5173,http://127.0.0.1:5174,http://localhost:5173,http://localhost:5174",
   ),
+  AUTH_MODE: z.enum(["required", "dev-bypass"]).default("required"),
+  DEV_AUTH_ACCOUNT: z.string().trim().min(3).max(32).default("dev-admin"),
   JWT_MODE: z.enum(["secret", "keypair"]).default("secret"),
   JWT_SECRET: z.string().optional(),
   JWT_PRIVATE_KEY: z.string().optional(),
@@ -52,6 +54,29 @@ if (!result.success) {
 if (result.data.NODE_ENV === "production" && result.data.JWT_MODE === "secret") {
   console.error("JWT_MODE=secret запрещён в production. Используйте JWT_MODE=keypair.");
   process.exit(1);
+}
+
+function isLoopbackHost(host: string) {
+  return ["127.0.0.1", "localhost", "::1", "[::1]"].includes(host.toLowerCase());
+}
+
+if (result.data.AUTH_MODE === "dev-bypass") {
+  let databaseHost = "";
+  try {
+    databaseHost = new URL(result.data.DATABASE_URL).hostname;
+  } catch {
+    console.error("DATABASE_URL должен быть корректным URL.");
+    process.exit(1);
+  }
+
+  if (result.data.NODE_ENV !== "development") {
+    console.error("AUTH_MODE=dev-bypass разрешён только при NODE_ENV=development.");
+    process.exit(1);
+  }
+  if (!isLoopbackHost(result.data.HOST) || !isLoopbackHost(databaseHost)) {
+    console.error("AUTH_MODE=dev-bypass разрешён только для локального API и локальной PostgreSQL.");
+    process.exit(1);
+  }
 }
 
 if (result.data.NODE_ENV !== "production" && result.data.JWT_MODE === "secret" && !result.data.JWT_SECRET) {
