@@ -2,9 +2,9 @@ import {initializeAuthSession, isAuthenticated} from "@/auth/session.js";
 import {canAccessPage, loadPlatformNavigation, pageCodeForPath} from "@/platform/navigation.js";
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (!import.meta.client) return;
-  await initializeAuthSession();
+  if (!import.meta.client || import.meta.dev) return;
 
+  await initializeAuthSession();
   if (to.meta.requiresAuth && !isAuthenticated()) {
     return navigateTo({path: "/sign-in-seed", query: {redirect: to.fullPath}});
   }

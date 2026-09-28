@@ -3,6 +3,7 @@ import {computed, onBeforeUnmount, ref, unref, watch} from "vue";
 import {useRoute, useRouter} from "#imports";
 import {NuxtLink} from "#components";
 import SvgIcon from "@/components/SvgIcon.vue";
+import WorkspaceSearch from "@/components/workspace/WorkspaceSearch.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
 import {readAuthSession, signOut} from "@/auth/session.js";
@@ -31,6 +32,7 @@ const footerItems = computed(() => contextNavigation.value
 
 const sidebarTitle = computed(() => contextNavigation.value?.title ?? "Mecorion");
 const sidebarSubtitle = computed(() => contextNavigation.value?.subtitle ?? null);
+const searchConfig = computed(() => unref(contextNavigation.value?.search));
 const workspaceAccentStyle = computed(() => {
   const accent = contextNavigation.value?.accent;
 
@@ -70,6 +72,7 @@ function isRouteActive(item) {
 
 function activateNavigationItem(item) {
   item.action?.();
+  closeSidebar();
 }
 
 function closeSidebar() {
@@ -178,12 +181,13 @@ onBeforeUnmount(() => {
     </aside>
 
     <section class="dashboard-board">
-      <header class="mcrn-topbar dashboard-topbar">
+      <header class="mcrn-topbar dashboard-topbar" :class="{'dashboard-topbar--music-search': searchConfig}">
         <button class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Переключить меню" @click="toggleSidebar">
           <SvgIcon name="menu" />
         </button>
 
-        <label class="mcrn-search dashboard-search">
+        <WorkspaceSearch v-if="searchConfig" :config="searchConfig" />
+        <label v-else class="mcrn-search dashboard-search">
           <SvgIcon name="search" />
           <input type="search" placeholder="Поиск по Mecorion" />
           <kbd>⌘K</kbd>

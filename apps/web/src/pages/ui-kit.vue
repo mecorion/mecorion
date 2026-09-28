@@ -4,11 +4,12 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import SectionHeader from "@/components/layout/SectionHeader.vue";
 import ComponentDocumentation from "@/components/ui-kit/ComponentDocumentation.vue";
 import {componentDocumentation} from "@/ui-kit/componentDocumentation.js";
-import {toast, UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
+import {toast, UiAlert, UiAvatar, UiAvatarGroup, UiAvatarGroupCount, UiBadge, UiBreadcrumb, UiButton, UiCard, UiCheckbox, UiDialog, UiDrawer, UiDropdownMenu, UiEmptyState, UiField, UiFieldGroup, UiFieldSeparator, UiFieldset, UiFilePicker, UiForm, UiInput, UiItem, UiItemGroup, UiItemSeparator, UiPopover, UiProgress, UiRadioGroup, UiSelect, UiSkeleton, UiSlider, UiSpinner, UiSteps, UiTabs, UiTextarea, UiToggle, UiTooltip} from "@/components/ui/index.js";
 
 definePageMeta({});
 const activeCategory = ref("buttons");
 const inputValue = ref("");
+const clearableInputValue = ref("Mecorion Music");
 const textareaValue = ref("");
 const selectValue = ref("music");
 const scrollableSelectValue = ref("service-1");
@@ -26,6 +27,8 @@ const sliderMultiple = ref([20, 50, 80]);
 const sliderVertical = ref([25, 70]);
 const sliderTemperature = ref([0.3, 0.7]);
 const progressValue = ref(56);
+const stepsValue = ref(2);
+const demoSteps = ["Жанры", "Исполнители", "Импорт", "Готово"];
 const fieldPrice = ref([200, 800]);
 const fieldDepartment = ref("");
 const singleFile = ref(null);
@@ -62,7 +65,7 @@ const allPeopleSelected = computed({
 });
 const somePeopleSelected = computed(() => selectedPeople.value.length > 0 && !allPeopleSelected.value);
 const categories = [
-  {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 9},
+  {value: "buttons", label: "Button", count: 13}, {value: "inputs", label: "Input", count: 10},
   {value: "avatar", label: "Avatar", count: 9},
   {value: "breadcrumb", label: "Breadcrumb", count: 6},
   {value: "empty", label: "Empty State", count: 7},
@@ -81,6 +84,7 @@ const categories = [
   {value: "toggle", label: "Toggle", count: 9},
   {value: "slider", label: "Slider", count: 6},
   {value: "progress", label: "Progress", count: 7},
+  {value: "steps", label: "Steps", count: 2},
   {value: "spinner", label: "Spinner", count: 13},
   {value: "cards", label: "Card", count: 8}, {value: "toast", label: "Toast", count: 8},
   {value: "alerts", label: "Alert", count: 8}, {value: "badges", label: "Badge", count: 7},
@@ -573,6 +577,7 @@ function showPromiseToast() {
           <UiCard><template #header><h3 class="mc-title-3">Состояния</h3></template><UiInput v-model="inputValue" label="Название проекта" placeholder="Mecorion Cloud" hint="До 80 символов" /><UiInput label="Email" type="email" model-value="mail@mecorion.dev" /><UiInput label="С ошибкой" error="Введите корректный адрес" placeholder="name@example.com" /><UiInput label="Успешная проверка" success="Название доступно" model-value="mecorion-cloud" /></UiCard>
           <UiCard><template #header><h3 class="mc-title-3">Размеры</h3></template><UiInput size="lg" label="Большой" placeholder="Large input" /><UiInput size="md" label="Средний" placeholder="Medium input" /><UiInput size="sm" label="Маленький" placeholder="Small input" /></UiCard>
           <UiCard><template #header><h3 class="mc-title-3">Дополнительный контент</h3></template><UiInput label="Поиск" placeholder="Найти компонент"><template #prefix><SvgIcon name="search" /></template></UiInput><UiInput label="Адрес пространства" model-value="design-system"><template #suffix>.mecorion</template></UiInput></UiCard>
+          <UiCard><template #header><h3 class="mc-title-3">Очистка значения</h3></template><UiInput v-model="clearableInputValue" clearable label="Поиск по Music" placeholder="Найти музыку"><template #prefix><SvgIcon name="search" /></template></UiInput></UiCard>
         </section>
         <section v-else-if="activeCategory === 'field'" class="uikit-demo-grid">
           <UiCard>
@@ -867,6 +872,22 @@ function showPromiseToast() {
               <UiProgress :value="58" label="Default" show-value />
               <UiProgress size="lg" :value="74" label="Large" show-value />
             </div>
+          </UiCard>
+        </section>
+        <section v-else-if="activeCategory === 'steps'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Пошаговая настройка</h3></template>
+            <div class="ui-progress-demo-stack">
+              <UiSteps :steps="demoSteps" :current="stepsValue" label="Настройка Music" />
+              <div class="mc-row">
+                <UiButton variant="outline" :disabled="stepsValue === 1" @click="stepsValue--">Назад</UiButton>
+                <UiButton variant="primary" :disabled="stepsValue === demoSteps.length" @click="stepsValue++">Далее</UiButton>
+              </div>
+            </div>
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Другой процесс</h3></template>
+            <UiSteps :steps="['Данные', 'Проверка', 'Готово']" :current="1" label="Создание аккаунта" />
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'spinner'" class="uikit-demo-grid">

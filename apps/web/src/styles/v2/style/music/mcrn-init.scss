@@ -905,12 +905,6 @@
     color: var(--mc-text-faint);
     font-size: var(--mcrn-font-size-9px);
   }
-  .memusic-player input[type=range] {
-    width: 100%;
-    height: var(--mcrn-size-3px);
-    accent-color: var(--mc-accent);
-    cursor: pointer;
-  }
   .memusic-player .ui-slider {
     width: 100%;
   }
@@ -1416,14 +1410,8 @@
   .memusic-player-mode__progress {
     margin-top: var(--mcrn-space-42px);
   }
-  .memusic-player-mode__progress input, .memusic-player-mode__volume input,
   .memusic-player-mode__progress .ui-slider, .memusic-player-mode__volume .ui-slider {
     width: 100%;
-    accent-color: var(--mc-accent);
-    cursor: pointer;
-  }
-  .memusic-player-mode__progress input {
-    height: var(--mcrn-size-5px);
   }
   .memusic-player-mode__progress > div {
     display: flex;

@@ -1,6 +1,6 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
-import {computed, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
@@ -9,32 +9,62 @@ import MusicQueuePanel from "@/components/music/MusicQueuePanel.vue";
 import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
 import LocalMusicView from "@/components/music/LocalMusicView.vue";
+import MusicOnboarding from "@/components/music/MusicOnboarding.vue";
+import MusicSearchView from "@/components/music/MusicSearchView.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import {getTracksByIds, musicGenres, musicPlaylists, musicTracks} from "@/music/catalog.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
+import {searchMusic, searchSuggestions} from "@/music/searchCatalog.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 
 const player = useMusicPlayerStore();
+const showOnboarding = ref(false);
+onMounted(() => { showOnboarding.value = !localStorage.getItem("mecorion.music.onboarding"); });
 const activeSection = ref("home");
-const query = ref("");
+const searchInput = ref("");
+const searchQuery = ref("");
+const searchTab = ref("all");
 const selectedPlaylistId = ref(null);
-const onlineFilters = ref({sort: "title"});
 const libraryFilters = ref({sort: "title"});
 
-const filteredTracks = computed(() => {
-  const normalized = query.value.trim().toLocaleLowerCase("ru");
-  const matchesQuery = !normalized ? musicTracks : musicTracks.filter((track) =>
-    [track.title, track.artist, track.album]
-      .join(" ")
-      .toLocaleLowerCase("ru")
-      .includes(normalized),
-  );
-
-  return filterAndSortTracks(matchesQuery, onlineFilters.value);
-});
+const searchResults = computed(() => searchMusic(searchQuery.value));
+const suggestions = computed(() => searchSuggestions(searchInput.value));
+function submitSearch(value) {
+  navigate("search");
+  searchInput.value = String(value).trim();
+  searchQuery.value = searchInput.value;
+  searchTab.value = "all";
+}
+function updateSearch(value) {
+  navigate("search");
+  searchInput.value = value;
+  searchQuery.value = value.trim();
+  searchTab.value = "all";
+}
+function clearSearch() {
+  searchInput.value = "";
+  searchQuery.value = "";
+  searchTab.value = "all";
+}
+function selectSearchItem(item) {
+  if (item.type === "playlist") { openPlaylist(item.id); return; }
+  if (item.type === "track") {
+    const track = musicTracks.find((entry) => entry.id === item.id);
+    if (track?.available) player.playTrack(track.id, searchResults.value.tracks.map((entry) => entry.id));
+    else { submitSearch(track?.title ?? item.title); searchTab.value = "tracks"; }
+    return;
+  }
+  submitSearch(item.title);
+  searchTab.value = item.type === "album" ? "albums" : "artists";
+}
+const searchConfig = computed(() => !showOnboarding.value ? {
+  query: searchInput, suggestions, placeholder: "Поиск по Music",
+  onActivate: () => navigate("search"), onInput: updateSearch,
+  onSubmit: submitSearch, onSelect: selectSearchItem, onClear: clearSearch,
+} : null);
 
 const selectedPlaylist = computed(() => musicPlaylists.find((playlist) => playlist.id === selectedPlaylistId.value) ?? null);
 const selectedPlaylistTracks = computed(() => selectedPlaylist.value ? getTracksByIds(selectedPlaylist.value.trackIds) : []);
@@ -52,7 +82,6 @@ const catalogAlbums = computed(() => [...new Map(musicTracks.map((track) => [tra
 function navigate(section) {
   activeSection.value = section;
   selectedPlaylistId.value = null;
-  if (section !== "search") query.value = "";
 }
 
 function openPlaylist(playlistId) {
@@ -65,10 +94,13 @@ useContextNavigation({
   subtitle: "Music",
   accent: "#ff6f8f",
   accentStrong: "#ff86a3",
-  activeId: activeSection,
+  activeId: computed(() => showOnboarding.value ? "onboarding" : activeSection.value),
+  search: searchConfig,
   groups: computed(() => [
+    {label: null, navLabel: "Настройка Music", items: [{id: "onboarding", title: "Первый запуск", icon: "star", active: showOnboarding.value, action: () => { showOnboarding.value = true; }}]},
     {label: null, navLabel: "Разделы Music", items: [
-      {id: "home", title: "Главная", icon: "home", action: () => navigate("home")},
+     {id: "home", title: "Главная", icon: "home", action: () => navigate("home")},
+      {id: "search", title: "Поиск", icon: "search", action: () => navigate("search")},
       {id: "library", title: "Моя музыка", icon: "music", action: () => navigate("library")},
       {id: "local", title: "Локальная музыка", icon: "download", action: () => navigate("local")},
     ]},
@@ -88,7 +120,8 @@ watch(selectedPlaylistId, () => {
 </script>
 
 <template>
-  <div class="memusic-app" :class="{'memusic-app--queue-open': player.isQueueOpen}">
+  <MusicOnboarding v-if="showOnboarding" @finish="showOnboarding = false" />
+  <div v-else class="memusic-app" :class="{'memusic-app--queue-open': player.isQueueOpen}">
     <section class="memusic-workspace" :inert="player.isPlayerModeOpen">
       <main class="memusic-content">
         <template v-if="activeSection === 'home'">
@@ -187,32 +220,7 @@ watch(selectedPlaylistId, () => {
           </section>
         </template>
 
-        <template v-else-if="activeSection === 'search'">
-          <section class="memusic-page-heading">
-            <p class="memusic-kicker">Поиск</p>
-            <h1>{{ query ? `Результаты для «${query}»` : 'Исследуйте музыку' }}</h1>
-            <p>{{ query ? `Найдено треков: ${filteredTracks.length}` : 'Используйте поиск или фильтры, чтобы найти музыку для любого момента.' }}</p>
-          </section>
-
-          <MusicFilters v-model="onlineFilters" :tracks="musicTracks" context="online" />
-
-          <MusicTrackList
-            :tracks="filteredTracks"
-            :title="query ? 'Треки' : 'Вся онлайн-музыка'"
-            empty-text="По этому запросу ничего не найдено"
-          />
-
-          <template v-if="!query">
-            <section class="memusic-genre-section">
-              <div class="memusic-section-heading"><h2>Настроения и жанры</h2></div>
-              <div class="memusic-genre-grid">
-                <UiButton v-for="genre in musicGenres" :key="genre.id" unstyled :class="`is-${genre.accent}`">
-                  <strong>{{ genre.title }}</strong><span aria-hidden="true"><SvgIcon name="music" /></span>
-                </UiButton>
-              </div>
-            </section>
-          </template>
-        </template>
+        <MusicSearchView v-else-if="activeSection === 'search'" v-model:tab="searchTab" :query="searchQuery" :results="searchResults" @search="submitSearch" @select="selectSearchItem" @clear="clearSearch" />
 
         <template v-else-if="activeSection === 'local'">
           <LocalMusicView />

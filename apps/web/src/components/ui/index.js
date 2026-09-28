@@ -28,6 +28,7 @@ export {default as UiSelect} from "./UiSelect.vue";
 export {default as UiSkeleton} from "./UiSkeleton.vue";
 export {default as UiSlider} from "./UiSlider.vue";
 export {default as UiSpinner} from "./UiSpinner.vue";
+export {default as UiSteps} from "./UiSteps.vue";
 export {default as UiTabs} from "./UiTabs.vue";
 export {default as UiTextarea} from "./UiTextarea.vue";
 export {default as UiToggle} from "./UiToggle.vue";
