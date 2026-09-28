@@ -6,6 +6,7 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
 import {readAuthSession, signOut} from "@/auth/session.js";
+import {clearPlatformNavigation, footerNavigationGroups, mainNavigationGroups} from "@/platform/navigation.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -21,45 +22,12 @@ const currentUser = {
   id: authenticatedUser?.id?.slice(0, 8).toUpperCase() || "00000000",
 };
 
-const primaryNavigation = [
-  {title: "Главная", icon: "home", route: "/dashboard"},
-  {title: "Исследовать", icon: "search", route: "/explore"},
-  {title: "Пространства", icon: "boxes", route: "/spaces"},
-  {title: "Сервисы", icon: "grid", route: "/services"},
-  {title: "Сохранённое", icon: "star", route: "/saved"},
-  {title: "Загрузки", icon: "download", route: "/downloads"},
-];
-
-const serviceNavigation = [
-  {title: "Music", icon: "music", route: "/music"},
-  {title: "Video", icon: "play", route: "/video"},
-  {title: "Books", icon: "book", route: "/books"},
-  {title: "Course", icon: "graduation-cap", route: "/course"},
-  {title: "Drive", icon: "cloud", route: "/drive"},
-  {title: "VPN", icon: "shield", route: "/vpn"},
-  {title: "Agents", icon: "users", route: "/agents"},
-];
-
-const communityNavigation = [
-  {title: "Resolutions", icon: "badge-check", route: "/resolutions"},
-  {title: "Requests", icon: "git-pull-request", route: "/requests"},
-];
-
-const accountNavigation = [
-  {title: "Профиль", icon: "user", route: "/profile"},
-  {title: "Настройки", icon: "settings", route: "/settings"},
-];
-
-const platformNavigationGroups = [
-  {label: null, items: primaryNavigation, navLabel: "Основное меню"},
-  {label: "Сервисы", items: serviceNavigation},
-  {label: "Сообщество", items: communityNavigation},
-  {label: "Аккаунт", items: accountNavigation},
-];
-
 const navigationGroups = computed(() => contextNavigation.value
   ? unref(contextNavigation.value.groups)
-  : platformNavigationGroups);
+  : mainNavigationGroups.value);
+const footerItems = computed(() => contextNavigation.value
+  ? []
+  : footerNavigationGroups.value.flatMap((group) => group.items));
 
 const sidebarTitle = computed(() => contextNavigation.value?.title ?? "Mecorion");
 const sidebarSubtitle = computed(() => contextNavigation.value?.subtitle ?? null);
@@ -119,6 +87,7 @@ function toggleSidebar() {
 
 async function logout() {
   await signOut();
+  clearPlatformNavigation();
   await router.replace("/sign-in-seed");
 }
 
@@ -196,9 +165,15 @@ onBeforeUnmount(() => {
 
         
       </template>
-      <NuxtLink class="sidebar-link dashboard-sidebar__support" to="/support" data-tooltip="Помощь и поддержка">
-        <span aria-hidden="true">?</span>
-        <span class="dashboard-nav__label">Помощь и поддержка</span>
+      <NuxtLink
+        v-for="item in footerItems"
+        :key="item.code"
+        class="sidebar-link dashboard-sidebar__support"
+        :to="item.route"
+        :data-tooltip="item.title"
+      >
+        <SvgIcon :name="item.icon" />
+        <span class="dashboard-nav__label">{{ item.title }}</span>
       </NuxtLink>
     </aside>
 

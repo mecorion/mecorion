@@ -9,6 +9,7 @@ const groups = [
       {label: "Обзор", icon: "home", to: "/", ready: true},
       {label: "Пользователи", icon: "users", to: "/users", ready: true},
       {label: "Роли и доступ", icon: "shield", to: "/access", ready: true},
+      {label: "Управление Mecorion", icon: "settings", to: "/platform", ready: true},
     ],
   },
   {
@@ -69,7 +70,7 @@ function isActive(path: string) {
 
     <div class="admin-sidebar__footer">
       <span class="admin-environment"><i></i>API: apps/api</span>
-      <span class="text-caption">Этап 7 · операции</span>
+      <span class="text-caption">Управление платформой</span>
     </div>
   </aside>
 </template>

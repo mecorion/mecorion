@@ -281,4 +281,50 @@ CROSS JOIN access."tPermission" permission
 WHERE role."code" IN ('FOUNDER', 'OWNER')
 ON CONFLICT ("roleId", "permissionId") DO NOTHING;
 
+-- UI navigation is data-driven. ON CONFLICT DO NOTHING is intentional: a
+-- repeated seed must not overwrite labels, icons or access changed in Admin.
+INSERT INTO core."tUiNavigationGroup" ("code", "label", "placement", "sortOrder") VALUES
+    ('MAIN', NULL, 'MAIN', 10),
+    ('SERVICES', 'Сервисы', 'MAIN', 20),
+    ('COMMUNITY', 'Сообщество', 'MAIN', 30),
+    ('ACCOUNT', 'Аккаунт', 'MAIN', 40),
+    ('SUPPORT', NULL, 'FOOTER', 50)
+ON CONFLICT ("code") DO NOTHING;
+
+INSERT INTO core."tUiNavigationItem" (
+    "groupId", "code", "label", "iconCode", "routePath", "componentKey", "sortOrder"
+)
+SELECT navigationGroup."id", item."code", item."label", item."iconCode", item."routePath", item."componentKey", item."sortOrder"
+FROM (VALUES
+    ('MAIN', 'home', 'Главная', 'home', '/dashboard', 'page.dashboard', 10),
+    ('MAIN', 'explore', 'Исследовать', 'search', '/explore', 'page.explore', 20),
+    ('MAIN', 'spaces', 'Пространства', 'boxes', '/spaces', 'page.spaces', 30),
+    ('MAIN', 'services', 'Сервисы', 'grid', '/services', 'page.services', 40),
+    ('MAIN', 'saved', 'Сохранённое', 'star', '/saved', 'page.saved', 50),
+    ('MAIN', 'downloads', 'Загрузки', 'download', '/downloads', 'page.downloads', 60),
+    ('SERVICES', 'music', 'Music', 'music', '/music', 'page.music', 10),
+    ('SERVICES', 'video', 'Video', 'play', '/video', 'page.video', 20),
+    ('SERVICES', 'books', 'Books', 'book', '/books', 'page.books', 30),
+    ('SERVICES', 'course', 'Course', 'graduation-cap', '/course', 'page.course', 40),
+    ('SERVICES', 'drive', 'Drive', 'cloud', '/drive', 'page.drive', 50),
+    ('SERVICES', 'vpn', 'VPN', 'shield', '/vpn', 'page.vpn', 60),
+    ('SERVICES', 'agents', 'Agents', 'users', '/agents', 'page.agents', 70),
+    ('COMMUNITY', 'resolutions', 'Resolutions', 'badge-check', '/resolutions', 'page.resolutions', 10),
+    ('COMMUNITY', 'requests', 'Requests', 'git-pull-request', '/requests', 'page.requests', 20),
+    ('ACCOUNT', 'profile', 'Профиль', 'user', '/profile', 'page.profile', 10),
+    ('ACCOUNT', 'settings', 'Настройки', 'settings', '/settings', 'page.settings', 20),
+    ('SUPPORT', 'support', 'Помощь и поддержка', 'circle-alert', '/support', 'page.support', 10)
+) AS item("groupCode", "code", "label", "iconCode", "routePath", "componentKey", "sortOrder")
+JOIN core."tUiNavigationGroup" navigationGroup ON navigationGroup."code" = item."groupCode"
+ON CONFLICT ("code") DO NOTHING;
+
+INSERT INTO core."tUiNavigationItemRole" ("navigationItemId", "roleId", "accessType")
+SELECT item."id", role."id", accessType."code"
+FROM core."tUiNavigationItem" item
+CROSS JOIN access."tRole" role
+CROSS JOIN (VALUES ('VISIBILITY'), ('ROUTE')) AS accessType("code")
+WHERE item."code" NOT IN ('home', 'profile', 'settings')
+  AND role."code" IN ('ADMIN', 'OWNER', 'FOUNDER', 'DEVELOPER')
+ON CONFLICT ("navigationItemId", "roleId", "accessType") DO NOTHING;
+
 COMMIT;

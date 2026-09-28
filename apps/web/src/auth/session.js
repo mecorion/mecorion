@@ -51,6 +51,12 @@ async function requestAuth(path, options = {}, retry = true) {
   return data;
 }
 
+// Shared authenticated transport for feature modules. Refresh rotation stays
+// centralized, so navigation, profile and future services use one session.
+export function requestWithSession(path, options = {}) {
+  return requestAuth(path, options);
+}
+
 function rememberAuthResponse(data) {
   currentSession = {token: data.tokens?.accessToken ?? null, user: data.user, createdAt: new Date().toISOString()};
   return currentSession;

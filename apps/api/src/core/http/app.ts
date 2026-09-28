@@ -13,6 +13,7 @@ import {registerLibraryModule} from "../../modules/library/library.module.js";
 import {registerMediaModule} from "../../modules/media/media.module.js";
 import {registerModerationModule} from "../../modules/moderation/moderation.module.js";
 import {registerMusicModule} from "../../modules/music/music.module.js";
+import {registerPlatformModule} from "../../modules/platform/platform.module.js";
 import {registerVideoModule} from "../../modules/video/video.module.js";
 import {registerWorkflowModule} from "../../modules/workflow/workflow.module.js";
 import {registerHealthRoutes} from "./health.routes.js";
@@ -68,6 +69,7 @@ export async function createApp() {
   await registerMediaModule(app);
   await registerModerationModule(app);
   await registerMusicModule(app);
+  await registerPlatformModule(app);
   await registerVideoModule(app);
   await registerWorkflowModule(app);
 
