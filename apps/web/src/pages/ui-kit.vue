@@ -22,6 +22,7 @@ const toggleBookmark = ref(true);
 const toggleBold = ref(false);
 const toggleItalic = ref(true);
 const sliderValue = ref(33);
+const formatSliderPercent = (value) => `${Math.round(value)}%`;
 const sliderRange = ref([25, 75]);
 const sliderMultiple = ref([20, 50, 80]);
 const sliderVertical = ref([25, 70]);
@@ -819,6 +820,10 @@ function showPromiseToast() {
           <UiCard>
             <template #header><h3 class="mc-title-3">Basic</h3></template>
             <UiSlider v-model="sliderValue" label="Громкость" />
+          </UiCard>
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Подсказка по позиции</h3></template>
+            <UiSlider v-model="sliderValue" label="Позиция" :tooltip-formatter="formatSliderPercent" />
           </UiCard>
           <UiCard>
             <template #header><h3 class="mc-title-3">Range</h3></template>

@@ -899,7 +899,7 @@
   }
   .memusic-player__progress {
     display: grid;
-    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
     gap: var(--mcrn-space-8px);
     color: var(--mc-text-faint);
@@ -1895,7 +1895,7 @@
     height: 44px;
   }
   .memusic-player__progress {
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    grid-template-columns: minmax(0, 1fr);
     font-size: var(--mc-font-xs);
   }
   .memusic-queue {

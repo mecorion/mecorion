@@ -50,7 +50,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onShortcut));
 
 <template>
   <div ref="root" class="mcrn-search dashboard-search workspace-search">
-    <UiInput v-model="query" clearable :placeholder="config.placeholder" :aria-expanded="showSuggestions" aria-controls="music-search-suggestions" autocomplete="off" @clear="config.onClear" @focus="activate" @blur="focused = false" @keydown.enter.prevent="submit" @keydown.down.prevent="move(1)" @keydown.up.prevent="move(-1)" @keydown.escape="focused = false">
+    <UiInput v-model="query" clearable :placeholder="config.placeholder" :aria-expanded="showSuggestions" aria-controls="music-search-suggestions" autocomplete="off" @clear="config.onClear" @focus="activate" @click="activate" @blur="focused = false" @keydown.enter.prevent="submit" @keydown.down.prevent="move(1)" @keydown.up.prevent="move(-1)" @keydown.escape="focused = false">
       <template #prefix><SvgIcon name="search" /></template>
     </UiInput>
     <kbd v-if="!query">⌘K</kbd>

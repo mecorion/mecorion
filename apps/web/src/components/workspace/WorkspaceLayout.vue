@@ -3,6 +3,7 @@ import {computed, onBeforeUnmount, ref, unref, watch} from "vue";
 import {useRoute, useRouter} from "#imports";
 import {NuxtLink} from "#components";
 import SvgIcon from "@/components/SvgIcon.vue";
+import UiInput from "@/components/ui/UiInput.vue";
 import WorkspaceSearch from "@/components/workspace/WorkspaceSearch.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
@@ -14,6 +15,7 @@ const router = useRouter();
 const app = useAppStore();
 const isSidebarOpen = ref(false);
 const isSidebarCollapsed = ref(false);
+const globalSearchQuery = ref("");
 
 const authenticatedUser = readAuthSession()?.user;
 const currentUser = {
@@ -73,6 +75,12 @@ function isRouteActive(item) {
 function activateNavigationItem(item) {
   item.action?.();
   closeSidebar();
+}
+
+function activateGlobalSearch() {
+  if (route.path.startsWith("/music/")) {
+    router.push("/music?section=search");
+  }
 }
 
 function closeSidebar() {
@@ -187,11 +195,10 @@ onBeforeUnmount(() => {
         </button>
 
         <WorkspaceSearch v-if="searchConfig" :config="searchConfig" />
-        <label v-else class="mcrn-search dashboard-search">
-          <SvgIcon name="search" />
-          <input type="search" placeholder="Поиск по Mecorion" />
-          <kbd>⌘K</kbd>
-        </label>
+        <UiInput v-else v-model="globalSearchQuery" class="workspace-global-search" size="md" type="search" aria-label="Поиск по Mecorion" placeholder="Поиск по Mecorion" @focus="activateGlobalSearch">
+          <template #prefix><SvgIcon name="search" /></template>
+          <template #suffix><kbd>⌘K</kbd></template>
+        </UiInput>
 
         <div class="mcrn-topbar__actions dashboard-topbar__account">
           <button class="mcrn-icon-button dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">

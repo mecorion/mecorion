@@ -1,6 +1,8 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
+
 import {computed, onMounted, ref, watch} from "vue";
+import {useRoute, useRouter} from "#app";
 import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
@@ -21,9 +23,11 @@ import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 
 const player = useMusicPlayerStore();
+const route = useRoute();
+const router = useRouter();
 const showOnboarding = ref(false);
 onMounted(() => { showOnboarding.value = !localStorage.getItem("mecorion.music.onboarding"); });
-const activeSection = ref("home");
+const activeSection = ref(route.query.section === "search" ? "search" : "home");
 const searchInput = ref("");
 const searchQuery = ref("");
 const searchTab = ref("all");
@@ -82,6 +86,9 @@ const catalogAlbums = computed(() => [...new Map(musicTracks.map((track) => [tra
 function navigate(section) {
   activeSection.value = section;
   selectedPlaylistId.value = null;
+  if (section !== "search" && route.query.section === "search") {
+    router.replace({query: {...route.query, section: undefined}});
+  }
 }
 
 function openPlaylist(playlistId) {
@@ -116,6 +123,10 @@ useContextNavigation({
 
 watch(selectedPlaylistId, () => {
   libraryFilters.value = {sort: "title"};
+});
+
+watch(() => route.query.section, (section) => {
+  if (section === "search") navigate("search");
 });
 </script>
 
@@ -197,9 +208,8 @@ watch(selectedPlaylistId, () => {
                 :key="track.album"
                 unstyled
                 class="memusic-album-card"
-                :disabled="!track.available"
-                :title="track.available ? `Слушать ${track.album}` : 'Аудио пока недоступно'"
-                @click="player.playTrack(track.id, catalogTrackIds)"
+                :title="`Открыть альбом ${track.album}`"
+                @click="$router.push('/music/album/night-signal')"
               >
                 <span class="memusic-album-card__cover"><img :src="track.cover" :alt="`Обложка альбома ${track.album}`" /><span aria-hidden="true"><SvgIcon name="play" /></span></span>
                 <strong>{{ track.album }}</strong>
@@ -214,7 +224,7 @@ watch(selectedPlaylistId, () => {
               <UiCard v-for="playlist in musicPlaylists" :key="playlist.id" raw unstyled class="memusic-playlist-tile">
                 <img :src="playlist.cover" :alt="`Обложка ${playlist.title}`" />
                 <div><strong>{{ playlist.title }}</strong><small>{{ playlist.description }}</small></div>
-                <UiButton unstyled :aria-label="`Открыть плейлист ${playlist.title}`" @click="openPlaylist(playlist.id)"><SvgIcon name="chevron-right" /></UiButton>
+                <UiButton unstyled :aria-label="`Открыть плейлист ${playlist.title}`" @click="$router.push('/music/playlist/evening-flow')"><SvgIcon name="chevron-right" /></UiButton>
               </UiCard>
             </div>
           </section>

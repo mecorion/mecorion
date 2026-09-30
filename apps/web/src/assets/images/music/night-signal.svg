@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="73" y1="40" x2="587" y2="640" gradientUnits="userSpaceOnUse"><stop stop-color="#242240"/><stop offset=".55" stop-color="#111529"/><stop offset="1" stop-color="#0A1224"/></linearGradient>
+    <linearGradient id="light" x1="170" y1="92" x2="479" y2="491" gradientUnits="userSpaceOnUse"><stop stop-color="#FF99BA"/><stop offset=".55" stop-color="#F65F91"/><stop offset="1" stop-color="#8854D5"/></linearGradient>
+    <linearGradient id="street" x1="320" y1="385" x2="320" y2="640" gradientUnits="userSpaceOnUse"><stop stop-color="#E84E8C" stop-opacity=".58"/><stop offset="1" stop-color="#E84E8C" stop-opacity="0"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="28"/></filter>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h640v640H0z"/>
+  <circle cx="420" cy="231" r="110" fill="#E85A9D" opacity=".36" filter="url(#glow)"/>
+  <circle cx="420" cy="231" r="97" stroke="url(#light)" stroke-width="4" opacity=".86"/>
+  <circle cx="420" cy="231" r="65" stroke="#FEBDD0" stroke-width="2" opacity=".4"/>
+  <circle cx="420" cy="231" r="31" fill="url(#light)"/>
+  <path d="M25 358h105v-68h37v68h32v-107h43v107h32v-48h29v48h31v-81h53v81h27v-34h28v34h26V225h46v133h54v282H25V358Z" fill="#11182C"/>
+  <path d="M0 429h640v211H0V429Z" fill="#0B1020"/>
+  <path d="M264 430h112l194 210H70l194-210Z" fill="url(#street)" opacity=".56"/>
+  <path d="M0 430h640M0 477h640M0 545h640M180 640l104-210m176 210L356 430" stroke="#F373A5" stroke-opacity=".22" stroke-width="2"/>
+  <path d="M39 111h202M39 123h124" stroke="#FEA3C0" stroke-opacity=".68" stroke-width="2"/>
+  <text x="39" y="69" fill="#F9F4FF" font-family="Arial,sans-serif" font-size="28" font-weight="700" letter-spacing="5">NORTEN</text>
+  <text x="39" y="548" fill="#F9F4FF" font-family="Arial,sans-serif" font-size="48" font-weight="700">НОЧНОЙ</text>
+  <text x="39" y="604" fill="#F9F4FF" font-family="Arial,sans-serif" font-size="48" font-weight="700">СИГНАЛ</text>
+</svg>
