@@ -29,6 +29,8 @@ const protectedRoutes = [
   ["GET", "/api/v1/admin/library/collections"],
   ["GET", "/api/v1/admin/audit/events"],
   ["GET", "/api/v1/admin/outbox/events"],
+  ["GET", "/api/v1/admin/music/references"],
+  ["POST", "/api/v1/admin/music/tracks/upload"],
 ] as const;
 
 for (const [method, url] of protectedRoutes) {

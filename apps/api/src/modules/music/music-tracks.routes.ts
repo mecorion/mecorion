@@ -1,28 +1,16 @@
+import {createReadStream} from "node:fs";
+import {stat} from "node:fs/promises";
+import {resolve} from "node:path";
 import type {FastifyInstance} from "fastify";
 import {z} from "zod";
+import {config} from "../../core/config.js";
 import {query} from "../../core/database.js";
 import {ApiError} from "../../core/http/api-error.js";
-import {requirePermission} from "../../core/http/auth-context.js";
 
 const TrackQuerySchema = z.object({
   q: z.string().trim().min(1).max(200).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(50),
   offset: z.coerce.number().int().min(0).default(0),
-});
-
-const TrackCreateSchema = z.object({
-  contentId: z.uuid(),
-  bpm: z.number().int().min(20).max(300).optional(),
-  isExplicit: z.boolean().default(false),
-  isrc: z.string().trim().regex(/^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$/).optional(),
-});
-
-const AlbumCreateSchema = z.object({
-  contentId: z.uuid(),
-  albumTypeCode: z.string().trim().min(2).max(32).default("ALBUM"),
-  upc: z.string().trim().max(32).optional(),
-  releaseDate: z.string().date().optional(),
-  discCount: z.number().int().positive().default(1),
 });
 
 export async function registerTrackRoutes(app: FastifyInstance) {
@@ -36,14 +24,28 @@ export async function registerTrackRoutes(app: FastifyInstance) {
         contentItem."releaseDt" AS "releaseDate",
         track."bpm",
         track."isExplicit",
-        COALESCE(array_agg(DISTINCT contributor."primaryName") FILTER (WHERE contributor."primaryName" IS NOT NULL), ARRAY[]::VARCHAR[]) AS "artists"
+        COALESCE(array_agg(DISTINCT contributor."primaryName") FILTER (WHERE contributor."primaryName" IS NOT NULL), ARRAY[]::VARCHAR[]) AS "artists",
+        (SELECT albumItem."originalTitle" FROM music."tAlbumTrack" membership
+         JOIN content."tContent" albumItem ON albumItem."id" = membership."albumContentId"
+         WHERE membership."trackContentId" = track."contentId" AND albumItem."retireDtm" IS NULL
+         ORDER BY membership."createDtm" LIMIT 1) AS "album"
       FROM music."tTrack" track
       JOIN content."tContent" contentItem ON contentItem."id" = track."contentId"
+      JOIN content."tContentStatus" contentStatus ON contentStatus."id" = contentItem."contentStatusId"
       LEFT JOIN content."tContentContributor" contentContributor ON contentContributor."contentId" = contentItem."id"
       LEFT JOIN content."tContributor" contributor ON contributor."id" = contentContributor."contributorId"
       WHERE contentItem."retireDtm" IS NULL
+        AND contentStatus."code" = 'ACTIVE'
+        AND EXISTS (
+          SELECT 1 FROM media."tContentAsset" link
+          JOIN media."tContentAssetRole" role ON role."id" = link."contentAssetRoleId" AND role."code" = 'PRIMARY_AUDIO'
+          JOIN media."tAssetVariant" variant ON variant."assetId" = link."assetId" AND variant."isSource" = TRUE
+          JOIN media."tStorageObject" object ON object."id" = variant."storageObjectId" AND object."deleteDtm" IS NULL
+          JOIN media."tStorageProvider" provider ON provider."id" = object."storageProviderId" AND provider."code" = 'local-data'
+          WHERE link."contentId" = track."contentId" AND link."isPrimary" = TRUE
+        )
         AND ($3::TEXT IS NULL OR contentItem."originalTitle" ILIKE '%' || $3 || '%')
-      GROUP BY contentItem."publicId", contentItem."originalTitle", contentItem."durationMs", contentItem."releaseDt", track."bpm", track."isExplicit", contentItem."createDtm"
+      GROUP BY contentItem."publicId", contentItem."originalTitle", contentItem."durationMs", contentItem."releaseDt", track."contentId", track."bpm", track."isExplicit", contentItem."createDtm"
       ORDER BY contentItem."createDtm" DESC
       LIMIT $1 OFFSET $2
     `, [filters.limit, filters.offset, filters.q ?? null]);
@@ -64,58 +66,62 @@ export async function registerTrackRoutes(app: FastifyInstance) {
         track."isrc"
       FROM music."tTrack" track
       JOIN content."tContent" contentItem ON contentItem."id" = track."contentId"
+      JOIN content."tContentStatus" contentStatus ON contentStatus."id" = contentItem."contentStatusId"
       WHERE contentItem."publicId" = $1
+        AND contentItem."retireDtm" IS NULL
+        AND contentStatus."code" = 'ACTIVE'
     `, [params.trackPublicId]);
     const row = result.rows[0];
     if (!row) throw new ApiError(404, "TRACK_NOT_FOUND", "Трек не найден");
     return row;
   });
 
-  app.post("/api/v1/admin/music/tracks", async (request, reply) => {
-    await requirePermission(request, "content.submit");
-    const input = TrackCreateSchema.parse(request.body);
-    const result = await query<{id: string}>(`
-      INSERT INTO music."tTrack" ("contentId", "bpm", "isExplicit", "isrc")
-      SELECT contentItem."id", $2, $3, $4
-      FROM content."tContent" contentItem
-      WHERE contentItem."publicId" = $1
-      RETURNING "contentId"::TEXT AS "id"
-    `, [input.contentId, input.bpm ?? null, input.isExplicit, input.isrc ?? null]);
-    if (!result.rows[0]) throw new ApiError(404, "CONTENT_NOT_FOUND", "Контент для трека не найден");
-    return reply.status(201).send({ok: true});
+  app.get("/api/v1/music/tracks/:trackPublicId/audio", async (request, reply) => {
+    const {trackPublicId} = z.object({trackPublicId: z.uuid()}).parse(request.params);
+    const result = await query<{objectKey: string; contentType: string | null}>(`
+      SELECT object."objectKey", object."contentType" FROM music."tTrack" track
+      JOIN content."tContent" item ON item."id" = track."contentId"
+      JOIN content."tContentStatus" status ON status."id" = item."contentStatusId" AND status."code" = 'ACTIVE'
+      JOIN media."tContentAsset" link ON link."contentId" = item."id" AND link."isPrimary" = TRUE
+      JOIN media."tContentAssetRole" role ON role."id" = link."contentAssetRoleId" AND role."code" = 'PRIMARY_AUDIO'
+      JOIN media."tAssetVariant" variant ON variant."assetId" = link."assetId" AND variant."isSource" = TRUE
+      JOIN media."tStorageObject" object ON object."id" = variant."storageObjectId" AND object."deleteDtm" IS NULL
+      JOIN media."tStorageProvider" provider ON provider."id" = object."storageProviderId" AND provider."code" = 'local-data'
+      WHERE item."publicId" = $1 AND item."retireDtm" IS NULL LIMIT 1
+    `, [trackPublicId]);
+    const object = result.rows[0];
+    if (!object) throw new ApiError(404, "AUDIO_NOT_FOUND", "Аудиофайл не найден");
+    const storageRoot = resolve(config.MEDIA_STORAGE_ROOT);
+    const path = resolve(storageRoot, object.objectKey);
+    if (!path.startsWith(`${storageRoot}/`)) throw new ApiError(404, "AUDIO_NOT_FOUND", "Аудиофайл не найден");
+    const info = await stat(path).catch(() => null);
+    if (!info?.isFile()) throw new ApiError(404, "AUDIO_NOT_FOUND", "Аудиофайл не найден");
+
+    let start = 0;
+    let end = info.size - 1;
+    const range = request.headers.range;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match || (!match[1] && !match[2])) {
+        return reply.status(416).header("Content-Range", `bytes */${info.size}`).send();
+      }
+      if (!match[1]) {
+        const suffix = Number(match[2]);
+        start = Math.max(0, info.size - suffix);
+      } else {
+        start = Number(match[1]);
+        if (match[2]) end = Math.min(Number(match[2]), info.size - 1);
+      }
+      if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start >= info.size || end < start) {
+        return reply.status(416).header("Content-Range", `bytes */${info.size}`).send();
+      }
+      reply.status(206).header("Content-Range", `bytes ${start}-${end}/${info.size}`);
+    }
+    return reply
+      .type(object.contentType || "application/octet-stream")
+      .header("Accept-Ranges", "bytes")
+      .header("Content-Length", end - start + 1)
+      .send(createReadStream(path, {start, end}));
   });
 
-  app.post("/api/v1/admin/music/albums", async (request, reply) => {
-    await requirePermission(request, "content.submit");
-    const input = AlbumCreateSchema.parse(request.body);
-    const result = await query<{id: string}>(`
-      INSERT INTO music."tAlbum" ("contentId", "albumTypeId", "upc", "releaseDt", "discCount")
-      SELECT contentItem."id", albumType."id", $3, $4, $5
-      FROM content."tContent" contentItem
-      JOIN music."tAlbumType" albumType ON albumType."code" = $2
-      WHERE contentItem."publicId" = $1
-      RETURNING "contentId"::TEXT AS "id"
-    `, [input.contentId, input.albumTypeCode, input.upc ?? null, input.releaseDate ?? null, input.discCount]);
-    if (!result.rows[0]) throw new ApiError(404, "CONTENT_NOT_FOUND", "Контент или тип альбома не найден");
-    return reply.status(201).send({ok: true});
-  });
-
-  app.post("/api/v1/admin/music/albums/:albumContentId/tracks", async (request, reply) => {
-    await requirePermission(request, "content.submit");
-    const params = z.object({albumContentId: z.uuid()}).parse(request.params);
-    const body = z.object({
-      trackContentId: z.uuid(),
-      trackNumber: z.number().int().positive(),
-      discNumber: z.number().int().positive().default(1),
-    }).parse(request.body);
-    const result = await query(`
-      INSERT INTO music."tAlbumTrack" ("albumContentId", "trackContentId", "discNumber", "trackNumber")
-      SELECT albumContent."id", trackContent."id", $3, $4
-      FROM content."tContent" albumContent
-      JOIN content."tContent" trackContent ON trackContent."publicId" = $2
-      WHERE albumContent."publicId" = $1
-    `, [params.albumContentId, body.trackContentId, body.discNumber, body.trackNumber]);
-    if (result.rowCount === 0) throw new ApiError(404, "CONTENT_NOT_FOUND", "Альбом или трек не найден");
-    return reply.status(201).send({ok: true});
-  });
 }

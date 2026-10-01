@@ -119,7 +119,8 @@ ON CONFLICT ("duplicatePolicyId", "evidenceType") DO UPDATE SET
     "weight" = EXCLUDED."weight", "isAuthoritative" = EXCLUDED."isAuthoritative", "isActive" = TRUE;
 
 INSERT INTO media."tStorageProvider" ("code", "name", "providerType") VALUES
-    ('primary-s3', 'Основное S3-хранилище', 'S3')
+    ('primary-s3', 'Основное S3-хранилище', 'S3'),
+    ('local-data', 'Локальное хранилище data', 'LOCAL')
 ON CONFLICT ("code") DO UPDATE SET "name" = EXCLUDED."name", "isActive" = TRUE;
 
 INSERT INTO media."tStorageObjectStatus" ("code", "name") VALUES

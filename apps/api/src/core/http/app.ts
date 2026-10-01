@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import multipart from "@fastify/multipart";
 import Fastify from "fastify";
 import {ZodError} from "zod";
 import {config} from "../config.js";
@@ -31,6 +32,12 @@ export async function createApp() {
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+  });
+
+  // Multipart is registered once for every domain. Files are streamed by the
+  // owning route, so even a large lossless track is never buffered in RAM.
+  await app.register(multipart, {
+    limits: {files: 1, fields: 12, fileSize: config.MEDIA_MAX_UPLOAD_BYTES},
   });
 
   // Credentials and seed phrases must never be cached by a browser, proxy or

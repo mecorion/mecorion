@@ -17,13 +17,14 @@ export function useAdminApi() {
   const baseUrl = String(config.public.mecorionApiUrl).replace(/\/+$/, "");
 
   async function request<T>(path: string, options: RequestInit = {}, token?: string | null, retry = true): Promise<T> {
+    const isFormData = options.body instanceof FormData;
     let response: Response;
     try {
       response = await fetch(`${baseUrl}${path}`, {
         ...options,
         credentials: "include",
         headers: {
-          "Content-Type": "application/json",
+          ...(!isFormData ? {"Content-Type": "application/json"} : {}),
           ...(token ? {Authorization: `Bearer ${token}`} : {}),
           ...options.headers,
         },

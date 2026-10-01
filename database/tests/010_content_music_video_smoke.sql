@@ -80,6 +80,7 @@ BEGIN
     RETURNING "id" INTO vContributorId;
     INSERT INTO content."tContributorName" ("contributorId", "nameType", "name", "normalizedName")
     VALUES (vContributorId, 'ALIAS', 'Test Artist Alias', 'test artist alias');
+    INSERT INTO music."tArtist" ("contributorId") VALUES (vContributorId);
     INSERT INTO content."tContentContributor" ("contentId", "contributorId", "contributorRoleId")
     VALUES (vTrackContentId, vContributorId, vArtistRoleId);
 
@@ -142,6 +143,9 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM content."tPublication" WHERE "id" = vPublicationId AND "publishDtm" IS NOT NULL) THEN
         RAISE EXCEPTION 'Publication was not published';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM music."tArtist" WHERE "contributorId" = vContributorId) THEN
+        RAISE EXCEPTION 'Music artist profile was not created';
     END IF;
 END;
 $$;
