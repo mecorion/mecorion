@@ -407,6 +407,7 @@ function showPromiseToast() {
             <UiDialog title="Редактировать профиль" description="Изменения будут применены ко всем сервисам Mecorion.">
               <template #trigger="{open}"><UiButton @click="open">Открыть Dialog</UiButton></template>
               <UiFieldGroup><UiInput label="Имя" model-value="Иван" /><UiInput label="Username" model-value="ivan" /></UiFieldGroup>
+              <UiSelect v-model="selectValue" label="Сервис" :options="[{label: 'Music', value: 'music'}, {label: 'Video', value: 'video'}, {label: 'Books', value: 'books'}]" />
               <template #footer="{close}"><UiButton variant="outline" @click="close">Отмена</UiButton><UiButton @click="close">Сохранить</UiButton></template>
             </UiDialog>
           </UiCard>
