@@ -33,7 +33,7 @@ function play(track) {
       >
         <UiButton unstyled class="memusic-track-row__main" :disabled="!track.available" @click="play(track)">
           <span class="memusic-track-row__number"><SvgIcon v-if="player.currentTrackId === track.id && player.isPlaying" name="music" /><template v-else>{{ index + 1 }}</template></span>
-          <MusicArtwork :track="track" />
+          <MusicArtwork :track="track" play-overlay />
           <span class="memusic-track-row__title"><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
           <span class="memusic-track-row__album">{{ track.album }}</span>
         </UiButton>

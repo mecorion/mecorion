@@ -199,7 +199,7 @@ watch(() => route.query.q, (value) => {
                 class="memusic-collection-track"
               >
                 <UiButton unstyled class="memusic-collection-track__main" :disabled="!track.available" :title="track.available ? `Слушать ${track.title}` : 'Аудио пока недоступно'" @click="player.playTrack(track.id, catalogTrackIds)">
-                  <MusicArtwork :track="track" />
+                  <MusicArtwork :track="track" play-overlay />
                   <span><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
                 </UiButton>
                 <UiButton

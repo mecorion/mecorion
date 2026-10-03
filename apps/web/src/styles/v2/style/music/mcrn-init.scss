@@ -625,6 +625,30 @@
     height: 100%;
     object-fit: cover;
   }
+  .memusic-artwork--play { position: relative; }
+  .memusic-artwork__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(8 8 20 / 52%);
+    color: #fff;
+    opacity: 0;
+    transform: scale(.88);
+    transition: opacity .18s ease, transform .18s ease;
+    pointer-events: none;
+  }
+  .memusic-artwork__play svg { width: 45%; height: 45%; }
+  button:hover .memusic-artwork--play .memusic-artwork__play,
+  button:focus-visible .memusic-artwork--play .memusic-artwork__play,
+  .memusic-track-row:hover .memusic-artwork--play .memusic-artwork__play,
+  .memusic-collection-track:hover .memusic-artwork--play .memusic-artwork__play {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .memusic-artwork__play { transition: none; }
+  }
   .memusic-empty-state {
     display: grid;
     min-height: var(--mcrn-size-130px);

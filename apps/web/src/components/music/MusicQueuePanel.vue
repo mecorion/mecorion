@@ -24,7 +24,7 @@ const player = useMusicPlayerStore();
         type="button"
         @click="player.playTrack(track.id)"
       >
-        <MusicArtwork :track="track" />
+        <MusicArtwork :track="track" play-overlay />
         <span><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
         <span aria-hidden="true"><SvgIcon name="ellipsis-vertical" /></span>
       </UiButton>
