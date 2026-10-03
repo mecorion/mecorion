@@ -255,13 +255,6 @@ useContextNavigation({
       {id: "library", title: "Моя музыка", icon: "music", action: () => navigate("library")},
       {id: "local", title: "Локальная музыка", icon: "download", action: () => navigate("local")},
     ]},
-    {label: "Плейлисты", items: musicPlaylists.map((playlist) => ({
-      id: `playlist-${playlist.id}`,
-      title: playlist.title,
-      icon: "music",
-      active: selectedPlaylistId.value === playlist.id,
-      action: () => openPlaylist(playlist.id),
-    }))},
   ]),
 });
 
