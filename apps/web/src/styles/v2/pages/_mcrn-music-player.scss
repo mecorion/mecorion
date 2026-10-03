@@ -141,6 +141,11 @@
 }
 .memusic-release-page .memusic-queue { bottom: 132px; }
 
+@media (max-width: 1180px) {
+  .memusic-player--release,
+  .dashboard-shell--sidebar-collapsed .memusic-player--release { left: 12px; }
+}
+
 @media (max-width: 1000px) {
   .memusic-player--release {
     grid-template-columns: minmax(0, 1fr) auto;

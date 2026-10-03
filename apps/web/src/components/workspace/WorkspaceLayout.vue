@@ -1,9 +1,10 @@
 <script setup>
-import {computed, onBeforeUnmount, ref, unref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, unref, watch} from "vue";
 import {useRoute, useRouter} from "#imports";
 import {NuxtLink} from "#components";
 import SvgIcon from "@/components/SvgIcon.vue";
 import UiInput from "@/components/ui/UiInput.vue";
+import UiButton from "@/components/ui/UiButton.vue";
 import WorkspaceSearch from "@/components/workspace/WorkspaceSearch.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
@@ -88,13 +89,27 @@ function closeSidebar() {
 }
 
 function toggleSidebar() {
-  if (window.matchMedia('(max-width: 860px)').matches) {
+  if (window.matchMedia('(max-width: 1180px)').matches) {
     isSidebarOpen.value = !isSidebarOpen.value;
     return;
   }
 
   isSidebarCollapsed.value = !isSidebarCollapsed.value;
 }
+
+function onViewportChange() {
+  closeSidebar();
+  isSidebarCollapsed.value = false;
+}
+
+function onSidebarKeydown(event) {
+  if (event.key === "Escape" && isSidebarOpen.value) closeSidebar();
+}
+
+onMounted(() => {
+  window.matchMedia('(max-width: 1180px)').addEventListener('change', onViewportChange);
+  window.addEventListener('keydown', onSidebarKeydown);
+});
 
 async function logout() {
   await signOut();
@@ -110,6 +125,8 @@ watch(isSidebarOpen, (isOpen) => {
 
 onBeforeUnmount(() => {
   document.documentElement.classList.remove("mcrn-menu-open");
+  window.matchMedia('(max-width: 1180px)').removeEventListener('change', onViewportChange);
+  window.removeEventListener('keydown', onSidebarKeydown);
 });
 </script>
 
@@ -128,13 +145,16 @@ onBeforeUnmount(() => {
     ></button>
 
     <aside class="mcrn-sidebar dashboard-sidebar" :class="{'mcrn-sidebar--open dashboard-sidebar--open': isSidebarOpen}" aria-label="Навигация Mecorion">
-      <NuxtLink class="mcrn-brand workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard">
-        <span class="mcrn-brand__mark workspace-brand__mark">M</span>
-        <span class="mcrn-brand__copy">
-          <strong>{{ sidebarTitle }}</strong>
-          <small v-if="sidebarSubtitle">{{ sidebarSubtitle }}</small>
-        </span>
-      </NuxtLink>
+      <div class="dashboard-sidebar__heading">
+        <NuxtLink class="mcrn-brand workspace-brand dashboard-sidebar__brand" to="/dashboard" aria-label="Mecorion dashboard" @click="closeSidebar">
+          <span class="mcrn-brand__mark workspace-brand__mark">M</span>
+          <span class="mcrn-brand__copy">
+            <strong>{{ sidebarTitle }}</strong>
+            <small v-if="sidebarSubtitle">{{ sidebarSubtitle }}</small>
+          </span>
+        </NuxtLink>
+        <UiButton unstyled class="dashboard-sidebar__close" aria-label="Закрыть меню" @click="closeSidebar"><SvgIcon name="x" /></UiButton>
+      </div>
 
       <template v-for="group in navigationGroups" :key="group.label ?? 'primary'">
         <nav v-if="!group.label" class="mcrn-nav dashboard-nav" :aria-label="group.navLabel">
