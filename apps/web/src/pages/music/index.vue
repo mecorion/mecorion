@@ -114,8 +114,8 @@ const currentArtistPage = computed(() => Math.min(artistPage.value, artistPageCo
 const currentPlaylistPage = computed(() => Math.min(playlistPage.value, playlistPageCount.value - 1));
 const currentLibraryPlaylistPage = computed(() => Math.min(libraryPlaylistPage.value, libraryPlaylistPageCount.value - 1));
 
-function shelfStyle(width, pageSize, total, page) {
-  const columns = Math.max(1, Math.min(pageSize, total));
+function shelfStyle(width, pageSize, page) {
+  const columns = Math.max(1, pageSize);
   const cardWidth = width ? (width - (columns - 1) * 20) / columns : 0;
   return {
     '--shelf-card-width': width ? `${cardWidth}px` : `calc((100% - ${(columns - 1) * 20}px) / ${columns})`,
@@ -345,7 +345,7 @@ watch(() => route.query.q, (value) => {
               </div>
             </div>
             <div id="music-home-artists" ref="artistStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('artists', $event)" @touchend.passive="endShelfSwipe('artists', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
-              <div class="memusic-artist-grid memusic-shelf-track" :style="shelfStyle(artistStripWidth, artistPageSize, catalogArtists.length, currentArtistPage)">
+              <div class="memusic-artist-grid memusic-shelf-track" :style="shelfStyle(artistStripWidth, artistPageSize, currentArtistPage)">
               <UiCard v-for="(artist, index) in catalogArtists" :key="artist.name" raw unstyled class="memusic-artist-card" :inert="index < currentArtistPage || index >= currentArtistPage + artistPageSize" :aria-hidden="index < currentArtistPage || index >= currentArtistPage + artistPageSize">
                 <div class="memusic-artist-card__art">
                   <img v-if="artist.cover" :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" />
@@ -373,7 +373,7 @@ watch(() => route.query.q, (value) => {
               </div>
             </div>
             <div id="music-home-albums" ref="albumStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('albums', $event)" @touchend.passive="endShelfSwipe('albums', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
-              <div class="memusic-album-strip memusic-shelf-track" :style="shelfStyle(albumStripWidth, albumPageSize, catalogAlbums.length, currentAlbumPage)">
+              <div class="memusic-album-strip memusic-shelf-track" :style="shelfStyle(albumStripWidth, albumPageSize, currentAlbumPage)">
               <UiCard
                 v-for="(track, index) in catalogAlbums"
                 :key="albumFavoriteId(track)"
@@ -409,7 +409,7 @@ watch(() => route.query.q, (value) => {
               </div>
             </div>
             <div id="music-home-playlists" ref="playlistStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('playlists', $event)" @touchend.passive="endShelfSwipe('playlists', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
-              <div class="memusic-playlist-strip memusic-shelf-track" :style="shelfStyle(playlistStripWidth, playlistPageSize, playlistCatalog.length, currentPlaylistPage)">
+              <div class="memusic-playlist-strip memusic-shelf-track" :style="shelfStyle(playlistStripWidth, playlistPageSize, currentPlaylistPage)">
                 <MusicMediaCard v-for="(playlist, index) in playlistCatalog" :key="playlist.id" :playlist="playlist" :inert="index < currentPlaylistPage || index >= currentPlaylistPage + playlistPageSize" :aria-hidden="index < currentPlaylistPage || index >= currentPlaylistPage + playlistPageSize" @open="openPlaylist" />
               </div>
             </div>
@@ -425,12 +425,29 @@ watch(() => route.query.q, (value) => {
         </template>
 
         <template v-else>
+          <div class="memusic-library-page">
           <section v-if="selectedPlaylist" class="memusic-playlist-heading">
             <img :src="selectedPlaylist.cover" :alt="`Обложка ${selectedPlaylist.title}`" />
             <div><p class="memusic-kicker">Плейлист</p><h1>{{ selectedPlaylist.title }}</h1><p>{{ selectedPlaylist.description }}</p><UiButton unstyled class="memusic-primary-action" @click="player.playCollection(selectedPlaylist.trackIds)"><SvgIcon name="play" /> Слушать</UiButton></div>
           </section>
-          <section v-else class="memusic-page-heading">
-            <p class="memusic-kicker">Коллекция</p><h1>Моя музыка</h1><p>Избранные треки и сохранённые подборки.</p>
+          <section v-else class="memusic-library-hero" aria-labelledby="music-library-title">
+            <div class="memusic-library-hero__copy">
+              <p class="memusic-kicker">Ваша коллекция / Mecorion Music</p>
+              <h1 id="music-library-title">Моя <span>музыка</span></h1>
+              <p class="memusic-library-hero__description">Место для треков, которые хочется слушать снова, и подборок под любое настроение.</p>
+              <div class="memusic-library-hero__stats" aria-label="Состав коллекции">
+                <span><strong>{{ player.likedTrackIds.length }}</strong><small>любимых треков</small></span>
+                <span><strong>{{ playlistCatalog.length }}</strong><small>плейлистов</small></span>
+              </div>
+              <div class="memusic-library-hero__actions">
+                <UiButton variant="primary" :disabled="!player.likedTracks.some(track => track.available)" @click="player.playCollection(player.likedTracks.filter(track => track.available).map(track => track.id))"><SvgIcon name="play" /> Слушать любимое</UiButton>
+                <UiButton variant="outline" @click="navigate('search')"><SvgIcon name="search" /> Найти музыку</UiButton>
+              </div>
+            </div>
+            <div class="memusic-library-hero__art" aria-hidden="true">
+              <img v-for="(track, index) in musicTracks.slice(0, 3)" :key="track.id" :src="track.cover" alt="" :class="`memusic-library-hero__cover--${index + 1}`" />
+              <span class="memusic-library-hero__art-mark"><SvgIcon name="heart" /></span>
+            </div>
           </section>
 
           <MusicFilters
@@ -445,9 +462,9 @@ watch(() => route.query.q, (value) => {
             empty-text="Добавляйте треки в любимые кнопкой с сердцем"
           />
 
-          <section v-if="!selectedPlaylist" class="memusic-carousel-section">
+          <section v-if="!selectedPlaylist" class="memusic-library-section memusic-playlist-section memusic-carousel-section" aria-labelledby="library-playlists-title">
             <div class="memusic-collection-section-title">
-              <div class="memusic-shelf-heading"><h2 id="library-playlists-title">Ваши плейлисты</h2><span class="memusic-shelf-count">{{ playlistCatalog.length }} в каталоге</span></div>
+              <div class="memusic-shelf-heading"><p class="memusic-kicker">Собрано для вас</p><h2 id="library-playlists-title">Ваши плейлисты</h2><span class="memusic-shelf-count">{{ playlistCatalog.length }} в каталоге</span></div>
               <div class="memusic-shelf-meta">
                 <div v-if="playlistCatalog.length > libraryPlaylistPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать ваши плейлисты">
                   <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentLibraryPlaylistPage === 0" aria-label="Предыдущие плейлисты" aria-controls="music-library-playlists" @click="libraryPlaylistPage = currentLibraryPlaylistPage - 1"><SvgIcon name="chevron-right" /></UiButton>
@@ -457,11 +474,12 @@ watch(() => route.query.q, (value) => {
               </div>
             </div>
             <div id="music-library-playlists" ref="libraryPlaylistStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('libraryPlaylists', $event)" @touchend.passive="endShelfSwipe('libraryPlaylists', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
-              <div class="memusic-media-grid memusic-media-grid--shelf memusic-shelf-track" :style="shelfStyle(libraryPlaylistStripWidth, libraryPlaylistPageSize, playlistCatalog.length, currentLibraryPlaylistPage)">
+              <div class="memusic-playlist-strip memusic-shelf-track" :style="shelfStyle(libraryPlaylistStripWidth, libraryPlaylistPageSize, currentLibraryPlaylistPage)">
                 <MusicMediaCard v-for="(playlist, index) in playlistCatalog" :key="playlist.id" :playlist="playlist" :inert="index < currentLibraryPlaylistPage || index >= currentLibraryPlaylistPage + libraryPlaylistPageSize" :aria-hidden="index < currentLibraryPlaylistPage || index >= currentLibraryPlaylistPage + libraryPlaylistPageSize" @open="openPlaylist" />
               </div>
             </div>
           </section>
+          </div>
         </template>
       </main>
     </section>

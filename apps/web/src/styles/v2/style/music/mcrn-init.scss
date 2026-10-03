@@ -1861,8 +1861,14 @@
   }
   .memusic-filter-field .ui-select__trigger {
     height: 44px;
-    padding-inline: var(--mc-space-3) 38px;
+    padding-inline: var(--mc-space-3);
     font-size: var(--mc-font-sm);
+  }
+  .memusic-filter-field .ui-select__chevron {
+    width: 7px;
+    height: 7px;
+    margin-right: 0;
+    border-width: 0 1.5px 1.5px 0;
   }
   .memusic-filters__reset {
     flex-basis: 44px;
