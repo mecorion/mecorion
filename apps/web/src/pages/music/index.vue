@@ -69,7 +69,24 @@ const catalogArtists = computed(() => [...new Map(onlineTracks.value.map((track)
   trackId: track.id,
   available: track.available,
 }])).values()]);
-const catalogAlbums = computed(() => [...new Map(onlineTracks.value.map((track) => [track.album, track])).values()]);
+const catalogAlbums = computed(() => [...new Map(onlineTracks.value.map((track) => [`${track.artist}:${track.album}`, track])).values()]);
+const shelfPageSize = 6;
+const playlistCatalog = ref([...musicPlaylists]);
+const albumPage = ref(0);
+const playlistPage = ref(0);
+const albumPageCount = computed(() => Math.max(1, Math.ceil(catalogAlbums.value.length / shelfPageSize)));
+const playlistPageCount = computed(() => Math.max(1, Math.ceil(playlistCatalog.value.length / shelfPageSize)));
+const currentAlbumPage = computed(() => Math.min(albumPage.value, albumPageCount.value - 1));
+const currentPlaylistPage = computed(() => Math.min(playlistPage.value, playlistPageCount.value - 1));
+const visibleAlbums = computed(() => catalogAlbums.value.slice(currentAlbumPage.value * shelfPageSize, (currentAlbumPage.value + 1) * shelfPageSize));
+const visiblePlaylists = computed(() => playlistCatalog.value.slice(currentPlaylistPage.value * shelfPageSize, (currentPlaylistPage.value + 1) * shelfPageSize));
+
+watch(albumPageCount, (count) => {
+  albumPage.value = Math.min(albumPage.value, count - 1);
+});
+watch(playlistPageCount, (count) => {
+  playlistPage.value = Math.min(playlistPage.value, count - 1);
+});
 
 // Серверный каталог временно отключён: Music работает с локальным musicTracks.
 /*
@@ -118,6 +135,18 @@ function navigate(section) {
 function openPlaylist(playlistId) {
   selectedPlaylistId.value = playlistId;
   activeSection.value = "library";
+}
+
+function albumFavoriteId(track) {
+  return `${track.artist}:${track.album}`;
+}
+
+function albumTrackIds(track) {
+  return onlineTracks.value.filter((item) => item.artist === track.artist && item.album === track.album).map((item) => item.id);
+}
+
+function canPlayAlbum(track) {
+  return onlineTracks.value.some((item) => item.artist === track.artist && item.album === track.album && item.available);
 }
 
 useContextNavigation({
@@ -218,7 +247,13 @@ watch(() => route.query.q, (value) => {
             <div class="memusic-collection-section-title"><div><p class="memusic-kicker">Знакомьтесь ближе</p><h2 id="artists-title">Исполнители</h2></div><span>{{ catalogArtists.length }} в каталоге</span></div>
             <div class="memusic-artist-grid">
               <UiCard v-for="artist in catalogArtists" :key="artist.name" raw unstyled class="memusic-artist-card">
-                <div class="memusic-artist-card__art"><img v-if="artist.cover" :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" /><div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div></div>
+                <div class="memusic-artist-card__art">
+                  <img v-if="artist.cover" :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" />
+                  <div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div>
+                  <div class="memusic-catalog-overlay">
+                    <UiButton unstyled class="memusic-catalog-overlay__like" :class="{'is-active': player.likedArtistNames.includes(artist.name)}" :aria-label="player.likedArtistNames.includes(artist.name) ? `Убрать ${artist.name} из избранного` : `Добавить ${artist.name} в избранное`" :aria-pressed="player.likedArtistNames.includes(artist.name)" @click="player.toggleArtistLike(artist.name)"><SvgIcon name="heart" /></UiButton>
+                  </div>
+                </div>
                 <strong>{{ artist.name }}</strong>
                 <small>Исполнитель</small>
               </UiCard>
@@ -228,32 +263,50 @@ watch(() => route.query.q, (value) => {
           <section class="memusic-library-section" aria-labelledby="albums-title">
             <div class="memusic-collection-section-title">
               <div><p class="memusic-kicker">Откройте звучание</p><h2 id="albums-title">Альбомы и релизы</h2></div>
-              <span>{{ catalogAlbums.length }} в каталоге</span>
+              <div class="memusic-shelf-meta">
+                <span>{{ catalogAlbums.length }} в каталоге</span>
+                <div v-if="catalogAlbums.length > shelfPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать альбомы">
+                  <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentAlbumPage === 0" aria-label="Предыдущие альбомы" aria-controls="music-home-albums" @click="albumPage = currentAlbumPage - 1"><SvgIcon name="chevron-right" /></UiButton>
+                  <span class="memusic-shelf-controls__position">{{ currentAlbumPage + 1 }} / {{ albumPageCount }}</span>
+                  <UiButton unstyled class="memusic-shelf-controls__arrow" :disabled="currentAlbumPage >= albumPageCount - 1" aria-label="Следующие альбомы" aria-controls="music-home-albums" @click="albumPage = currentAlbumPage + 1"><SvgIcon name="chevron-right" /></UiButton>
+                </div>
+              </div>
             </div>
-            <div class="memusic-album-strip">
-              <UiButton
-                v-for="track in catalogAlbums"
-                :key="track.album"
-                unstyled
+            <div id="music-home-albums" class="memusic-album-strip" aria-live="polite">
+              <UiCard
+                v-for="track in visibleAlbums"
+                :key="albumFavoriteId(track)"
+                raw unstyled
                 class="memusic-album-card"
-                :title="`Открыть альбом ${track.album}`"
-                @click="$router.push('/music/album/night-signal')"
               >
-                <span class="memusic-album-card__cover"><img v-if="track.cover" :src="track.cover" :alt="`Обложка альбома ${track.album}`" /><div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div><span aria-hidden="true"><SvgIcon name="play" /></span></span>
-                <strong>{{ track.album }}</strong>
+                <div class="memusic-album-card__cover">
+                  <img v-if="track.cover" :src="track.cover" :alt="`Обложка альбома ${track.album}`" />
+                  <div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div>
+                  <div class="memusic-catalog-overlay">
+                    <UiButton unstyled class="memusic-catalog-overlay__play" :disabled="!canPlayAlbum(track)" :aria-label="`Включить альбом ${track.album}`" :title="canPlayAlbum(track) ? `Включить ${track.album}` : 'Аудио пока недоступно'" @click="player.playCollection(albumTrackIds(track))"><SvgIcon name="play" /></UiButton>
+                    <UiButton unstyled class="memusic-catalog-overlay__like" :class="{'is-active': player.likedAlbumIds.includes(albumFavoriteId(track))}" :aria-label="player.likedAlbumIds.includes(albumFavoriteId(track)) ? `Убрать ${track.album} из избранного` : `Добавить ${track.album} в избранное`" :aria-pressed="player.likedAlbumIds.includes(albumFavoriteId(track))" @click="player.toggleAlbumLike(albumFavoriteId(track))"><SvgIcon name="heart" /></UiButton>
+                  </div>
+                </div>
+                <UiButton unstyled class="memusic-album-card__title" :aria-label="`Открыть альбом ${track.album}`" @click="$router.push('/music/album/night-signal')"><strong>{{ track.album }}</strong></UiButton>
                 <small>{{ track.artist }}</small>
-              </UiButton>
+              </UiCard>
             </div>
           </section>
 
           <section class="memusic-library-section memusic-playlist-section" aria-labelledby="playlists-title">
-            <div class="memusic-collection-section-title"><div><p class="memusic-kicker">Для любого настроения</p><h2 id="playlists-title">Подборки</h2></div><span>{{ musicPlaylists.length }} плейлиста</span></div>
-            <div class="memusic-playlist-strip">
-              <UiCard v-for="playlist in musicPlaylists" :key="playlist.id" raw unstyled class="memusic-playlist-tile">
-                <img :src="playlist.cover" :alt="`Обложка ${playlist.title}`" />
-                <div><strong>{{ playlist.title }}</strong><small>{{ playlist.description }}</small></div>
-                <UiButton unstyled :aria-label="`Открыть плейлист ${playlist.title}`" @click="$router.push('/music/playlist/evening-flow')"><SvgIcon name="chevron-right" /></UiButton>
-              </UiCard>
+            <div class="memusic-collection-section-title">
+              <div><p class="memusic-kicker">Для любого настроения</p><h2 id="playlists-title">Подборки</h2></div>
+              <div class="memusic-shelf-meta">
+                <span>{{ playlistCatalog.length }} в каталоге</span>
+                <div v-if="playlistCatalog.length > shelfPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать плейлисты">
+                  <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentPlaylistPage === 0" aria-label="Предыдущие плейлисты" aria-controls="music-home-playlists" @click="playlistPage = currentPlaylistPage - 1"><SvgIcon name="chevron-right" /></UiButton>
+                  <span class="memusic-shelf-controls__position">{{ currentPlaylistPage + 1 }} / {{ playlistPageCount }}</span>
+                  <UiButton unstyled class="memusic-shelf-controls__arrow" :disabled="currentPlaylistPage >= playlistPageCount - 1" aria-label="Следующие плейлисты" aria-controls="music-home-playlists" @click="playlistPage = currentPlaylistPage + 1"><SvgIcon name="chevron-right" /></UiButton>
+                </div>
+              </div>
+            </div>
+            <div id="music-home-playlists" class="memusic-playlist-strip" aria-live="polite">
+              <MusicMediaCard v-for="playlist in visiblePlaylists" :key="playlist.id" :playlist="playlist" @open="openPlaylist" />
             </div>
           </section>
         </template>
@@ -314,7 +367,7 @@ watch(() => route.query.q, (value) => {
           <section v-if="!selectedPlaylist" class="memusic-carousel-section">
             <div class="memusic-section-heading"><h2>Ваши плейлисты</h2></div>
             <div class="memusic-media-grid">
-              <MusicMediaCard v-for="playlist in musicPlaylists" :key="playlist.id" :playlist="playlist" />
+              <MusicMediaCard v-for="playlist in musicPlaylists" :key="playlist.id" :playlist="playlist" @open="openPlaylist" />
             </div>
           </section>
         </template>

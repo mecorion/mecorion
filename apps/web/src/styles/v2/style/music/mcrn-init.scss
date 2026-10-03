@@ -496,31 +496,79 @@
     border-radius: var(--mcrn-radius-6px);
   }
   .memusic-media-card__cover img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  .memusic-media-card__cover button {
+  .memusic-media-card__overlay {
     position: absolute;
-    right: var(--mcrn-size-12px);
-    bottom: var(--mcrn-size-12px);
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mc-space-3);
+    background: rgb(8 8 20 / 68%);
+    opacity: 0;
+    transition: opacity .18s ease;
+  }
+  .memusic-media-card:hover .memusic-media-card__overlay,
+  .memusic-media-card:focus-within .memusic-media-card__overlay {
+    opacity: 1;
+  }
+  .memusic-media-card__overlay button {
     display: grid;
-    width: var(--mcrn-size-40px);
-    height: var(--mcrn-size-40px);
+    flex: 0 0 44px;
     place-items: center;
+    width: 44px;
+    height: 44px;
     border: 0;
     border-radius: 50%;
+    cursor: pointer;
+    transform: translateY(5px);
+    transition: transform .18s ease, background-color .18s ease;
+  }
+  .memusic-media-card:hover .memusic-media-card__overlay button,
+  .memusic-media-card:focus-within .memusic-media-card__overlay button { transform: translateY(0); }
+  .memusic-media-card__play {
     background: var(--mc-accent);
     color: var(--mc-accent-contrast);
-    font-size: var(--mcrn-font-size-12px);
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 0.18s ease, transform 0.18s ease;
   }
-  .memusic-media-card:hover .memusic-media-card__cover button, .memusic-media-card__cover button:focus-visible {
-    opacity: 1;
-    transform: translateY(0);
+  .memusic-media-card__play:disabled { opacity: .55; cursor: not-allowed; }
+  .memusic-media-card__like {
+    border: 1px solid rgb(255 255 255 / 38%) !important;
+    background: rgb(255 255 255 / 14%);
+    color: #fff;
+  }
+  .memusic-media-card__like:hover,
+  .memusic-media-card__like.is-active { background: var(--mc-accent); color: var(--mc-accent-contrast); }
+  .memusic-media-card__like.is-active svg { fill: currentColor; }
+  .memusic-media-card__title {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .memusic-media-card__title:hover,
+  .memusic-media-card__title:focus-visible { color: var(--mc-accent); }
+  @media (hover: none) {
+    .memusic-media-card__overlay {
+      align-items: end;
+      justify-content: end;
+      padding: var(--mc-space-2);
+      background: linear-gradient(transparent 28%, rgb(8 8 20 / 64%));
+      opacity: 1;
+    }
+    .memusic-media-card__overlay button { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .memusic-media-card__overlay,
+    .memusic-media-card__overlay button { transition: none; }
   }
   .memusic-media-card > strong {
     display: block;
@@ -2599,6 +2647,62 @@
     font-size: clamp(1.4rem, 2.2vw, 2rem);
     letter-spacing: -.035em;
   }
+  .memusic-shelf-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--mc-space-4);
+    min-width: 0;
+    margin-left: auto;
+  }
+  .memusic-shelf-meta > span {
+    color: var(--mc-text-muted);
+    font-size: var(--mc-font-xs);
+    white-space: nowrap;
+  }
+  .memusic-shelf-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--mc-space-2);
+    flex: 0 0 auto;
+  }
+  .memusic-shelf-controls__arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--mc-border-soft);
+    border-radius: 50%;
+    background: var(--mc-surface);
+    color: var(--mc-text-primary);
+    cursor: pointer;
+    transition: border-color .18s ease, background-color .18s ease, color .18s ease;
+  }
+  .memusic-shelf-controls__arrow:hover:not(:disabled),
+  .memusic-shelf-controls__arrow:focus-visible {
+    border-color: var(--mc-accent);
+    background: color-mix(in srgb, var(--mc-accent) 12%, var(--mc-surface));
+    color: var(--mc-accent);
+  }
+  .memusic-shelf-controls__arrow:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 2px; }
+  .memusic-shelf-controls__arrow:disabled { opacity: .38; cursor: not-allowed; }
+  .memusic-shelf-controls__arrow .svg-icon { width: 18px; height: 18px; }
+  .memusic-shelf-controls__arrow--previous .svg-icon { transform: rotate(180deg); }
+  .memusic-shelf-controls__position {
+    min-width: 3ch;
+    color: var(--mc-text-muted);
+    font-size: var(--mc-font-xs);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    white-space: nowrap;
+  }
+  @media (max-width: 480px) {
+    .memusic-collection-section-title { flex-wrap: wrap; }
+    .memusic-shelf-meta > span { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .memusic-shelf-controls__arrow { transition: none; }
+  }
   .memusic-artist-grid {
     max-width: none;
     grid-template-columns: repeat(auto-fill, minmax(150px, 190px));
@@ -2687,6 +2791,86 @@
   .memusic-album-card:disabled:hover img {
     filter: none;
     transform: none;
+  }
+  .memusic-artist-card__art { position: relative; }
+  .memusic-album-card { cursor: default; }
+  .memusic-album-card__title {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-top: var(--mc-space-3);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .memusic-album-card__title strong { display: block; margin-top: 0; }
+  .memusic-album-card__title:hover,
+  .memusic-album-card__title:focus-visible { color: var(--mc-accent); }
+  .memusic-catalog-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mc-space-3);
+    background: rgb(8 8 20 / 68%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+  }
+  .memusic-artist-card:hover .memusic-catalog-overlay,
+  .memusic-artist-card:focus-within .memusic-catalog-overlay,
+  .memusic-album-card:hover .memusic-catalog-overlay,
+  .memusic-album-card:focus-within .memusic-catalog-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .memusic-catalog-overlay button {
+    display: grid;
+    flex: 0 0 44px;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translateY(5px);
+    transition: transform .18s ease, background-color .18s ease;
+  }
+  .memusic-catalog-overlay:is(:hover, :focus-within) button,
+  .memusic-artist-card:hover .memusic-catalog-overlay button,
+  .memusic-album-card:hover .memusic-catalog-overlay button { transform: translateY(0); }
+  .memusic-catalog-overlay__play { background: var(--mc-accent); color: var(--mc-accent-contrast); }
+  .memusic-catalog-overlay__play:disabled { opacity: .55; cursor: not-allowed; }
+  .memusic-catalog-overlay__like {
+    border: 1px solid rgb(255 255 255 / 38%) !important;
+    background: rgb(255 255 255 / 14%);
+    color: #fff;
+  }
+  .memusic-catalog-overlay__like:hover,
+  .memusic-catalog-overlay__like.is-active { background: var(--mc-accent); color: var(--mc-accent-contrast); }
+  .memusic-catalog-overlay__like.is-active svg { fill: currentColor; }
+  .memusic-catalog-overlay button .svg-icon { width: 20px; height: 20px; }
+  .memusic-catalog-overlay button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  @media (hover: none) {
+    .memusic-catalog-overlay {
+      align-items: end;
+      justify-content: end;
+      padding: var(--mc-space-2);
+      background: linear-gradient(transparent 28%, rgb(8 8 20 / 64%));
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .memusic-artist-card__art .memusic-catalog-overlay { align-items: center; justify-content: center; background: rgb(8 8 20 / 25%); }
+    .memusic-catalog-overlay button { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .memusic-catalog-overlay,
+    .memusic-catalog-overlay button { transition: none; }
   }
   .memusic-playlist-strip {
     display: grid;
