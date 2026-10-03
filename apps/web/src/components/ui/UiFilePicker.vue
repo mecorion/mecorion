@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref} from "vue";
-import SvgIcon from "@/components/SvgIcon.vue";
+import SvgIcon from "../SvgIcon.vue";
 import UiButton from "./UiButton.vue";
 
 const model = defineModel({default: null});

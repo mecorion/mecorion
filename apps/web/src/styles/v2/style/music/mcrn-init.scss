@@ -2601,6 +2601,15 @@
     border-radius: 50%;
     box-shadow: none;
   }
+  .memusic-cover-placeholder {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    background: color-mix(in srgb, var(--mc-accent) 15%, var(--mc-surface-deep));
+    color: var(--mc-accent);
+  }
+  .memusic-cover-placeholder .svg-icon { width: 30%; height: 30%; }
   .memusic-album-strip {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: var(--mc-space-5);
@@ -2650,6 +2659,7 @@
     width: 18px;
     height: 18px;
   }
+  .memusic-album-card__cover .memusic-cover-placeholder .svg-icon { width: 30%; height: 30%; }
   .memusic-album-card:disabled:hover img {
     filter: none;
     transform: none;

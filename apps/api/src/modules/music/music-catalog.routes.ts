@@ -9,12 +9,13 @@ export async function registerCatalogRoutes(app: FastifyInstance) {
         contributor."primaryName" AS "name",
         contributor."normalizedName",
         COUNT(DISTINCT contentContributor."contentId")::INT AS "trackCount"
-      FROM content."tContributor" contributor
+      FROM music."tArtist" musicArtist
+      JOIN content."tContributor" contributor ON contributor."id" = musicArtist."contributorId"
       JOIN content."tContributorRole" role ON role."code" IN ('PRIMARY_ARTIST', 'FEATURED_ARTIST')
       LEFT JOIN content."tContentContributor" contentContributor
         ON contentContributor."contributorId" = contributor."id"
        AND contentContributor."contributorRoleId" = role."id"
-      WHERE contributor."retireDtm" IS NULL
+      WHERE contributor."retireDtm" IS NULL AND musicArtist."artistStatus" = 'ACTIVE'
       GROUP BY contributor."publicId", contributor."primaryName", contributor."normalizedName"
       ORDER BY contributor."primaryName"
     `);
@@ -31,9 +32,10 @@ export async function registerCatalogRoutes(app: FastifyInstance) {
         COUNT(albumTrack."trackContentId")::INT AS "trackCount"
       FROM music."tAlbum" album
       JOIN content."tContent" contentItem ON contentItem."id" = album."contentId"
+      JOIN content."tContentStatus" contentStatus ON contentStatus."id" = contentItem."contentStatusId"
       JOIN music."tAlbumType" albumType ON albumType."id" = album."albumTypeId"
       LEFT JOIN music."tAlbumTrack" albumTrack ON albumTrack."albumContentId" = album."contentId"
-      WHERE contentItem."retireDtm" IS NULL
+      WHERE contentItem."retireDtm" IS NULL AND contentStatus."code" = 'ACTIVE'
       GROUP BY contentItem."publicId", contentItem."originalTitle", contentItem."releaseDt", albumType."code"
       ORDER BY contentItem."releaseDt" DESC NULLS LAST, contentItem."originalTitle"
     `);

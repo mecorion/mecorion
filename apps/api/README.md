@@ -246,7 +246,8 @@ Admin авторизуется через двухшаговый seed challenge:
 ## Известные ограничения
 
 - `apps/media-worker` пока не выполняет реальные FFmpeg-задачи.
-- API регистрирует storage metadata, но физический local/S3 adapter не готов.
+- Music Admin умеет потоково сохранять исходники в локальный `data/music`.
+  Общий local/S3 adapter для остальных сервисов пока не готов.
 - Outbox dispatcher/broker не реализован; Admin предоставляет диагностику и
   ручные recovery-действия.
 - Полный end-to-end тест требует запущенный PostgreSQL 18 и применённые seed.
@@ -281,3 +282,33 @@ PATCH /api/v1/admin/platform/navigation/groups/:groupPublicId
 Пустой набор правил соответствующего типа означает доступ для всех
 авторизованных пользователей. Все изменения административного API пишутся в
 неизменяемый аудит.
+
+## Music Admin API
+
+Music Admin объединяет общие сущности контента с таблицами `music.tArtist`,
+`music.tAlbum`, `music.tAlbumTrack`, `music.tTrack` и `music.tLyrics`.
+Создание альбома или трека транзакционно создаёт `core.tResource`,
+`content.tContent`, доменную запись и связи с исполнителями. Статус
+`content.tContentStatus` является единым модерационным состоянием.
+
+```text
+POST /api/v1/admin/music/tracks/upload
+POST /api/v1/admin/music/tracks/:id/audio
+POST /api/v1/admin/music/albums/:id/cover
+GET  /api/v1/music/tracks/:id/audio
+```
+
+`tracks/upload` принимает multipart-поля `file`, необязательные `title`,
+`artistId`, `albumId`. Если название не задано, используется имя файла.
+Создание трека и media-записей происходит в одной транзакции; статус `ACTIVE`
+делает его видимым в публичном каталоге. Маршрут аудио поддерживает HTTP Range
+для воспроизведения и перемотки в браузере.
+
+```env
+MEDIA_STORAGE_ROOT=../../data
+MEDIA_MAX_UPLOAD_BYTES=536870912
+```
+
+Поддерживаются MP3, M4A/MP4 Audio, FLAC, WAV и OGG; для обложек — JPEG, PNG,
+WebP и AVIF. Файл сначала пишется во временный `.part`, затем атомарно
+переименовывается. При ошибке БД файл удаляется.

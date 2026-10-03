@@ -48,6 +48,15 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
   },
 
   actions: {
+    setOnlineCatalog(onlineTracks) {
+      const localTracks = this.tracks.filter((track) => track.isLocal);
+      this.tracks = [...onlineTracks, ...localTracks];
+      this.queueIds = this.queueIds.filter((id) => this.tracks.some((track) => track.id === id && track.available));
+      if (!this.currentTrackId || !this.tracks.some((track) => track.id === this.currentTrackId)) {
+        this.currentTrackId = onlineTracks.find((track) => track.available)?.id ?? localTracks[0]?.id ?? null;
+        this.isPlaying = false;
+      }
+    },
     initialize() {
       if (this.isInitialized) return;
 
@@ -188,7 +197,7 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
 
       if (wasPlayingLocalTrack) {
         this.isPlaying = false;
-        this.currentTrackId = musicTracks.find((track) => track.available)?.id ?? null;
+        this.currentTrackId = this.tracks.find((track) => !track.isLocal && track.available)?.id ?? null;
         this.currentTime = 0;
         this.duration = 0;
       }
@@ -197,7 +206,7 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
         if (track.source?.startsWith("blob:")) URL.revokeObjectURL(track.source);
       });
 
-      this.tracks = [...musicTracks, ...localTracks];
+      this.tracks = [...this.tracks.filter((track) => !track.isLocal), ...localTracks];
       this.localTrackIds = localTracks.map((track) => track.id);
       this.localFolderName = folderName;
       this.queueIds = this.queueIds.filter((id) => !previousLocalTracks.some((track) => track.id === id));

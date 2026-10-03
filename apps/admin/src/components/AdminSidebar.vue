@@ -15,6 +15,7 @@ const groups = [
   {
     label: "Контент",
     items: [
+      {label: "Музыка", icon: "music", to: "/music", ready: true},
       {label: "Каталог", icon: "boxes", to: "/content", ready: true},
       {label: "Публикации", icon: "book", to: "/publications", ready: true},
       {label: "Медиа", icon: "play", to: "/media", ready: true},

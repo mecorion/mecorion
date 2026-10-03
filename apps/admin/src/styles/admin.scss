@@ -468,6 +468,7 @@
     .admin-sign-in__form .ui-form__actions { align-items: stretch; flex-direction: column-reverse; }
     .admin-sign-in__form .ui-form__actions .mc-button { width: 100%; }
     .admin-list-item { grid-template-columns: 1fr; align-items: flex-start; }
+    .mc-form-grid { grid-template-columns: minmax(0, 1fr); }
     .admin-list-item > .mc-button { width: 100%; }
     .admin-check-grid { grid-template-columns: 1fr; }
     .admin-pagination { align-items: stretch; flex-direction: column; }

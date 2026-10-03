@@ -632,3 +632,38 @@ PATCH /api/v1/admin/platform/navigation/groups/:groupPublicId
 исполняемого кода из БД была бы критической уязвимостью. На текущем этапе ключ
 является безопасным идентификатором страницы; подключение динамического
 рендерера компонентов будет отдельным этапом UI Registry.
+
+## Управление Mecorion Music
+
+Раздел `/admin/music` объединяет общие схемы `content`, `media` и доменную
+схему `music`. Здесь можно создавать и редактировать исполнителей, альбомы и
+треки, управлять составом релиза, модерационными статусами и текстами песен,
+а также загружать исходное аудио и обложки.
+
+Основной сценарий: «Загрузить музыку» → выбрать MP3 → при необходимости
+указать название, исполнителя и альбом → отправить. Название подставляется из
+имени файла. Трек сразу публикуется в `/music`; технические метаданные для
+загрузки не требуются. Исполнителя и альбом можно создать по названию отдельно.
+
+Файлы принимаются потоково и сохраняются в `data/music`. API вычисляет
+SHA-256 во время записи и одной транзакцией создаёт `tStorageObject`, `tAsset`,
+`tAssetVariant` и `tContentAsset`. Путь строится из UUID, поэтому имя файла
+пользователя не может изменить директорию хранения.
+
+```text
+GET/POST       /api/v1/admin/music/artists
+PATCH/DELETE   /api/v1/admin/music/artists/:id
+GET/POST       /api/v1/admin/music/albums
+PATCH/DELETE   /api/v1/admin/music/albums/:id
+PUT            /api/v1/admin/music/albums/:id/tracks
+POST           /api/v1/admin/music/albums/:id/cover
+GET/POST       /api/v1/admin/music/tracks
+POST           /api/v1/admin/music/tracks/upload
+PATCH/DELETE   /api/v1/admin/music/tracks/:id
+GET/PUT        /api/v1/admin/music/tracks/:id/lyrics
+POST           /api/v1/admin/music/tracks/:id/audio
+```
+
+Перед ручной проверкой применить миграции и seed. Seed создаёт локальный
+provider `local-data`; миграция `150_music_admin.sql` создаёт `music.tArtist`
+и переносит в него уже связанных музыкальных contributors.

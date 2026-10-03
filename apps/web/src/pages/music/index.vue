@@ -32,56 +32,67 @@ const searchInput = ref("");
 const searchQuery = ref("");
 const searchTab = ref("all");
 const selectedPlaylistId = ref(null);
+const catalogError = ref("");
 const libraryFilters = ref({sort: "title"});
+const onlineTracks = computed(() => player.tracks.filter((track) => !track.isLocal));
 
-const searchResults = computed(() => searchMusic(searchQuery.value));
-const suggestions = computed(() => searchSuggestions(searchInput.value));
-function submitSearch(value) {
-  navigate("search");
-  searchInput.value = String(value).trim();
-  searchQuery.value = searchInput.value;
-  searchTab.value = "all";
-}
-function updateSearch(value) {
-  navigate("search");
-  searchInput.value = value;
-  searchQuery.value = value.trim();
-  searchTab.value = "all";
-}
-function clearSearch() {
-  searchInput.value = "";
-  searchQuery.value = "";
-  searchTab.value = "all";
-}
-function selectSearchItem(item) {
-  if (item.type === "playlist") { openPlaylist(item.id); return; }
-  if (item.type === "track") {
-    const track = musicTracks.find((entry) => entry.id === item.id);
-    if (track?.available) player.playTrack(track.id, searchResults.value.tracks.map((entry) => entry.id));
-    else { submitSearch(track?.title ?? item.title); searchTab.value = "tracks"; }
-    return;
-  }
-  submitSearch(item.title);
-  searchTab.value = item.type === "album" ? "albums" : "artists";
-}
-const searchConfig = computed(() => !showOnboarding.value ? {
-  query: searchInput, suggestions, placeholder: "Поиск по Music",
-  onActivate: () => navigate("search"), onInput: updateSearch,
-  onSubmit: submitSearch, onSelect: selectSearchItem, onClear: clearSearch,
-} : null);
+const filteredTracks = computed(() => {
+  const normalized = query.value.trim().toLocaleLowerCase("ru");
+  const matchesQuery = !normalized ? onlineTracks.value : onlineTracks.value.filter((track) =>
+    [track.title, track.artist, track.album]
+      .join(" ")
+      .toLocaleLowerCase("ru")
+      .includes(normalized),
+  );
+
+  return filterAndSortTracks(matchesQuery, onlineFilters.value);
+});
 
 const selectedPlaylist = computed(() => musicPlaylists.find((playlist) => playlist.id === selectedPlaylistId.value) ?? null);
 const selectedPlaylistTracks = computed(() => selectedPlaylist.value ? getTracksByIds(selectedPlaylist.value.trackIds) : []);
 const librarySourceTracks = computed(() => selectedPlaylist.value ? selectedPlaylistTracks.value : player.likedTracks);
 const filteredLibraryTracks = computed(() => filterAndSortTracks(librarySourceTracks.value, libraryFilters.value));
-const catalogTrackIds = musicTracks.map((track) => track.id);
-const catalogArtists = computed(() => [...new Map(musicTracks.map((track) => [track.artist, {
+const catalogTrackIds = computed(() => onlineTracks.value.map((track) => track.id));
+const catalogArtists = computed(() => [...new Map(onlineTracks.value.map((track) => [track.artist, {
   name: track.artist,
   cover: track.cover,
   trackId: track.id,
   available: track.available,
 }])).values()]);
-const catalogAlbums = computed(() => [...new Map(musicTracks.map((track) => [track.album, track])).values()]);
+const catalogAlbums = computed(() => [...new Map(onlineTracks.value.map((track) => [track.album, track])).values()]);
+
+async function loadCatalog() {
+  try {
+    const response = await fetch("/api/v1/music/tracks?limit=100", {credentials: "include"});
+    if (!response.ok) throw new Error("Каталог музыки недоступен");
+    const {items} = await response.json();
+    const uploadedTracks = items.map((item) => {
+      const duration = item.durationMs ? Math.round(item.durationMs / 1000) : 0;
+      return {
+        id: item.id,
+        title: item.title,
+        artist: item.artists?.join(", ") || "Неизвестный исполнитель",
+        album: item.album || "Синглы",
+        year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : null,
+        durationLabel: duration ? `${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, "0")}` : "—",
+        cover: null,
+        accent: "rose",
+        source: `/api/v1/music/tracks/${item.id}/audio`,
+        available: true,
+      };
+    });
+    player.setOnlineCatalog([...uploadedTracks, ...musicTracks]);
+    catalogError.value = "";
+  } catch {
+    catalogError.value = "Не удалось загрузить музыку с сервера";
+  }
+}
+
+onMounted(() => {
+  void loadCatalog();
+  window.addEventListener("focus", loadCatalog);
+});
+onBeforeUnmount(() => window.removeEventListener("focus", loadCatalog));
 
 function navigate(section) {
   activeSection.value = section;
@@ -166,7 +177,7 @@ watch(() => route.query.section, (section) => {
 
             <div class="memusic-collection-tracks">
               <div
-                v-for="track in musicTracks"
+                v-for="track in onlineTracks"
                 :key="track.id"
                 class="memusic-collection-track"
               >
@@ -190,7 +201,7 @@ watch(() => route.query.section, (section) => {
             <div class="memusic-collection-section-title"><div><p class="memusic-kicker">Знакомьтесь ближе</p><h2 id="artists-title">Исполнители</h2></div><span>{{ catalogArtists.length }} в каталоге</span></div>
             <div class="memusic-artist-grid">
               <UiCard v-for="artist in catalogArtists" :key="artist.name" raw unstyled class="memusic-artist-card">
-                <div class="memusic-artist-card__art"><img :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" /></div>
+                <div class="memusic-artist-card__art"><img v-if="artist.cover" :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" /><div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div></div>
                 <strong>{{ artist.name }}</strong>
                 <small>Исполнитель</small>
               </UiCard>
@@ -211,7 +222,7 @@ watch(() => route.query.section, (section) => {
                 :title="`Открыть альбом ${track.album}`"
                 @click="$router.push('/music/album/night-signal')"
               >
-                <span class="memusic-album-card__cover"><img :src="track.cover" :alt="`Обложка альбома ${track.album}`" /><span aria-hidden="true"><SvgIcon name="play" /></span></span>
+                <span class="memusic-album-card__cover"><img v-if="track.cover" :src="track.cover" :alt="`Обложка альбома ${track.album}`" /><div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div><span aria-hidden="true"><SvgIcon name="play" /></span></span>
                 <strong>{{ track.album }}</strong>
                 <small>{{ track.artist }}</small>
               </UiButton>
@@ -230,7 +241,33 @@ watch(() => route.query.section, (section) => {
           </section>
         </template>
 
-        <MusicSearchView v-else-if="activeSection === 'search'" v-model:tab="searchTab" :query="searchQuery" :results="searchResults" @search="submitSearch" @select="selectSearchItem" @clear="clearSearch" />
+        <template v-else-if="activeSection === 'search'">
+          <section class="memusic-page-heading">
+            <p class="memusic-kicker">Поиск</p>
+            <h1>{{ query ? `Результаты для «${query}»` : 'Исследуйте музыку' }}</h1>
+            <p>{{ query ? `Найдено треков: ${filteredTracks.length}` : 'Используйте поиск или фильтры, чтобы найти музыку для любого момента.' }}</p>
+          </section>
+
+          <p v-if="catalogError" role="alert">{{ catalogError }}</p>
+          <MusicFilters v-model="onlineFilters" :tracks="onlineTracks" context="online" />
+
+          <MusicTrackList
+            :tracks="filteredTracks"
+            :title="query ? 'Треки' : 'Вся онлайн-музыка'"
+            empty-text="По этому запросу ничего не найдено"
+          />
+
+          <template v-if="!query">
+            <section class="memusic-genre-section">
+              <div class="memusic-section-heading"><h2>Настроения и жанры</h2></div>
+              <div class="memusic-genre-grid">
+                <UiButton v-for="genre in musicGenres" :key="genre.id" unstyled :class="`is-${genre.accent}`">
+                  <strong>{{ genre.title }}</strong><span aria-hidden="true"><SvgIcon name="music" /></span>
+                </UiButton>
+              </div>
+            </section>
+          </template>
+        </template>
 
         <template v-else-if="activeSection === 'local'">
           <LocalMusicView />

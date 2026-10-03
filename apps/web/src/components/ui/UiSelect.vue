@@ -26,6 +26,7 @@ const activeIndex = ref(-1);
 const placement = ref("bottom");
 const menuMaxHeight = ref(null);
 const menuPosition = ref({top: 0, left: 0, width: 0});
+const overlayMenuZIndex = ref(null);
 const canScrollUp = ref(false);
 const canScrollDown = ref(false);
 let autoScrollFrame = null;
@@ -47,8 +48,15 @@ const menuStyle = computed(() => {
     width: `${menuPosition.value.width}px`,
     maxHeight: height,
     height: props.scrollable ? height : undefined,
+    zIndex: overlayMenuZIndex.value ?? undefined,
   };
 });
+
+function updateMenuLayer() {
+  const overlay = root.value?.closest(".ui-dialog, .ui-drawer, .ui-popover");
+  const layer = overlay ? Number.parseInt(window.getComputedStyle(overlay).zIndex, 10) : NaN;
+  overlayMenuZIndex.value = Number.isFinite(layer) ? layer + 1 : null;
+}
 
 function updateMenuPlacement() {
   if (!isOpen.value || !trigger.value || !menu.value) return;
@@ -100,6 +108,7 @@ function scrollStep(direction) {
 
 async function openSelect() {
   if (props.disabled) return;
+  updateMenuLayer();
   placement.value = "bottom";
   menuMaxHeight.value = null;
   isOpen.value = true;

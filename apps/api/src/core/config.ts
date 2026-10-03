@@ -15,6 +15,8 @@ const schema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
   DATABASE_URL: z.string().min(1),
+  MEDIA_STORAGE_ROOT: z.string().min(1).default("../../data"),
+  MEDIA_MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(536_870_912),
   // Several first-party frontends use the same API in development. Values are
   // comma-separated so production can still provide a single explicit origin.
   CORS_ORIGIN: z.string().default(

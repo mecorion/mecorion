@@ -389,6 +389,11 @@ Health route:
   source assets, привязка к контенту и очередь transcode jobs. Успешное
   завершение job атомарно создаёт output object/variant и переводит asset в
   `READY`.
+- В Admin есть предметный раздел `/admin/music`: CRUD исполнителей, альбомов и
+  треков, состав релиза, тексты, модерационные статусы и потоковая загрузка
+  аудио/обложек в `data/music`. API находится в
+  `modules/music/music-admin.routes.ts`, доменная таблица исполнителей добавлена
+  миграцией `150_music_admin.sql`.
 - В Admin реализован этап 5: очередь workflow-заявок, detail с revisions,
   targets, reviews и историей, а также контролируемые переходы статусов.
 - В Admin реализован этап 6: жалобы с отправителем и целевым resource,
