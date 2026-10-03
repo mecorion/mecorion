@@ -2230,14 +2230,6 @@
   .dashboard-topbar--music-search .workspace-search { grid-column: 1 / -1; grid-row: 2; }
   .workspace-search .ui-input__control { min-height: 48px; }
   .memusic-search-view { min-height: 420px; padding: 16px; }
-  .music-search__welcome { min-height: 400px; }
-  .music-search__explore { min-height: 260px; }
-  .music-search__orbit { width: 135px; height: 135px; }
-  .music-search__orbit svg { width: 70px; height: 70px; }
-  .music-search__explore-chips .ui-button:nth-child(1) { left: 0; top: 7%; }
-  .music-search__explore-chips .ui-button:nth-child(2) { left: 0; top: 70%; }
-  .music-search__explore-chips .ui-button:nth-child(3) { right: 0; top: 7%; }
-  .music-search__explore-chips .ui-button:nth-child(4) { right: 0; top: 70%; }
   .music-search__tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
   .music-search__tabs::-webkit-scrollbar { display: none; }
   .music-search__tabs .ui-tabs__trigger { flex: 0 0 auto; min-height: 48px; padding-inline: 12px; }
@@ -2248,9 +2240,6 @@
   .music-search__track-actions { gap: 6px; }
 }
 @media (max-width: 330px) {
-  .music-search__explore-chips { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; }
-  .music-search__explore-chips .ui-button { position: static; min-width: 0; padding-inline: 4px; font-size: 12px; }
-  .music-search__explore { gap: 20px; }
   .music-search__artist-grid, .music-search__album-grid, .music-search__playlist-grid { grid-template-columns: minmax(0, 1fr); }
   .music-search__track-row { gap: 5px; padding: 6px; }
   .music-search__track-main { gap: 5px; }

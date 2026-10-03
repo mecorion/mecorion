@@ -42,14 +42,18 @@ const bestPlayable = computed(() => best.value?.type === "track" ? best.value.av
 <template>
   <section class="memusic-search-view" aria-label="Поиск музыки">
     <div v-if="!query" class="music-search__welcome">
-      <p class="music-search__eyebrow">Mecorion Music / Поиск</p>
-      <h1>Что будем искать?</h1>
-      <p>Ищите треки, исполнителей, альбомы и плейлисты. Ваша музыка начинается с одного запроса.</p>
-      <div class="music-search__explore">
-        <div class="music-search__orbit" aria-hidden="true"><span></span><SvgIcon name="search" /><span></span></div>
+      <div class="music-search__intro">
+        <p class="music-search__eyebrow">Mecorion Music / Поиск</p>
+        <h1>Что будем искать?</h1>
+        <p class="music-search__description">Ищите треки, исполнителей, альбомы и плейлисты. Ваша музыка начинается с одного запроса.</p>
+        <p class="music-search__quick-label">Начните с популярной категории</p>
         <div class="music-search__explore-chips">
           <UiButton v-for="item in ['Треки', 'Исполнители', 'Альбомы', 'Плейлисты']" :key="item" variant="outline" @click="emit('search', item === 'Треки' ? 'Трек' : item === 'Исполнители' ? 'Исполнитель' : item === 'Альбомы' ? 'Альбом' : 'Вечерний')">{{ item }}</UiButton>
         </div>
+      </div>
+      <div class="music-search__explore" aria-hidden="true">
+        <div class="music-search__orbit"><SvgIcon name="search" /></div>
+        <span class="music-search__visual-caption">Ваш следующий трек уже близко</span>
       </div>
     </div>
 
