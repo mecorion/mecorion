@@ -188,3 +188,43 @@
   .memusic-release-page { --release-player-space: 204px; }
   .memusic-release-page .memusic-queue { bottom: 206px; }
 }
+
+@media (max-width: 520px) {
+  .memusic-player--release {
+    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-rows: 48px;
+    align-items: center;
+    height: 72px;
+    min-height: 72px;
+    gap: 8px;
+    padding: 10px;
+  }
+  .memusic-player--release .memusic-player__track {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: 48px minmax(0, 1fr);
+    min-width: 0;
+  }
+  .memusic-player--release .memusic-player__center {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .memusic-player--release .memusic-player__controls {
+    display: block;
+    width: 44px;
+    overflow: visible;
+  }
+  .memusic-player--release .memusic-player__controls > button:not(.memusic-player__play),
+  .memusic-player--release .memusic-player__tools,
+  .memusic-player--release .memusic-player__progress { display: none; }
+  .memusic-player--release .memusic-player__controls .memusic-player__play {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .memusic-release-page { --release-player-space: 88px; }
+  .memusic-release-page .memusic-queue { bottom: 88px; }
+}

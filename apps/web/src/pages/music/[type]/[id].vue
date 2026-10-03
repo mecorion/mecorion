@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {useRoute} from "#app";
 import SvgIcon from "@/components/SvgIcon.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
@@ -12,11 +12,23 @@ import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
 import {musicPlaylists} from "@/music/catalog.js";
 import {findMusicRelease, getRelatedReleases} from "@/music/releases.js";
+import {searchSuggestions} from "@/music/searchCatalog.js";
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 
 const route = useRoute();
 const player = useMusicPlayerStore();
+const searchInput = ref("");
+const searchConfig = {
+  query: searchInput,
+  suggestions: computed(() => searchSuggestions(searchInput.value)),
+  placeholder: "Поиск по Mecorion Music",
+  onInput: (value) => { searchInput.value = value; },
+  onSubmit: (value) => navigateTo({path: "/music", query: {section: "search", q: value.trim()}}),
+  onSelect: (item) => navigateTo({path: "/music", query: {section: "search", q: item.title}}),
+  onClear: () => { searchInput.value = ""; },
+  onActivate: () => {},
+};
 const release = computed(() => findMusicRelease(String(route.params.type), String(route.params.id)));
 const related = computed(() => release.value ? getRelatedReleases(release.value.id) : []);
 const playableIds = computed(() => release.value?.tracks.map((track) => track.id) ?? []);
@@ -36,6 +48,7 @@ useContextNavigation({
   accent: "#ff6f8f",
   accentStrong: "#ff86a3",
   activeId: computed(() => release.value.kind === "playlist" ? "playlist-playlist-evening" : ""),
+  search: searchConfig,
   groups: computed(() => [
     {label: null, navLabel: "Настройка Music", items: [
       {id: "onboarding", title: "Первый запуск", icon: "star", action: () => navigateTo("/music")},

@@ -12,13 +12,12 @@ import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
 import LocalMusicView from "@/components/music/LocalMusicView.vue";
 import MusicOnboarding from "@/components/music/MusicOnboarding.vue";
-import MusicSearchView from "@/components/music/MusicSearchView.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import {getTracksByIds, musicGenres, musicPlaylists, musicTracks} from "@/music/catalog.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
-import {searchMusic, searchSuggestions} from "@/music/searchCatalog.js";
+import {searchSuggestions} from "@/music/searchCatalog.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 
@@ -28,9 +27,20 @@ const router = useRouter();
 const showOnboarding = ref(false);
 onMounted(() => { showOnboarding.value = !localStorage.getItem("mecorion.music.onboarding"); });
 const activeSection = ref(route.query.section === "search" ? "search" : "home");
-const searchInput = ref("");
-const searchQuery = ref("");
-const searchTab = ref("all");
+const searchInput = ref(String(route.query.q ?? ""));
+const searchQuery = ref(String(route.query.q ?? ""));
+const query = searchQuery;
+const onlineFilters = ref({sort: "title"});
+const searchConfig = {
+  query: searchInput,
+  suggestions: computed(() => searchSuggestions(searchInput.value)),
+  placeholder: "Поиск по Mecorion Music",
+  onInput: (value) => { searchInput.value = value; },
+  onSubmit: (value) => { searchQuery.value = value.trim(); navigate("search"); },
+  onSelect: (item) => { searchInput.value = item.title; searchQuery.value = item.title; navigate("search"); },
+  onClear: () => { searchInput.value = ""; searchQuery.value = ""; },
+  onActivate: () => navigate("search"),
+};
 const selectedPlaylistId = ref(null);
 const catalogError = ref("");
 const libraryFilters = ref({sort: "title"});
@@ -61,6 +71,8 @@ const catalogArtists = computed(() => [...new Map(onlineTracks.value.map((track)
 }])).values()]);
 const catalogAlbums = computed(() => [...new Map(onlineTracks.value.map((track) => [track.album, track])).values()]);
 
+// Серверный каталог временно отключён: Music работает с локальным musicTracks.
+/*
 async function loadCatalog() {
   try {
     const response = await fetch("/api/v1/music/tracks?limit=100", {credentials: "include"});
@@ -93,6 +105,7 @@ onMounted(() => {
   window.addEventListener("focus", loadCatalog);
 });
 onBeforeUnmount(() => window.removeEventListener("focus", loadCatalog));
+*/
 
 function navigate(section) {
   activeSection.value = section;
@@ -138,6 +151,10 @@ watch(selectedPlaylistId, () => {
 
 watch(() => route.query.section, (section) => {
   if (section === "search") navigate("search");
+});
+watch(() => route.query.q, (value) => {
+  searchInput.value = String(value ?? "");
+  searchQuery.value = searchInput.value;
 });
 </script>
 
