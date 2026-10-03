@@ -12,12 +12,13 @@ import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import MusicArtwork from "@/components/music/MusicArtwork.vue";
 import LocalMusicView from "@/components/music/LocalMusicView.vue";
 import MusicOnboarding from "@/components/music/MusicOnboarding.vue";
+import MusicSearchView from "@/components/music/MusicSearchView.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {getTracksByIds, musicGenres, musicPlaylists, musicTracks} from "@/music/catalog.js";
+import {getTracksByIds, musicPlaylists, musicTracks} from "@/music/catalog.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
-import {searchSuggestions} from "@/music/searchCatalog.js";
+import {searchMusic, searchSuggestions} from "@/music/searchCatalog.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 
@@ -29,8 +30,8 @@ onMounted(() => { showOnboarding.value = !localStorage.getItem("mecorion.music.o
 const activeSection = ref(route.query.section === "search" ? "search" : "home");
 const searchInput = ref(String(route.query.q ?? ""));
 const searchQuery = ref(String(route.query.q ?? ""));
-const query = searchQuery;
-const onlineFilters = ref({sort: "title"});
+const searchTab = ref("all");
+const searchResults = computed(() => searchMusic(searchQuery.value));
 const searchConfig = {
   query: searchInput,
   suggestions: computed(() => searchSuggestions(searchInput.value)),
@@ -45,18 +46,6 @@ const selectedPlaylistId = ref(null);
 const catalogError = ref("");
 const libraryFilters = ref({sort: "title"});
 const onlineTracks = computed(() => player.tracks.filter((track) => !track.isLocal));
-
-const filteredTracks = computed(() => {
-  const normalized = query.value.trim().toLocaleLowerCase("ru");
-  const matchesQuery = !normalized ? onlineTracks.value : onlineTracks.value.filter((track) =>
-    [track.title, track.artist, track.album]
-      .join(" ")
-      .toLocaleLowerCase("ru")
-      .includes(normalized),
-  );
-
-  return filterAndSortTracks(matchesQuery, onlineFilters.value);
-});
 
 const selectedPlaylist = computed(() => musicPlaylists.find((playlist) => playlist.id === selectedPlaylistId.value) ?? null);
 const selectedPlaylistTracks = computed(() => selectedPlaylist.value ? getTracksByIds(selectedPlaylist.value.trackIds) : []);
@@ -226,6 +215,23 @@ function navigate(section) {
 function openPlaylist(playlistId) {
   selectedPlaylistId.value = playlistId;
   activeSection.value = "library";
+}
+
+function runSearch(value) {
+  searchInput.value = value;
+  searchQuery.value = value.trim();
+  searchTab.value = "all";
+  navigate("search");
+}
+
+function selectSearchResult(item) {
+  if (item.type === "playlist") {
+    openPlaylist(item.id);
+    return;
+  }
+  searchInput.value = item.title;
+  searchQuery.value = item.title;
+  searchTab.value = {track: "tracks", artist: "artists", album: "albums"}[item.type] ?? "all";
 }
 
 function albumFavoriteId(track) {
@@ -411,31 +417,7 @@ watch(() => route.query.q, (value) => {
         </template>
 
         <template v-else-if="activeSection === 'search'">
-          <section class="memusic-page-heading">
-            <p class="memusic-kicker">Поиск</p>
-            <h1>{{ query ? `Результаты для «${query}»` : 'Исследуйте музыку' }}</h1>
-            <p>{{ query ? `Найдено треков: ${filteredTracks.length}` : 'Используйте поиск или фильтры, чтобы найти музыку для любого момента.' }}</p>
-          </section>
-
-          <p v-if="catalogError" role="alert">{{ catalogError }}</p>
-          <MusicFilters v-model="onlineFilters" :tracks="onlineTracks" context="online" />
-
-          <MusicTrackList
-            :tracks="filteredTracks"
-            :title="query ? 'Треки' : 'Вся онлайн-музыка'"
-            empty-text="По этому запросу ничего не найдено"
-          />
-
-          <template v-if="!query">
-            <section class="memusic-genre-section">
-              <div class="memusic-section-heading"><h2>Настроения и жанры</h2></div>
-              <div class="memusic-genre-grid">
-                <UiButton v-for="genre in musicGenres" :key="genre.id" unstyled :class="`is-${genre.accent}`">
-                  <strong>{{ genre.title }}</strong><span aria-hidden="true"><SvgIcon name="music" /></span>
-                </UiButton>
-              </div>
-            </section>
-          </template>
+          <MusicSearchView v-model:tab="searchTab" :query="searchQuery" :results="searchResults" @search="runSearch" @select="selectSearchResult" @clear="runSearch('')" />
         </template>
 
         <template v-else-if="activeSection === 'local'">
