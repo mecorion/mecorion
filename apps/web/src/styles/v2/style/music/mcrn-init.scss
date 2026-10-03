@@ -483,11 +483,10 @@
     border-radius: var(--mc-radius-md);
     padding: var(--mcrn-space-14px);
     background: var(--mc-surface);
-    transition: border-color 0.18s ease, transform 0.18s ease;
+    transition: border-color 0.18s ease;
   }
   .memusic-media-card:hover {
     border-color: var(--mc-border-strong);
-    transform: translateY(-2px);
   }
   .memusic-media-card__cover {
     position: relative;
@@ -500,6 +499,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform .2s ease;
+  }
+  .memusic-media-card:is(:hover, :focus-within) .memusic-media-card__cover img {
+    transform: scale(1.04);
   }
   .memusic-media-card__overlay {
     position: absolute;
@@ -558,10 +561,9 @@
   .memusic-media-card__title:focus-visible { color: var(--mc-accent); }
   @media (hover: none) {
     .memusic-media-card__overlay {
-      align-items: end;
-      justify-content: end;
-      padding: var(--mc-space-2);
-      background: linear-gradient(transparent 28%, rgb(8 8 20 / 64%));
+      align-items: center;
+      justify-content: center;
+      background: rgb(8 8 20 / 25%);
       opacity: 1;
     }
     .memusic-media-card__overlay button { transform: none; }
@@ -2382,11 +2384,7 @@
     aspect-ratio: 1;
     border-radius: var(--mc-radius-sm);
     object-fit: cover;
-    transition: transform .2s ease, filter .2s ease;
-  }
-  .memusic-album-card:hover img {
-    filter: brightness(1.08);
-    transform: translateY(-3px);
+    transition: transform .2s ease;
   }
   .memusic-album-card strong {
     margin-top: var(--mc-space-3);
@@ -2409,15 +2407,6 @@
       grid-template-columns: minmax(0, 1fr);
       gap: var(--mc-space-1);
     }
-    .memusic-album-strip {
-      grid-template-columns: repeat(3, minmax(150px, 1fr));
-      overflow-x: auto;
-      padding-bottom: var(--mc-space-3);
-      scroll-snap-type: x proximity;
-    }
-    .memusic-album-card {
-      scroll-snap-align: start;
-    }
   }
   @media (max-width: 480px) {
     .memusic-collection-heading {
@@ -2433,17 +2422,6 @@
     .memusic-library-title strong,
     .memusic-collection-section-title h2 {
       font-size: var(--mc-font-title-3);
-    }
-    .memusic-artist-grid {
-      display: flex;
-      overflow-x: auto;
-      gap: var(--mc-space-4);
-      padding-bottom: var(--mc-space-3);
-      scroll-snap-type: x proximity;
-    }
-    .memusic-artist-card {
-      flex: 0 0 132px;
-      scroll-snap-align: start;
     }
     .memusic-collection-empty-grid {
       grid-template-columns: minmax(0, 1fr);
@@ -2655,10 +2633,12 @@
     min-width: 0;
     margin-left: auto;
   }
-  .memusic-shelf-meta > span {
+  .memusic-shelf-heading { min-width: 0; }
+  .memusic-shelf-count {
+    display: block;
+    margin-top: var(--mc-space-1);
     color: var(--mc-text-muted);
     font-size: var(--mc-font-xs);
-    white-space: nowrap;
   }
   .memusic-shelf-controls {
     display: flex;
@@ -2696,17 +2676,22 @@
     text-align: center;
     white-space: nowrap;
   }
+  @media (max-width: 767px) {
+    .memusic-shelf-meta { display: none; }
+  }
   @media (max-width: 480px) {
     .memusic-collection-section-title { flex-wrap: wrap; }
-    .memusic-shelf-meta > span { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .memusic-shelf-controls__arrow { transition: none; }
   }
   .memusic-artist-grid {
+    display: grid;
     max-width: none;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 190px));
+    grid-template-columns: repeat(var(--artist-columns, 6), minmax(0, 1fr));
     gap: var(--mc-space-5);
+    min-width: 0;
+    overflow: visible;
   }
   .memusic-artist-card {
     border: 1px solid var(--mc-border-soft);
@@ -2739,11 +2724,13 @@
   }
   .memusic-cover-placeholder .svg-icon { width: 30%; height: 30%; }
   .memusic-album-strip {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(var(--album-columns, 6), minmax(0, 1fr));
     gap: var(--mc-space-5);
+    min-width: 0;
+    overflow: visible;
   }
   .memusic-album-card {
-    padding: var(--mc-space-3);
+    padding: var(--mc-space-4);
     border: 1px solid var(--mc-border-soft);
     border-radius: var(--mc-radius-md);
     background: var(--mc-surface);
@@ -2763,6 +2750,22 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+  .memusic-artist-card__art img,
+  .memusic-album-card__cover img {
+    transition: transform .2s ease;
+  }
+  .memusic-artist-card:is(:hover, :focus-within) .memusic-artist-card__art img,
+  .memusic-album-card:is(:hover, :focus-within) .memusic-album-card__cover img {
+    transform: scale(1.04);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .memusic-artist-card__art img,
+    .memusic-album-card__cover img,
+    .memusic-media-card__cover img { transition: none; }
+    .memusic-artist-card:is(:hover, :focus-within) .memusic-artist-card__art img,
+    .memusic-album-card:is(:hover, :focus-within) .memusic-album-card__cover img,
+    .memusic-media-card:is(:hover, :focus-within) .memusic-media-card__cover img { transform: none; }
   }
   .memusic-album-card__cover > span {
     position: absolute;
@@ -2858,10 +2861,9 @@
   .memusic-catalog-overlay button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   @media (hover: none) {
     .memusic-catalog-overlay {
-      align-items: end;
-      justify-content: end;
-      padding: var(--mc-space-2);
-      background: linear-gradient(transparent 28%, rgb(8 8 20 / 64%));
+      align-items: center;
+      justify-content: center;
+      background: rgb(8 8 20 / 25%);
       opacity: 1;
       pointer-events: auto;
     }
@@ -2872,10 +2874,31 @@
     .memusic-catalog-overlay,
     .memusic-catalog-overlay button { transition: none; }
   }
-  .memusic-playlist-strip {
+  .memusic-playlist-strip,
+  .memusic-media-grid--shelf {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--playlist-columns, 3), minmax(0, 1fr));
     gap: var(--mc-space-4);
+    min-width: 0;
+  }
+  .memusic-playlist-strip .memusic-media-card__cover,
+  .memusic-media-grid--shelf .memusic-media-card__cover { aspect-ratio: 1; }
+  .memusic-shelf-viewport {
+    min-width: 0;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+  .memusic-shelf-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--shelf-card-width);
+    gap: var(--mc-space-5);
+    width: 100%;
+    transform: translate3d(var(--shelf-offset, 0px), 0, 0);
+    transition: transform .36s cubic-bezier(.22, 1, .36, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .memusic-shelf-track { transition: none; }
   }
   .memusic-playlist-tile {
     display: grid;

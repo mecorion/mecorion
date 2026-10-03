@@ -2169,6 +2169,52 @@
 @media (max-width: 1100px) {
   .music-search__artist-grid, .music-search__album-grid, .music-search__playlist-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+@media (min-width: 861px) and (max-width: 980px) {
+  .dashboard-topbar--music-search {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: var(--mc-space-3);
+  }
+  .dashboard-topbar--music-search .dashboard-menu-button {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .dashboard-topbar--music-search .workspace-search {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  .dashboard-topbar--music-search .dashboard-topbar__account {
+    grid-column: 3;
+    grid-row: 1;
+    flex-wrap: nowrap;
+  }
+}
+@media (max-width: 860px) {
+  .dashboard-topbar--music-search {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: var(--mc-space-2);
+    align-items: center;
+  }
+  .dashboard-topbar--music-search .dashboard-menu-button { grid-column: 1; grid-row: 1; }
+  .dashboard-topbar--music-search .dashboard-topbar__account {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  .dashboard-topbar--music-search .workspace-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}
 @media (max-width: 800px) {
   .music-search__overview { grid-template-columns: minmax(0, 1fr); }
   .music-search__artist-grid, .music-search__album-grid, .music-search__playlist-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "#app";
 import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
@@ -70,22 +70,113 @@ const catalogArtists = computed(() => [...new Map(onlineTracks.value.map((track)
   available: track.available,
 }])).values()]);
 const catalogAlbums = computed(() => [...new Map(onlineTracks.value.map((track) => [`${track.artist}:${track.album}`, track])).values()]);
-const shelfPageSize = 6;
+const albumStrip = ref(null);
+const artistStrip = ref(null);
+const playlistStrip = ref(null);
+const libraryPlaylistStrip = ref(null);
+const albumPageSize = ref(6);
+const artistPageSize = ref(6);
+const playlistPageSize = ref(6);
+const libraryPlaylistPageSize = ref(6);
+const albumStripWidth = ref(0);
+const artistStripWidth = ref(0);
+const playlistStripWidth = ref(0);
+const libraryPlaylistStripWidth = ref(0);
+let shelfResizeObserver;
+const columnsForWidth = (width) => Math.min(6, Math.max(1, Math.floor((width + 20) / 200)));
+onMounted(() => {
+  shelfResizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const width = entry.contentRect.width;
+      if (entry.target === albumStrip.value) { albumStripWidth.value = width; albumPageSize.value = columnsForWidth(width); }
+      if (entry.target === artistStrip.value) { artistStripWidth.value = width; artistPageSize.value = columnsForWidth(width); }
+      if (entry.target === playlistStrip.value) { playlistStripWidth.value = width; playlistPageSize.value = columnsForWidth(width); }
+      if (entry.target === libraryPlaylistStrip.value) { libraryPlaylistStripWidth.value = width; libraryPlaylistPageSize.value = columnsForWidth(width); }
+    }
+  });
+  if (albumStrip.value) shelfResizeObserver.observe(albumStrip.value);
+  if (artistStrip.value) shelfResizeObserver.observe(artistStrip.value);
+  if (playlistStrip.value) shelfResizeObserver.observe(playlistStrip.value);
+  if (libraryPlaylistStrip.value) shelfResizeObserver.observe(libraryPlaylistStrip.value);
+});
+onUnmounted(() => { shelfResizeObserver?.disconnect(); clearTimeout(swipeClickTimer); });
+watch([albumStrip, artistStrip, playlistStrip, libraryPlaylistStrip], ([album, artist, playlist, libraryPlaylist], [previousAlbum, previousArtist, previousPlaylist, previousLibraryPlaylist]) => {
+  if (!shelfResizeObserver) return;
+  if (previousAlbum) shelfResizeObserver.unobserve(previousAlbum);
+  if (previousArtist) shelfResizeObserver.unobserve(previousArtist);
+  if (previousPlaylist) shelfResizeObserver.unobserve(previousPlaylist);
+  if (previousLibraryPlaylist) shelfResizeObserver.unobserve(previousLibraryPlaylist);
+  if (album) shelfResizeObserver.observe(album);
+  if (artist) shelfResizeObserver.observe(artist);
+  if (playlist) shelfResizeObserver.observe(playlist);
+  if (libraryPlaylist) shelfResizeObserver.observe(libraryPlaylist);
+});
 const playlistCatalog = ref([...musicPlaylists]);
 const albumPage = ref(0);
+const artistPage = ref(0);
 const playlistPage = ref(0);
-const albumPageCount = computed(() => Math.max(1, Math.ceil(catalogAlbums.value.length / shelfPageSize)));
-const playlistPageCount = computed(() => Math.max(1, Math.ceil(playlistCatalog.value.length / shelfPageSize)));
+const libraryPlaylistPage = ref(0);
+const albumPageCount = computed(() => Math.max(1, catalogAlbums.value.length - albumPageSize.value + 1));
+const artistPageCount = computed(() => Math.max(1, catalogArtists.value.length - artistPageSize.value + 1));
+const playlistPageCount = computed(() => Math.max(1, playlistCatalog.value.length - playlistPageSize.value + 1));
+const libraryPlaylistPageCount = computed(() => Math.max(1, playlistCatalog.value.length - libraryPlaylistPageSize.value + 1));
 const currentAlbumPage = computed(() => Math.min(albumPage.value, albumPageCount.value - 1));
+const currentArtistPage = computed(() => Math.min(artistPage.value, artistPageCount.value - 1));
 const currentPlaylistPage = computed(() => Math.min(playlistPage.value, playlistPageCount.value - 1));
-const visibleAlbums = computed(() => catalogAlbums.value.slice(currentAlbumPage.value * shelfPageSize, (currentAlbumPage.value + 1) * shelfPageSize));
-const visiblePlaylists = computed(() => playlistCatalog.value.slice(currentPlaylistPage.value * shelfPageSize, (currentPlaylistPage.value + 1) * shelfPageSize));
+const currentLibraryPlaylistPage = computed(() => Math.min(libraryPlaylistPage.value, libraryPlaylistPageCount.value - 1));
+
+function shelfStyle(width, pageSize, total, page) {
+  const columns = Math.max(1, Math.min(pageSize, total));
+  const cardWidth = width ? (width - (columns - 1) * 20) / columns : 0;
+  return {
+    '--shelf-card-width': width ? `${cardWidth}px` : `calc((100% - ${(columns - 1) * 20}px) / ${columns})`,
+    '--shelf-offset': `${-page * (cardWidth + 20)}px`,
+    gridTemplateColumns: 'none',
+  };
+}
+
+const shelfPages = {artists: artistPage, albums: albumPage, playlists: playlistPage, libraryPlaylists: libraryPlaylistPage};
+const shelfPageCounts = {artists: artistPageCount, albums: albumPageCount, playlists: playlistPageCount, libraryPlaylists: libraryPlaylistPageCount};
+let swipeStart = null;
+let suppressSwipeClick = false;
+let swipeClickTimer;
+
+function startShelfSwipe(shelf, event) {
+  if (event.touches.length !== 1) return;
+  swipeStart = {shelf, x: event.touches[0].clientX, y: event.touches[0].clientY};
+}
+
+function endShelfSwipe(shelf, event) {
+  if (!swipeStart || swipeStart.shelf !== shelf || !event.changedTouches.length) return;
+  const dx = event.changedTouches[0].clientX - swipeStart.x;
+  const dy = event.changedTouches[0].clientY - swipeStart.y;
+  swipeStart = null;
+  if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+  const page = shelfPages[shelf];
+  page.value = Math.max(0, Math.min(shelfPageCounts[shelf].value - 1, page.value + (dx < 0 ? 1 : -1)));
+  suppressSwipeClick = true;
+  clearTimeout(swipeClickTimer);
+  swipeClickTimer = setTimeout(() => { suppressSwipeClick = false; }, 450);
+}
+
+function preventSwipeClick(event) {
+  if (!suppressSwipeClick) return;
+  event.preventDefault();
+  event.stopPropagation();
+  suppressSwipeClick = false;
+}
 
 watch(albumPageCount, (count) => {
   albumPage.value = Math.min(albumPage.value, count - 1);
 });
+watch(artistPageCount, (count) => {
+  artistPage.value = Math.min(artistPage.value, count - 1);
+});
 watch(playlistPageCount, (count) => {
   playlistPage.value = Math.min(playlistPage.value, count - 1);
+});
+watch(libraryPlaylistPageCount, (count) => {
+  libraryPlaylistPage.value = Math.min(libraryPlaylistPage.value, count - 1);
 });
 
 // Серверный каталог временно отключён: Music работает с локальным musicTracks.
@@ -244,9 +335,19 @@ watch(() => route.query.q, (value) => {
           </section>
 
           <section class="memusic-library-section" aria-labelledby="artists-title">
-            <div class="memusic-collection-section-title"><div><p class="memusic-kicker">Знакомьтесь ближе</p><h2 id="artists-title">Исполнители</h2></div><span>{{ catalogArtists.length }} в каталоге</span></div>
-            <div class="memusic-artist-grid">
-              <UiCard v-for="artist in catalogArtists" :key="artist.name" raw unstyled class="memusic-artist-card">
+            <div class="memusic-collection-section-title">
+              <div class="memusic-shelf-heading"><p class="memusic-kicker">Знакомьтесь ближе</p><h2 id="artists-title">Исполнители</h2><span class="memusic-shelf-count">{{ catalogArtists.length }} в каталоге</span></div>
+              <div class="memusic-shelf-meta">
+                <div v-if="catalogArtists.length > artistPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать исполнителей">
+                  <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentArtistPage === 0" aria-label="Предыдущие исполнители" aria-controls="music-home-artists" @click="artistPage = currentArtistPage - 1"><SvgIcon name="chevron-right" /></UiButton>
+                  <span class="memusic-shelf-controls__position">{{ currentArtistPage + 1 }} / {{ artistPageCount }}</span>
+                  <UiButton unstyled class="memusic-shelf-controls__arrow" :disabled="currentArtistPage >= artistPageCount - 1" aria-label="Следующие исполнители" aria-controls="music-home-artists" @click="artistPage = currentArtistPage + 1"><SvgIcon name="chevron-right" /></UiButton>
+                </div>
+              </div>
+            </div>
+            <div id="music-home-artists" ref="artistStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('artists', $event)" @touchend.passive="endShelfSwipe('artists', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
+              <div class="memusic-artist-grid memusic-shelf-track" :style="shelfStyle(artistStripWidth, artistPageSize, catalogArtists.length, currentArtistPage)">
+              <UiCard v-for="(artist, index) in catalogArtists" :key="artist.name" raw unstyled class="memusic-artist-card" :inert="index < currentArtistPage || index >= currentArtistPage + artistPageSize" :aria-hidden="index < currentArtistPage || index >= currentArtistPage + artistPageSize">
                 <div class="memusic-artist-card__art">
                   <img v-if="artist.cover" :src="artist.cover" :alt="`Обложка трека исполнителя ${artist.name}`" />
                   <div v-else class="memusic-cover-placeholder" aria-hidden="true"><SvgIcon name="music" /></div>
@@ -257,27 +358,30 @@ watch(() => route.query.q, (value) => {
                 <strong>{{ artist.name }}</strong>
                 <small>Исполнитель</small>
               </UiCard>
+              </div>
             </div>
           </section>
 
           <section class="memusic-library-section" aria-labelledby="albums-title">
             <div class="memusic-collection-section-title">
-              <div><p class="memusic-kicker">Откройте звучание</p><h2 id="albums-title">Альбомы и релизы</h2></div>
+              <div class="memusic-shelf-heading"><p class="memusic-kicker">Откройте звучание</p><h2 id="albums-title">Альбомы и релизы</h2><span class="memusic-shelf-count">{{ catalogAlbums.length }} в каталоге</span></div>
               <div class="memusic-shelf-meta">
-                <span>{{ catalogAlbums.length }} в каталоге</span>
-                <div v-if="catalogAlbums.length > shelfPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать альбомы">
+                <div v-if="catalogAlbums.length > albumPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать альбомы">
                   <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentAlbumPage === 0" aria-label="Предыдущие альбомы" aria-controls="music-home-albums" @click="albumPage = currentAlbumPage - 1"><SvgIcon name="chevron-right" /></UiButton>
                   <span class="memusic-shelf-controls__position">{{ currentAlbumPage + 1 }} / {{ albumPageCount }}</span>
                   <UiButton unstyled class="memusic-shelf-controls__arrow" :disabled="currentAlbumPage >= albumPageCount - 1" aria-label="Следующие альбомы" aria-controls="music-home-albums" @click="albumPage = currentAlbumPage + 1"><SvgIcon name="chevron-right" /></UiButton>
                 </div>
               </div>
             </div>
-            <div id="music-home-albums" class="memusic-album-strip" aria-live="polite">
+            <div id="music-home-albums" ref="albumStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('albums', $event)" @touchend.passive="endShelfSwipe('albums', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
+              <div class="memusic-album-strip memusic-shelf-track" :style="shelfStyle(albumStripWidth, albumPageSize, catalogAlbums.length, currentAlbumPage)">
               <UiCard
-                v-for="track in visibleAlbums"
+                v-for="(track, index) in catalogAlbums"
                 :key="albumFavoriteId(track)"
                 raw unstyled
                 class="memusic-album-card"
+                :inert="index < currentAlbumPage || index >= currentAlbumPage + albumPageSize"
+                :aria-hidden="index < currentAlbumPage || index >= currentAlbumPage + albumPageSize"
               >
                 <div class="memusic-album-card__cover">
                   <img v-if="track.cover" :src="track.cover" :alt="`Обложка альбома ${track.album}`" />
@@ -290,23 +394,25 @@ watch(() => route.query.q, (value) => {
                 <UiButton unstyled class="memusic-album-card__title" :aria-label="`Открыть альбом ${track.album}`" @click="$router.push('/music/album/night-signal')"><strong>{{ track.album }}</strong></UiButton>
                 <small>{{ track.artist }}</small>
               </UiCard>
+              </div>
             </div>
           </section>
 
           <section class="memusic-library-section memusic-playlist-section" aria-labelledby="playlists-title">
             <div class="memusic-collection-section-title">
-              <div><p class="memusic-kicker">Для любого настроения</p><h2 id="playlists-title">Подборки</h2></div>
+              <div class="memusic-shelf-heading"><p class="memusic-kicker">Для любого настроения</p><h2 id="playlists-title">Подборки</h2><span class="memusic-shelf-count">{{ playlistCatalog.length }} в каталоге</span></div>
               <div class="memusic-shelf-meta">
-                <span>{{ playlistCatalog.length }} в каталоге</span>
-                <div v-if="playlistCatalog.length > shelfPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать плейлисты">
+                <div v-if="playlistCatalog.length > playlistPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать плейлисты">
                   <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentPlaylistPage === 0" aria-label="Предыдущие плейлисты" aria-controls="music-home-playlists" @click="playlistPage = currentPlaylistPage - 1"><SvgIcon name="chevron-right" /></UiButton>
                   <span class="memusic-shelf-controls__position">{{ currentPlaylistPage + 1 }} / {{ playlistPageCount }}</span>
                   <UiButton unstyled class="memusic-shelf-controls__arrow" :disabled="currentPlaylistPage >= playlistPageCount - 1" aria-label="Следующие плейлисты" aria-controls="music-home-playlists" @click="playlistPage = currentPlaylistPage + 1"><SvgIcon name="chevron-right" /></UiButton>
                 </div>
               </div>
             </div>
-            <div id="music-home-playlists" class="memusic-playlist-strip" aria-live="polite">
-              <MusicMediaCard v-for="playlist in visiblePlaylists" :key="playlist.id" :playlist="playlist" @open="openPlaylist" />
+            <div id="music-home-playlists" ref="playlistStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('playlists', $event)" @touchend.passive="endShelfSwipe('playlists', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
+              <div class="memusic-playlist-strip memusic-shelf-track" :style="shelfStyle(playlistStripWidth, playlistPageSize, playlistCatalog.length, currentPlaylistPage)">
+                <MusicMediaCard v-for="(playlist, index) in playlistCatalog" :key="playlist.id" :playlist="playlist" :inert="index < currentPlaylistPage || index >= currentPlaylistPage + playlistPageSize" :aria-hidden="index < currentPlaylistPage || index >= currentPlaylistPage + playlistPageSize" @open="openPlaylist" />
+              </div>
             </div>
           </section>
         </template>
@@ -365,9 +471,20 @@ watch(() => route.query.q, (value) => {
           />
 
           <section v-if="!selectedPlaylist" class="memusic-carousel-section">
-            <div class="memusic-section-heading"><h2>Ваши плейлисты</h2></div>
-            <div class="memusic-media-grid">
-              <MusicMediaCard v-for="playlist in musicPlaylists" :key="playlist.id" :playlist="playlist" @open="openPlaylist" />
+            <div class="memusic-collection-section-title">
+              <div class="memusic-shelf-heading"><h2 id="library-playlists-title">Ваши плейлисты</h2><span class="memusic-shelf-count">{{ playlistCatalog.length }} в каталоге</span></div>
+              <div class="memusic-shelf-meta">
+                <div v-if="playlistCatalog.length > libraryPlaylistPageSize" class="memusic-shelf-controls" role="group" aria-label="Листать ваши плейлисты">
+                  <UiButton unstyled class="memusic-shelf-controls__arrow memusic-shelf-controls__arrow--previous" :disabled="currentLibraryPlaylistPage === 0" aria-label="Предыдущие плейлисты" aria-controls="music-library-playlists" @click="libraryPlaylistPage = currentLibraryPlaylistPage - 1"><SvgIcon name="chevron-right" /></UiButton>
+                  <span class="memusic-shelf-controls__position">{{ currentLibraryPlaylistPage + 1 }} / {{ libraryPlaylistPageCount }}</span>
+                  <UiButton unstyled class="memusic-shelf-controls__arrow" :disabled="currentLibraryPlaylistPage >= libraryPlaylistPageCount - 1" aria-label="Следующие плейлисты" aria-controls="music-library-playlists" @click="libraryPlaylistPage = currentLibraryPlaylistPage + 1"><SvgIcon name="chevron-right" /></UiButton>
+                </div>
+              </div>
+            </div>
+            <div id="music-library-playlists" ref="libraryPlaylistStrip" class="memusic-shelf-viewport" aria-live="polite" @touchstart.passive="startShelfSwipe('libraryPlaylists', $event)" @touchend.passive="endShelfSwipe('libraryPlaylists', $event)" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
+              <div class="memusic-media-grid memusic-media-grid--shelf memusic-shelf-track" :style="shelfStyle(libraryPlaylistStripWidth, libraryPlaylistPageSize, playlistCatalog.length, currentLibraryPlaylistPage)">
+                <MusicMediaCard v-for="(playlist, index) in playlistCatalog" :key="playlist.id" :playlist="playlist" :inert="index < currentLibraryPlaylistPage || index >= currentLibraryPlaylistPage + libraryPlaylistPageSize" :aria-hidden="index < currentLibraryPlaylistPage || index >= currentLibraryPlaylistPage + libraryPlaylistPageSize" @open="openPlaylist" />
+              </div>
             </div>
           </section>
         </template>
