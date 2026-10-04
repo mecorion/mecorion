@@ -6,6 +6,24 @@ test.beforeEach(async ({page}) => {
   await page.route('**/api/v1/platform/navigation', route => route.fulfill({json: {groups: [], allowedPageCodes: ['video']}}));
 });
 
+test('watch later keeps saved videos after reload and removes them', async ({page}) => {
+  await page.goto('/video/video-series-01');
+  const save = page.locator('.mevideo-watch-view__actions').getByRole('button', {name: 'Смотреть позже', exact: true});
+  if (await save.getAttribute('aria-pressed') === 'true') await save.click();
+  await save.click();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('.mcrn-sidebar').getByRole('link', {name: 'Смотреть позже', exact: true}).click();
+  await expect(page.getByRole('heading', {name: 'Смотреть позже', exact: true})).toBeVisible();
+  await page.reload();
+  const card = page.locator('.mevideo-media-card').filter({hasText: 'Сериал: пилотный выпуск'});
+  await expect(card).toHaveCount(1);
+  await card.getByRole('button', {name: 'Действия: Сериал: пилотный выпуск'}).click();
+  await page.getByRole('menuitem', {name: 'Убрать из «Смотреть позже»'}).click();
+  await expect(card).toHaveCount(0);
+  await page.reload();
+  await expect(card).toHaveCount(0);
+});
+
 test('search suggestions, submit, categories, clear and direct URL', async ({page}) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));

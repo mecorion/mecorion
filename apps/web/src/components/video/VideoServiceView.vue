@@ -8,14 +8,16 @@ import {searchVideo, videoSearchSuggestions} from "@/video/searchCatalog.js";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect, toast} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
+import {useVideoWatchLater} from "@/video/watchLater.js";
+const watchLater = useVideoWatchLater();
 const route = useRoute();
 const router = useRouter();
 const activeSection = computed(() => {
   const path = route.path.replace(/\/$/, "");
-  return path === "/video" ? route.query.section === "search" ? "search" : "home" : path === "/video/library" ? "library" : "watch";
+  return path === "/video" ? route.query.section === "search" ? "search" : route.query.section === "watchLater" ? "watchLater" : "home" : path === "/video/library" ? "library" : "watch";
 });
 function queryFilter(key, fallback, values) {
   return computed({
@@ -23,7 +25,7 @@ function queryFilter(key, fallback, values) {
     set: value => router.push({path: route.path, query: {...route.query, [key]: value === fallback ? undefined : value}}),
   });
 }
-const activeFilter = queryFilter("filter", "Все", ["Все", "Продолжить", "Позже"]);
+const activeFilter = queryFilter("filter", "Все", ["Все", "Продолжить"]);
 const activeQuality = queryFilter("quality", "Любое качество", ["Любое качество", "2160p", "1440p", "1080p", "720p"]);
 const activeCategory = queryFilter("category", "Все", ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"]);
 const searchQuery = computed(() => typeof route.query.q === "string" ? route.query.q : "");
@@ -55,25 +57,20 @@ const navigation = [
   {id: "home", route: "/video", icon: "home", title: "Главная", shortTitle: "Главная"},
   {id: "search", route: "/video?section=search", icon: "search", title: "Поиск", shortTitle: "Поиск"},
   {id: "library", route: "/video/library", icon: "grid", title: "Медиатека", shortTitle: "Видео"},
+  {id: "watchLater", route: "/video?section=watchLater", icon: "star", title: "Смотреть позже", shortTitle: "Позже"},
 ];
 
-const filters = [{value: "Все", label: "Все видео"}, {value: "Продолжить", label: "Продолжить просмотр"}, {value: "Позже", label: "Смотреть позже"}];
+const filters = [{value: "Все", label: "Все видео"}, {value: "Продолжить", label: "Продолжить просмотр"}];
 const hasFilters = computed(() => activeCategory.value !== "Все" || activeFilter.value !== "Все" || activeQuality.value !== "Любое качество");
-function resetFilters() { return router.push({path: route.path, query: searchQuery.value ? {q: searchQuery.value} : {}}); }
+function resetFilters() { return router.push({path: route.path, query: {section: route.query.section, q: searchQuery.value || undefined}}); }
 
 const qualities = ["Любое качество", "2160p", "1440p", "1080p", "720p"];
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
 
 const playbackSettings = useState("video-playback-settings", () => ({}));
 const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id && video.state.kind === selectedVideo.value.state.kind).slice(0, 3));
-function toggleSaved() {
-  const saved = !isSelectedSaved.value;
-  savedOverrides.value[selectedVideo.value.id] = saved;
-  if (saved) toast.add({type: "success", title: "Видео сохранено в «Смотреть позже»"});
-}
-const isSelectedSaved = computed(() => savedOverrides.value[selectedVideo.value.id] ?? selectedVideo.value.state.saved);
-
-const savedOverrides = useState("video-saved-overrides", () => ({}));
+function toggleSaved() { watchLater.toggle(selectedVideo.value); }
+const isSelectedSaved = computed(() => watchLater.isSaved(selectedVideo.value));
 const decoratedVideos = computed(() => videoCatalog);
 
 const heroVideo = computed(() => continueVideo.value);
@@ -98,8 +95,8 @@ const videos = computed(() => {
     items = items.filter((item) => item.state.progress > 0);
   }
 
-  if (activeFilter.value === "Позже") {
-    items = items.filter((item) => savedOverrides.value[item.id] ?? item.state.saved);
+  if (activeSection.value === "watchLater") {
+    items = items.filter((item) => watchLater.isSaved(item));
   }
 
   if (activeCategory.value !== "Все") {

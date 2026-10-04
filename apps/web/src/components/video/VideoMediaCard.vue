@@ -3,6 +3,8 @@ import {videoPath} from "@/video/catalog.js";
 import {computed} from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import {UiAvatar, UiButton, UiCard, UiDropdownMenu} from "@/components/ui";
+import {useVideoWatchLater} from "@/video/watchLater.js";
+const watchLater = useVideoWatchLater();
 
 const props = defineProps({video: {type: Object, required: true}});
 const viewLabel = computed(() => props.video.views == null ? "Нет просмотров" : `${new Intl.NumberFormat("ru-RU", {notation: "compact", maximumFractionDigits: 1}).format(props.video.views)} просмотров`);
@@ -13,6 +15,7 @@ const durationLabel = computed(() => {
   return hours ? `${hours}:${String(minutes).padStart(2, "0")}:00` : minutes ? `${minutes}:00` : text;
 });
 const menuItems = computed(() => [
+  {id: "watch-later", label: watchLater.isSaved(props.video) ? "Убрать из «Смотреть позже»" : "Смотреть позже", icon: "star", onSelect: () => watchLater.toggle(props.video)},
   {id: "watch", label: props.video.seasons?.length ? "Выбрать серию" : props.video.state.progress > 0 ? "Продолжить просмотр" : "Смотреть", icon: "play", onSelect: () => navigateTo(videoPath(props.video.id))},
   {id: "details", label: "О публикации", icon: "arrow-up-right-1", onSelect: () => navigateTo(`/space/${props.video.spaceId}/publication/${props.video.id}`)},
 ]);
