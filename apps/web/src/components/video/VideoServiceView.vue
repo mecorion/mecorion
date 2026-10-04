@@ -6,7 +6,7 @@ import VideoPlayer from "@/components/video/VideoPlayer.vue";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiSelect, toast} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect, toast} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 const route = useRoute();
@@ -18,7 +18,7 @@ const activeSection = computed(() => {
 function queryFilter(key, fallback, values) {
   return computed({
     get: () => values.includes(route.query[key]) ? route.query[key] : fallback,
-    set: value => router.push({path: "/video/library", query: {...route.query, [key]: value === fallback ? undefined : value}}),
+    set: value => router.push({path: route.path, query: {...route.query, [key]: value === fallback ? undefined : value}}),
   });
 }
 const activeFilter = queryFilter("filter", "Все", ["Все", "Продолжить", "Позже"]);
@@ -36,7 +36,7 @@ const navigation = [
 
 const filters = [{value: "Все", label: "Все видео"}, {value: "Продолжить", label: "Продолжить просмотр"}, {value: "Позже", label: "Смотреть позже"}];
 const hasFilters = computed(() => activeCategory.value !== "Все" || activeFilter.value !== "Все" || activeQuality.value !== "Любое качество");
-function resetFilters() { return router.push({path: "/video/library", query: searchQuery.value ? {q: searchQuery.value} : {}}); }
+function resetFilters() { return router.push({path: route.path, query: searchQuery.value ? {q: searchQuery.value} : {}}); }
 
 const qualities = ["Любое качество", "2160p", "1440p", "1080p", "720p"];
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
@@ -186,13 +186,25 @@ function episodePath(season, episode) {
               :key="category"
               :class="{'is-active': activeCategory === category}" :aria-pressed="activeCategory === category"
               type="button"
-              :to="category === 'Все' ? '/video' : {path: '/video/library', query: {category}}"
+              @click="activeCategory = category"
             >
               {{ category }}
             </UiButton>
           </section>
 
-          <VideoShelf v-for="row in videoRows" :key="row.id" :row="row" @browse="openRow" />
+          <template v-if="hasFilters || searchQuery">
+            <div class="mevideo-library-toolbar__summary">
+              <span role="status" aria-live="polite">Найдено видео: <strong>{{ videos.length }}</strong></span>
+              <UiButton variant="ghost" size="sm" :disabled="!hasFilters" @click="resetFilters">Сбросить фильтры</UiButton>
+            </div>
+            <section class="mevideo-media-grid" aria-label="Результаты фильтрации Video">
+              <VideoMediaCard v-for="video in videos" :key="video.id" :video="video" />
+              <UiEmptyState v-if="!videos.length" title="Видео не найдены" description="Попробуйте изменить фильтры." />
+            </section>
+          </template>
+          <template v-else>
+            <VideoShelf v-for="row in videoRows" :key="row.id" :row="row" @browse="openRow" />
+          </template>
         </template>
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'watchLater'">
