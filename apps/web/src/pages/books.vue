@@ -1,6 +1,8 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
+import {UiButton, UiCard, UiBadge, UiProgress, UiInput, UiSelect, UiEmptyState} from "@/components/ui";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
@@ -18,10 +20,10 @@ const selectedBookId = ref(null);
 const filters = ["Все", "Книги", "Сборники", "Продолжить", "Закладки"];
 const languages = ["Все языки", "Русский", "English", "Español"];
 const navigation = [
-  {id: "home", icon: "⌂", title: "Главная", shortTitle: "Главная"},
-  {id: "library", icon: "▤", title: "Библиотека", shortTitle: "Книги"},
-  {id: "bookmarks", icon: "◇", title: "Закладки", shortTitle: "Закладки"},
-  {id: "reader", icon: "▣", title: "Читалка", shortTitle: "Читать"},
+  {id: "home", icon: "home", title: "Главная", shortTitle: "Главная"},
+  {id: "library", icon: "grid", title: "Библиотека", shortTitle: "Книги"},
+  {id: "bookmarks", icon: "star", title: "Закладки", shortTitle: "Закладки"},
+  {id: "reader", icon: "book", title: "Читалка", shortTitle: "Читать"},
 ];
 
 const readerStateById = {
@@ -73,10 +75,10 @@ const savedBooks = computed(() => decoratedBooks.value.filter((book) => book.rea
 const selectedBook = computed(() => decoratedBooks.value.find((book) => book.id === selectedBookId.value) ?? continueBook.value);
 const bookmarkedBooks = computed(() => decoratedBooks.value.filter((book) => book.reader.bookmarked));
 const libraryShelves = computed(() => [
-  {title: "Читаю сейчас", count: decoratedBooks.value.filter((book) => book.reader.progress > 0).length, icon: "↗"},
-  {title: "Сохранённое", count: savedBooks.value, icon: "◇"},
-  {title: "EPUB", count: decoratedBooks.value.filter((book) => book.reader.format === "EPUB").length, icon: "Aa"},
-  {title: "PDF", count: decoratedBooks.value.filter((book) => book.reader.format === "PDF").length, icon: "□"},
+  {title: "Читаю сейчас", count: decoratedBooks.value.filter((book) => book.reader.progress > 0).length, icon: "arrow-up-right-1"},
+  {title: "Сохранённое", count: savedBooks.value, icon: "star"},
+  {title: "EPUB", count: decoratedBooks.value.filter((book) => book.reader.format === "EPUB").length, icon: "book"},
+  {title: "PDF", count: decoratedBooks.value.filter((book) => book.reader.format === "PDF").length, icon: "book"},
 ]);
 
 function navigate(section) {
@@ -98,10 +100,10 @@ useContextNavigation({
   accentStrong: "#ffd36d",
   activeId: activeSection,
   groups: computed(() => [
-    {label: null, navLabel: "Разделы Books", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},
+    {label: null, navLabel: "Разделы Books", items: navigation.map((item) => ({...item, icon: item.icon, action: () => navigate(item.id)}))},
     {label: "Полки", items: libraryShelves.value.map((shelf) => ({
       title: `${shelf.title} · ${shelf.count}`,
-      symbol: shelf.icon,
+      icon: shelf.icon,
       action: () => navigate("library"),
     }))},
   ]),
@@ -121,41 +123,41 @@ useContextNavigation({
               <h1>Здесь собраны все возможные книги</h1>
               <p><span>Book</span> помогает найти книгу, выбрать язык, сохранить страницу и продолжить чтение там, где вы остановились.</p>
               <div class="mebook-hero__actions">
-                <button type="button" @click="openReader(continueBook.id)">Продолжить чтение</button>
-                <button type="button" @click="activeSection = 'search'">Найти книгу</button>
+                <UiButton variant="primary" type="button" @click="openReader(continueBook.id)">Продолжить чтение</UiButton>
+                <UiButton variant="outline" type="button" @click="activeSection = 'search'">Найти книгу</UiButton>
               </div>
             </div>
-            <article class="mebook-current-card" :class="`space-publication-card--${continueBook.coverTone}`">
-              <span>Сейчас читается</span>
+            <UiCard raw class="mebook-current-card" :class="`space-publication-card--${continueBook.coverTone}`">
+              <UiBadge>Сейчас читается</UiBadge>
               <h2>{{ continueBook.title }}</h2>
               <p>Страница {{ continueBook.reader.page }} из {{ continueBook.reader.pages }}</p>
-              <div class="mebook-progress"><i :style="{width: `${continueBook.reader.progress}%`}"></i></div>
-            </article>
+              <UiProgress :value="continueBook.reader.progress" size="sm" />
+            </UiCard>
           </section>
 
           <section class="mebook-shelf-grid" aria-label="Быстрые полки">
-            <button v-for="shelf in libraryShelves" :key="shelf.title" type="button" @click="activeSection = 'library'">
-              <span aria-hidden="true">{{ shelf.icon }}</span>
+            <UiButton v-for="shelf in libraryShelves" :key="shelf.title" type="button" @click="activeSection = 'library'">
+              <span aria-hidden="true"><SvgIcon :name="shelf.icon" /></span>
               <strong>{{ shelf.title }}</strong>
               <small>{{ shelf.count }} материалов</small>
-            </button>
+            </UiButton>
           </section>
 
           <section class="mebook-section">
-            <div class="mebook-section-heading"><h2>Продолжить</h2><button type="button" @click="activeSection = 'library'">Смотреть всё</button></div>
+            <div class="mebook-section-heading"><h2>Продолжить</h2><UiButton variant="primary" type="button" @click="activeSection = 'library'">Смотреть всё</UiButton></div>
             <div class="mebook-card-grid">
-              <article
+              <UiCard raw
                 v-for="book in decoratedBooks.filter((item) => item.reader.progress > 0)"
                 :key="book.id"
                 class="mebook-card"
                 :class="`space-publication-card--${book.coverTone}`"
               >
-                <span>{{ publicationTypeLabels[book.type] }}</span>
+                <UiBadge>{{ publicationTypeLabels[book.type] }}</UiBadge>
                 <h3>{{ book.title }}</h3>
                 <p>{{ book.subtitle }}</p>
-                <div class="mebook-progress"><i :style="{width: `${book.reader.progress}%`}"></i></div>
-                <footer><small>{{ book.reader.language }} · {{ book.reader.format }}</small><button type="button" @click="openReader(book.id)">Читать</button></footer>
-              </article>
+                <UiProgress :value="book.reader.progress" size="sm" />
+                <footer><small>{{ book.reader.language }} · {{ book.reader.format }}</small><UiButton variant="primary" type="button" @click="openReader(book.id)">Читать</UiButton></footer>
+              </UiCard>
             </div>
           </section>
         </template>
@@ -168,62 +170,44 @@ useContextNavigation({
           </section>
 
           <section class="mebook-filter-panel" aria-label="Фильтры Book">
-            <div class="mebook-filter-row">
-              <button
-                v-for="filter in filters"
-                :key="filter"
-                :class="{'is-active': activeFilter === filter}"
-                type="button"
-                @click="activeFilter = filter"
-              >
-                {{ filter }}
-              </button>
-            </div>
-            <div class="mebook-filter-row">
-              <button
-                v-for="language in languages"
-                :key="language"
-                :class="{'is-active': activeLanguage === language}"
-                type="button"
-                @click="activeLanguage = language"
-              >
-                {{ language }}
-              </button>
-            </div>
+            <UiInput v-model="searchQuery" clearable placeholder="Найти книгу" aria-label="Поиск книги"><template #prefix><SvgIcon name="search" /></template></UiInput>
+            <UiSelect v-model="activeFilter" label="Раздел" :options="filters" />
+            <UiSelect v-model="activeLanguage" label="Язык" :options="languages" />
           </section>
 
           <section class="mebook-card-grid">
-            <article
+            <UiEmptyState v-if="!books.length" title="Книги не найдены" description="Попробуйте изменить поиск или фильтры." />
+            <UiCard raw
               v-for="book in books"
               :key="book.id"
               class="mebook-card"
               :class="`space-publication-card--${book.coverTone}`"
             >
-              <span>{{ publicationTypeLabels[book.type] }}</span>
+              <UiBadge>{{ publicationTypeLabels[book.type] }}</UiBadge>
               <h3>{{ book.title }}</h3>
               <p>{{ book.subtitle }}</p>
-              <div class="mebook-progress"><i :style="{width: `${book.reader.progress}%`}"></i></div>
+              <UiProgress :value="book.reader.progress" size="sm" />
               <footer>
                 <small>{{ book.reader.language }} · {{ book.reader.format }}</small>
-                <button type="button" @click="openReader(book.id)">Читать</button>
+                <UiButton variant="primary" type="button" @click="openReader(book.id)">Читать</UiButton>
               </footer>
-              <NuxtLink :to="`/space/${book.spaceId}/publication/${book.id}`">{{ getSpaceBreadcrumb(book) }}</NuxtLink>
-            </article>
+              <UiButton variant="ghost" :to="`/space/${book.spaceId}/publication/${book.id}`">{{ getSpaceBreadcrumb(book) }}</UiButton>
+            </UiCard>
           </section>
         </template>
 
         <template v-else>
           <section class="mebook-reader">
             <aside class="mebook-reader__book">
-              <div class="mebook-reader__cover" :class="`space-publication-card--${selectedBook.coverTone}`">
-                <span>{{ publicationTypeLabels[selectedBook.type] }}</span>
+              <UiCard raw class="mebook-reader__cover" :class="`space-publication-card--${selectedBook.coverTone}`">
+                <UiBadge>{{ publicationTypeLabels[selectedBook.type] }}</UiBadge>
                 <strong>{{ selectedBook.title }}</strong>
-              </div>
-              <button type="button">Добавить закладку</button>
-              <NuxtLink :to="`/space/${selectedBook.spaceId}/publication/${selectedBook.id}`">Открыть публикацию</NuxtLink>
+              </UiCard>
+              <UiButton variant="primary" type="button">Добавить закладку</UiButton>
+              <UiButton variant="ghost" :to="`/space/${selectedBook.spaceId}/publication/${selectedBook.id}`">Открыть публикацию</UiButton>
             </aside>
 
-            <article class="mebook-reader__page">
+            <UiCard raw class="mebook-reader__page">
               <p class="mebook-kicker">{{ selectedBook.reader.language }} · {{ selectedBook.reader.format }}</p>
               <h1>{{ selectedBook.title }}</h1>
               <p>
@@ -235,11 +219,11 @@ useContextNavigation({
                 При подключении API это состояние будет храниться в профиле пользователя.
               </p>
               <div class="mebook-reader__controls">
-                <button type="button">← Назад</button>
-                <div class="mebook-progress"><i :style="{width: `${selectedBook.reader.progress}%`}"></i></div>
-                <button type="button">Дальше →</button>
+                <UiButton variant="outline" type="button"><SvgIcon name="chevron-right" class="mebook-reader__previous" />Назад</UiButton>
+                <UiProgress :value="selectedBook.reader.progress" size="sm" />
+                <UiButton variant="primary" type="button">Дальше<SvgIcon name="chevron-right" /></UiButton>
               </div>
-            </article>
+            </UiCard>
           </section>
         </template>
       </main>

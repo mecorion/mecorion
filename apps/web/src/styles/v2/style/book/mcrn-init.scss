@@ -268,25 +268,8 @@
     gap: var(--mcrn-space-10px);
     margin-top: var(--mcrn-space-26px);
   }
-  .mebook-hero__actions button,
-  .mebook-reader__book button,
-  .mebook-card footer button,
-  .mebook-section-heading button {
-    min-height: var(--mcrn-size-40px);
-    border: 0;
-    border-radius: var(--mc-radius-sm);
-    padding: var(--mcrn-dashboard-nav-group-padding);
-    background: var(--mc-accent);
-    color: var(--mc-accent-contrast);
-    font-weight: 650;
-    cursor: pointer;
-  }
-  .mebook-hero__actions button:last-child,
-  .mebook-section-heading button {
-    border: 1px solid var(--mc-border-soft);
-    background: var(--mc-surface-deep);
-    color: var(--mc-text-primary);
-  }
+
+
   .mebook-current-card,
   .mebook-card,
   .mebook-reader__cover {
@@ -498,17 +481,23 @@
     gap: var(--mcrn-space-14px);
     margin-top: var(--mcrn-space-40px);
   }
-  .mebook-reader__controls button {
-    min-height: var(--mcrn-size-40px);
-    border: 1px solid var(--mc-border-soft);
-    border-radius: var(--mc-radius-sm);
-    padding: var(--mcrn-dashboard-search-padding);
-    background: var(--mc-surface-deep);
-    color: var(--mc-text-primary);
-    cursor: pointer;
-  }
+
 }
 
 @layer utilities {
   .mebook-current-card, .mebook-card, .mebook-reader__cover { --mc-text-primary: var(--mcrn-color-on-artwork); --mc-text-secondary: var(--mcrn-color-on-artwork); color: var(--mcrn-color-on-artwork); }
+}
+@layer components {
+  .mebook-reader__previous { transform: rotate(180deg); }
+  .mebook-shelf-grid .svg-icon { width: var(--mc-space-5); height: var(--mc-space-5); }
+  .mebook-app .ui-progress { width: 100%; min-width: 0; }
+  .mebook-app .ui-badge { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .mebook-card .mc-button--link { justify-content: flex-start; white-space: normal; overflow-wrap: anywhere; }
+  .mebook-reader__cover.ui-card { min-width: 0; }
+}
+@layer components {
+  .mebook-app .mc-button > .svg-icon { width: var(--mc-space-5); height: var(--mc-space-5); flex: 0 0 var(--mc-space-5); }
+  .mebook-current-card > .ui-badge { align-self: flex-start; }
+  .mebook-app .ui-progress__track { background: var(--mcrn-book-progress-background); }
+  .mebook-shelf-grid button { justify-content: stretch; }
 }
