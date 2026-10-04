@@ -1350,7 +1350,6 @@
 @layer utilities {
   @media (max-width: #{root.$mcrn-breakpoint-1120}) {
     .mevideo-hero,
-    .mevideo-cinema-hero,
     .mevideo-watch {
       grid-template-columns: 1fr;
     }
@@ -1442,7 +1441,6 @@
       display: none;
     }
     .mevideo-hero__player,
-    .mevideo-cinema-hero,
     .mevideo-hero__copy,
     .mevideo-filter-panel,
     .mevideo-watch__player,
@@ -1464,16 +1462,6 @@
     }
     .mevideo-screen {
       min-height: var(--mcrn-size-300px);
-    }
-    .mevideo-cinema-hero {
-      min-height: var(--mcrn-responsive-min-height-500px);
-      margin-right: var(--mcrn-responsive-margin-right-14px);
-      margin-left: var(--mcrn-responsive-margin-left-14px);
-      border-radius: var(--mcrn-responsive-border-radius-0-0-18px-18px);
-      padding: var(--mcrn-responsive-padding-32px-18px);
-    }
-    .mevideo-cinema-hero h1 {
-      font-size: var(--mcrn-responsive-font-size-38px);
     }
     .mevideo-poster-row {
       grid-auto-columns: minmax(190px, 76vw);
@@ -2090,8 +2078,6 @@
   .mebook-current-card { grid-template-columns: minmax(0, 1fr); }
   .mebook-hero h1, .mebook-page-heading h1, .mevideo-page-heading h1,
   .mecourse-hero h1 { font-size: var(--mc-font-display); }
-  .mevideo-cinema-hero { margin-inline: 0; padding: var(--mc-space-3); }
-  .mevideo-cinema-hero h1 { font-size: var(--mc-font-display); }
   .mevideo-player-controls, .mevideo-screen__controls { flex-wrap: wrap; }
   .mevideo-poster-row, .mevideo-wide-row { grid-auto-columns: minmax(0, 90%); }
   .mecourse-hero, .mecourse-card-grid, .mecourse-stat-grid { grid-template-columns: minmax(0, 1fr); }
@@ -2112,7 +2098,6 @@
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; animation-duration: 0s !important; }
 }
 @media (max-width: #{root.$mcrn-breakpoint-860}) {
-  .mevideo-cinema-hero { margin-inline: 0; }
   .memusic-sidebar, .mebook-sidebar, .mevideo-sidebar, .mecourse-sidebar { flex-wrap: wrap; }
   .mcrn-service-sidebar__exit { display: inline-flex; margin: 0; padding: var(--mc-space-2); font-size: var(--mc-font-xs); }
 }
@@ -2306,4 +2291,44 @@
 }
 @media (max-width: 240px) {
   .mevideo-media-card__watch { flex-direction: column; padding: var(--mc-space-2); line-height: 1.4 !important; }
+}
+
+@media (max-width: 900px) {
+  .mevideo-cinema-hero { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-cinema-hero h1 { max-width: 24ch; font-size: clamp(var(--mc-font-title-2), 5vw, var(--mc-font-display)); }
+  .mevideo-cinema-hero__visual { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+}
+@media (max-width: 480px) {
+  .mevideo-cinema-hero { padding: var(--mc-space-4); }
+  .mevideo-cinema-hero__copy { gap: var(--mc-space-4); }
+  .mevideo-cinema-hero__visual { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-cinema-hero__actions .mc-button { flex: 1 1 100%; }
+}
+@media (max-width: 240px) {
+  .mevideo-cinema-hero { padding: var(--mc-space-3); }
+  .mevideo-cinema-hero__actions .mc-button { flex-direction: column; padding: var(--mc-space-2); }
+  .mevideo-cinema-hero__frame-label { top: var(--mc-space-2); left: var(--mc-space-2); font-size: var(--mc-font-xs); letter-spacing: 0; }
+  .mevideo-cinema-hero__frame { aspect-ratio: 1; }
+  .mevideo-cinema-hero__frame-play { margin-top: 0; }
+  .mevideo-cinema-hero__continue.ui-card { padding: var(--mc-space-3); }
+}
+
+@media (max-width: 260px) {
+  .mevideo-media-card__info { grid-template-columns: minmax(0, 1fr) auto; }
+  .mevideo-media-card__avatar { grid-column: 1; }
+  .mevideo-media-card__copy { grid-column: 1 / -1; grid-row: 2; }
+  .mevideo-media-card__info > .ui-dropdown-menu__anchor { grid-column: 2; grid-row: 1; }
+}
+
+@container video-content (max-width: 1079px) {
+  .mevideo-media-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container video-content (max-width: 779px) {
+  .mevideo-media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container video-content (max-width: 519px) {
+  .mevideo-media-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mevideo-shelf__track { transition: none; }
 }

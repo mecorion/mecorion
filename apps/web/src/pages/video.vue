@@ -1,9 +1,10 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
+import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiButton, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
+import {UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
@@ -116,6 +117,8 @@ const fallbackVideos = [
 
 const decoratedVideos = computed(() => [...getVideoServicePublications(), ...fallbackVideos].map((video, index) => ({
   ...video,
+  views: video.views ?? [128400, 46700, 23100, 89500, 15200, 6400][index],
+  publishedLabel: video.publishedLabel ?? ["4 дня назад", "неделю назад", "2 дня назад", "3 недели назад", "5 дней назад", "вчера"][index],
   state: videoStateById[video.id] ?? {
     progress: index % 2 ? 0 : 7,
     watchedMinutes: index % 2 ? 0 : 5,
@@ -282,27 +285,34 @@ function chooseSeason(seasonNumber) {
 
       <main class="mevideo-content">
         <template v-if="activeSection === 'home'">
-          <section class="mevideo-cinema-hero" :class="`space-publication-card--${heroVideo.coverTone}`">
+          <section class="mevideo-cinema-hero" aria-labelledby="video-feature-title">
             <div class="mevideo-cinema-hero__copy">
-              <p class="mevideo-kicker">Mecorion Video</p>
-              <h1>{{ heroVideo.title }}</h1>
-              <p>{{ heroVideo.subtitle }}. Выбирайте качество, субтитры, озвучку и продолжайте просмотр с любого места.</p>
-              <div class="mevideo-cinema-hero__meta">
-                <span>{{ heroVideo.state.kind }}</span>
+              <div class="mevideo-cinema-hero__eyebrow"><SvgIcon name="sidebar-videos" /><span>Mecorion Video</span><UiBadge variant="accent">В центре внимания</UiBadge></div>
+              <h1 id="video-feature-title">{{ heroVideo.title }}</h1>
+              <p class="mevideo-cinema-hero__description">{{ heroVideo.subtitle }}. Продолжите с того места, где остановились.</p>
+              <div class="mevideo-cinema-hero__meta" aria-label="Информация о видео">
+                <UiBadge>{{ heroVideo.state.kind }}</UiBadge>
                 <span>{{ heroVideo.state.quality }}</span>
                 <span>{{ heroVideo.duration }}</span>
+                <span>{{ heroVideo.state.subtitles }} субтитры</span>
               </div>
               <div class="mevideo-cinema-hero__actions">
-                <UiButton unstyled type="button" @click="openWatch(heroVideo.id)"><SvgIcon name="play" /> Смотреть</UiButton>
-                <UiButton unstyled type="button" @click="activeSection = 'library'">Подробнее</UiButton>
+                <UiButton variant="primary" @click="openWatch(heroVideo.id)"><SvgIcon name="play" />Продолжить просмотр</UiButton>
+                <UiButton variant="outline" :to="`/space/${heroVideo.spaceId}/publication/${heroVideo.id}`">Подробнее<SvgIcon name="arrow-up-right-1" /></UiButton>
               </div>
             </div>
-
-            <aside class="mevideo-cinema-hero__continue">
-              <span>Продолжить</span>
-              <strong>{{ heroVideo.state.watchedMinutes }} / {{ heroVideo.state.totalMinutes }} мин</strong>
-              <UiProgress :value="heroVideo.state.progress" size="sm" aria-label="Прогресс просмотра" />
-            </aside>
+            <div class="mevideo-cinema-hero__visual">
+              <UiButton unstyled class="mevideo-cinema-hero__frame" :aria-label="`Смотреть ${heroVideo.title}`" @click="openWatch(heroVideo.id)">
+                <span class="mevideo-cinema-hero__frame-label">MECORION VIDEO</span>
+                <span class="mevideo-cinema-hero__frame-art" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
+                <span class="mevideo-cinema-hero__frame-play"><SvgIcon name="play" /></span>
+                <span class="mevideo-cinema-hero__frame-quality">{{ heroVideo.state.quality }}</span>
+              </UiButton>
+              <UiCard class="mevideo-cinema-hero__continue" raw size="sm" aria-label="Ваш прогресс просмотра">
+                <div class="mevideo-cinema-hero__continue-heading"><span>Продолжить историю</span><strong>{{ heroVideo.state.watchedMinutes }} <small>/ {{ heroVideo.state.totalMinutes }} мин</small></strong></div>
+                <UiProgress :value="heroVideo.state.progress" size="sm" />
+              </UiCard>
+            </div>
           </section>
 
           <section class="mevideo-channel-strip" aria-label="Быстрые фильтры">
@@ -317,21 +327,7 @@ function chooseSeason(seasonNumber) {
             </UiButton>
           </section>
 
-          <section v-for="row in videoRows" :key="row.id" class="mevideo-row">
-            <div class="mevideo-section-heading">
-              <h2>{{ row.title }}</h2>
-              <UiButton unstyled
-                type="button"
-                @click="openRow(row)"
-              >
-                {{ row.action }}
-              </UiButton>
-            </div>
-
-            <div class="mevideo-media-grid">
-              <VideoMediaCard v-for="video in row.items" :key="video.id" :video="video" @watch="openWatch" />
-            </div>
-          </section>
+          <VideoShelf v-for="row in videoRows" :key="row.id" :row="row" @watch="openWatch" @browse="openRow" />
         </template>
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'watchLater'">

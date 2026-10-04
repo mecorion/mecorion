@@ -1,42 +1,42 @@
 <script setup>
 import {computed} from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiBadge, UiButton, UiCard, UiProgress} from "@/components/ui";
-import {getSpaceBreadcrumb} from "@/spaces/spaces.mock.js";
+import {UiAvatar, UiButton, UiCard, UiDropdownMenu} from "@/components/ui";
 
 const props = defineProps({video: {type: Object, required: true}});
 const emit = defineEmits(["watch"]);
-const seasonLabel = computed(() => {
-  const count = props.video.seasons?.length ?? 0;
-  return `${count} ${count === 1 ? 'сезон' : count < 5 ? 'сезона' : 'сезонов'}`;
+const viewLabel = computed(() => props.video.views == null ? "Нет просмотров" : `${new Intl.NumberFormat("ru-RU", {notation: "compact", maximumFractionDigits: 1}).format(props.video.views)} просмотров`);
+const durationLabel = computed(() => {
+  const text = props.video.duration ?? "";
+  const hours = Number(text.match(/(\d+)\s*ч/)?.[1] ?? 0);
+  const minutes = Number(text.match(/(\d+)\s*мин/)?.[1] ?? 0);
+  return hours ? `${hours}:${String(minutes).padStart(2, "0")}:00` : minutes ? `${minutes}:00` : text;
 });
-const actionLabel = computed(() => props.video.seasons?.length ? "Выбрать серию" : props.video.state.progress > 0 ? "Продолжить" : "Смотреть");
+const menuItems = computed(() => [
+  {id: "watch", label: props.video.seasons?.length ? "Выбрать серию" : props.video.state.progress > 0 ? "Продолжить просмотр" : "Смотреть", icon: "play", onSelect: () => emit("watch", props.video.id)},
+  {id: "details", label: "О публикации", icon: "arrow-up-right-1", onSelect: () => navigateTo(`/space/${props.video.spaceId}/publication/${props.video.id}`)},
+]);
 </script>
 
 <template>
-  <UiCard class="mevideo-media-card" size="sm">
-    <template #media>
-      <UiButton unstyled class="mevideo-media-card__preview" :class="`mevideo-media-card__preview--${video.coverTone}`" :aria-label="`Смотреть ${video.title}`" @click="emit('watch', video.id)">
-        <span class="mevideo-media-card__visual" aria-hidden="true"><SvgIcon name="sidebar-videos" /></span>
-        <span class="mevideo-media-card__play" aria-hidden="true"><SvgIcon name="play" /></span>
-        <span class="mevideo-media-card__duration">{{ video.duration }}</span>
-      </UiButton>
-    </template>
-    <div class="mevideo-media-card__meta">
-      <UiBadge>{{ video.state.kind }}</UiBadge>
-      <span>{{ video.state.quality }}</span>
-      <span v-if="video.seasons?.length">{{ seasonLabel }}</span>
+  <UiCard class="mevideo-media-card" raw unstyled>
+    <UiButton unstyled class="mevideo-media-card__preview" :class="`mevideo-media-card__preview--${video.coverTone}`" :aria-label="`${video.state.progress > 0 ? 'Продолжить' : 'Смотреть'}: ${video.title}`" @click="emit('watch', video.id)">
+      <img v-if="video.coverUrl" class="mevideo-media-card__image" :src="video.coverUrl" alt="" loading="lazy" />
+      <span v-else class="mevideo-media-card__visual" aria-hidden="true"><SvgIcon name="sidebar-videos" /></span>
+      <span class="mevideo-media-card__play" aria-hidden="true"><SvgIcon name="play" /></span>
+      <span class="mevideo-media-card__duration">{{ durationLabel }}</span>
+      <span v-if="video.state.progress > 0" class="mevideo-media-card__timeline" role="progressbar" :aria-valuenow="video.state.progress" :aria-valuemin="0" :aria-valuemax="100" aria-label="Просмотрено"><span :style="{width: `${video.state.progress}%`}"></span></span>
+    </UiButton>
+    <div class="mevideo-media-card__info">
+      <UiAvatar class="mevideo-media-card__avatar" :src="video.authorAvatar" :alt="video.author" :fallback="video.author?.split(' ').map(word => word[0]).slice(0, 2).join('')" size="sm" />
+      <div class="mevideo-media-card__copy">
+        <h3 class="mevideo-media-card__title"><UiButton unstyled @click="emit('watch', video.id)">{{ video.title }}</UiButton></h3>
+        <p class="mevideo-media-card__author">{{ video.author }}</p>
+        <p class="mevideo-media-card__stats"><span>{{ viewLabel }}</span><span v-if="video.publishedLabel">{{ video.publishedLabel }}</span></p>
+      </div>
+      <UiDropdownMenu :items="menuItems" align="end" width="min(240px, calc(100vw - 16px))">
+        <template #trigger="{toggle, isOpen}"><UiButton class="mevideo-media-card__menu" variant="ghost" size="sm" icon :aria-label="`Действия: ${video.title}`" aria-haspopup="menu" :aria-expanded="isOpen" @click="toggle"><SvgIcon name="ellipsis-vertical" /></UiButton></template>
+      </UiDropdownMenu>
     </div>
-    <h3 class="mevideo-media-card__title">
-      <UiButton unstyled @click="emit('watch', video.id)">{{ video.title }}</UiButton>
-    </h3>
-    <p class="mevideo-media-card__description">{{ video.subtitle }}</p>
-    <div class="mevideo-media-card__progress">
-      <UiProgress :value="video.state.progress" size="sm" :label="video.state.progress > 0 ? 'Просмотрено' : 'Ещё не смотрели'" :show-value="video.state.progress > 0" />
-    </div>
-    <template #footer>
-      <UiButton variant="outline" size="sm" class="mevideo-media-card__watch" @click="emit('watch', video.id)"><SvgIcon name="play" />{{ actionLabel }}</UiButton>
-      <UiButton variant="ghost" size="sm" icon :to="`/space/${video.spaceId}/publication/${video.id}`" :aria-label="`О публикации: ${video.title}`" :title="getSpaceBreadcrumb(video) || 'О публикации'"><SvgIcon name="arrow-up-right-1" /></UiButton>
-    </template>
   </UiCard>
 </template>
