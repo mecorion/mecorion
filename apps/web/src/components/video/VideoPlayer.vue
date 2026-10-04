@@ -89,7 +89,7 @@ onBeforeUnmount(() => media.value?.pause());
       <div v-else class="mevideo-player__art" aria-hidden="true"></div>
       <div v-if="!available" class="mevideo-player__empty" role="status"><SvgIcon name="play" /><strong>{{ error ? 'Видео недоступно' : 'Видео скоро появится' }}</strong><p>{{ error || 'Видеофайл ещё не добавлен к публикации.' }}</p></div>
       <UiButton v-else-if="!playing" class="mevideo-player__center" variant="secondary" icon aria-label="Воспроизвести видео" @click="togglePlayback"><SvgIcon name="play" /></UiButton>
-      <div class="mevideo-player__badge"><UiBadge>{{ video.state.kind }}</UiBadge></div>
+      <div class="mevideo-player__badge"><UiBadge>{{ video.state.kind }}</UiBadge><slot name="selectors" /></div>
     </div>
     <p v-if="notice" class="mevideo-player__notice" role="status">{{ notice }}</p>
     <div class="mevideo-player__controls">

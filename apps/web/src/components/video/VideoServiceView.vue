@@ -6,7 +6,7 @@ import VideoPlayer from "@/components/video/VideoPlayer.vue";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 const route = useRoute();
@@ -42,7 +42,7 @@ const qualities = ["Любое качество", "2160p", "1440p", "1080p", "72
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
 
 const playbackSettings = useState("video-playback-settings", () => ({}));
-const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id).slice(0, 3));
+const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id && video.state.kind === selectedVideo.value.state.kind).slice(0, 3));
 function toggleSaved() { savedOverrides.value[selectedVideo.value.id] = !isSelectedSaved.value; }
 const isSelectedSaved = computed(() => savedOverrides.value[selectedVideo.value.id] ?? selectedVideo.value.state.saved);
 
@@ -105,6 +105,16 @@ const currentEpisode = computed(() => {
   const episodes = currentSeason.value?.episodes ?? [];
   return episodes.find((episode) => episode.id === selectedEpisodeId.value) ?? episodes[0] ?? null;
 });
+const seasonOptions = computed(() => (selectedVideo.value.seasons ?? []).map(season => ({value: season.number, label: season.title})));
+const episodeOptions = computed(() => (currentSeason.value?.episodes ?? []).map(episode => ({value: episode.id, label: `${episode.title} · ${episode.duration}`})));
+function selectSeason(number) {
+  const season = selectedVideo.value.seasons?.find(item => item.number === number);
+  if (season?.episodes.length) return router.push(episodePath(season, season.episodes[0]));
+}
+function selectEpisode(id) {
+  const episode = currentSeason.value?.episodes.find(item => item.id === id);
+  if (episode) return router.push(episodePath(currentSeason.value, episode));
+}
 
 
 useContextNavigation({
@@ -209,7 +219,12 @@ function episodePath(season, episode) {
         <template v-else>
           <section class="mevideo-watch-view">
             <div class="mevideo-watch-view__main">
-              <VideoPlayer :key="`${selectedVideo.id}-${currentEpisode?.id ?? ''}`" :video="selectedVideo" :settings="playbackSettings[selectedVideo.id] ?? {}" @setting="updatePlaybackSetting($event.key, $event.value)" />
+              <VideoPlayer :key="`${selectedVideo.id}-${currentEpisode?.id ?? ''}`" :video="selectedVideo" :settings="playbackSettings[selectedVideo.id] ?? {}" @setting="updatePlaybackSetting($event.key, $event.value)">
+                <template v-if="selectedVideo.seasons?.length" #selectors>
+                  <UiSelect wrapper-class="mevideo-player__season" size="sm" aria-label="Сезон" :model-value="currentSeason?.number" :options="seasonOptions" :scrollable="seasonOptions.length > 4" @update:model-value="selectSeason" />
+                  <UiSelect wrapper-class="mevideo-player__episode" size="sm" aria-label="Серия" :model-value="currentEpisode?.id" :options="episodeOptions" :scrollable="episodeOptions.length > 4" @update:model-value="selectEpisode" />
+                </template>
+              </VideoPlayer>
               <div class="mevideo-watch-view__meta">
                 <div class="mevideo-watch-view__eyebrow"><UiBadge variant="accent">{{ selectedVideo.state.kind }}</UiBadge><span>{{ selectedVideo.duration }}</span><span>{{ selectedVideo.publishedLabel }}</span></div>
                 <h1>{{ selectedVideo.title }}</h1>
@@ -224,38 +239,12 @@ function episodePath(season, episode) {
                 <UiCard class="mevideo-watch-view__description" raw size="sm"><p>{{ selectedVideo.subtitle }}</p><p>{{ selectedVideo.body || 'Выберите серию и продолжите историю в удобном для вас темпе.' }}</p></UiCard>
               </div>
             </div>
-            <aside class="mevideo-watch-view__aside" :aria-label="selectedVideo.seasons?.length ? 'Сезоны и серии' : 'Другие видео'">
-              <h2>{{ selectedVideo.seasons?.length ? 'Сезоны и серии' : 'Смотрите также' }}</h2>
-              <template v-if="selectedVideo.seasons?.length">
-                <div class="mevideo-season-tabs" aria-label="Сезоны">
-                  <UiButton unstyled
-                    v-for="season in selectedVideo.seasons"
-                    :key="season.number"
-                    :class="{'is-active': currentSeason?.number === season.number}" :aria-pressed="currentSeason?.number === season.number"
-                    type="button"
-                    :to="episodePath(season, season.episodes[0])"
-                  >
-                    {{ season.title }}
-                  </UiButton>
-                </div>
+            <aside class="mevideo-watch-view__aside" aria-label="Предложенные медиа">
+              <h2>Смотрите также</h2>
 
-                <div class="mevideo-episode-list">
-                  <UiButton unstyled
-                    v-for="episode in currentSeason?.episodes"
-                    :key="episode.id"
-                    :class="{'is-active': currentEpisode?.id === episode.id}" :aria-pressed="currentEpisode?.id === episode.id"
-                    type="button"
-                    :to="episodePath(currentSeason, episode)"
-                  >
-                    <span>{{ episode.title }}</span>
-                    <small>{{ episode.duration }}</small>
-                    <UiProgress class="mevideo-episode-progress" :value="episode.progress" size="sm" aria-label="Прогресс эпизода" />
-                  </UiButton>
-                </div>
-              </template>
-
-              <div v-if="!selectedVideo.seasons?.length" class="mevideo-watch-view__recommendations">
+              <div class="mevideo-watch-view__recommendations">
                 <VideoMediaCard v-for="video in recommendedVideos" :key="video.id" :video="video" />
+                <UiEmptyState v-if="!recommendedVideos.length" title="Пока нет рекомендаций" description="Другие медиа этого типа скоро появятся." />
               </div>
             </aside>
           </section>
