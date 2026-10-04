@@ -2332,3 +2332,8 @@
 @media (prefers-reduced-motion: reduce) {
   .mevideo-shelf__track { transition: none; }
 }
+
+@media (max-width: 600px) {
+  .mevideo-library-toolbar__filters { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-library-toolbar__summary > * { min-width: 0; max-width: 100%; }
+}

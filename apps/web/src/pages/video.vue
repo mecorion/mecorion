@@ -27,7 +27,13 @@ const navigation = [
   {id: "watch", icon: "play", title: "Плеер", shortTitle: "Плеер"},
 ];
 
-const filters = ["Все", "Фильмы", "Сериалы", "Подборки", "Продолжить", "Позже"];
+const filters = [{value: "Все", label: "Все видео"}, {value: "Продолжить", label: "Продолжить просмотр"}, {value: "Позже", label: "Смотреть позже"}];
+const hasFilters = computed(() => activeCategory.value !== "Все" || activeFilter.value !== "Все" || activeQuality.value !== "Любое качество");
+function resetFilters() {
+  activeCategory.value = "Все";
+  activeFilter.value = "Все";
+  activeQuality.value = "Любое качество";
+}
 const qualities = ["Любое качество", "2160p", "1440p", "1080p", "720p"];
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
 
@@ -148,18 +154,6 @@ const videoRows = computed(() => [
 const videos = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
   let items = decoratedVideos.value;
-
-  if (activeFilter.value === "Фильмы") {
-    items = items.filter((item) => item.state.kind === "Фильм");
-  }
-
-  if (activeFilter.value === "Сериалы") {
-    items = items.filter((item) => item.state.kind === "Сериал");
-  }
-
-  if (activeFilter.value === "Подборки") {
-    items = items.filter((item) => item.state.kind === "Подборка");
-  }
 
   if (activeFilter.value === "Продолжить") {
     items = items.filter((item) => item.state.progress > 0);
@@ -331,27 +325,21 @@ function chooseSeason(seasonNumber) {
         </template>
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'watchLater'">
-          <section class="mevideo-page-heading">
+          <section class="mevideo-page-heading mevideo-library-heading">
             <p class="mevideo-kicker">{{ activeSection === 'search' ? 'Поиск' : activeSection === 'watchLater' ? 'Смотреть позже' : 'Медиатека' }}</p>
-            <h1>{{ searchQuery ? `Результаты для «${searchQuery}»` : 'Просмотр всех фильмов и видео' }}</h1>
-            <p>Фильтруйте каталог по типу, качеству, прогрессу просмотра и сохранённым материалам.</p>
+            <h1>{{ searchQuery ? `Результаты для «${searchQuery}»` : activeSection === 'watchLater' ? 'Смотреть позже' : 'Медиатека' }}</h1>
+            <p>Фильмы, сериалы и истории для вашего следующего вечера.</p>
           </section>
 
-          <section class="mevideo-filter-panel" aria-label="Фильтры Video">
-            <div class="mevideo-filter-row">
-              <UiButton unstyled v-for="category in categories" :key="category" :class="{'is-active': activeCategory === category}" :aria-pressed="activeCategory === category" type="button" @click="activeCategory = category">
-                {{ category }}
-              </UiButton>
+          <section class="mevideo-library-toolbar" aria-label="Фильтры медиатеки">
+            <div class="mevideo-library-toolbar__filters">
+              <UiSelect v-model="activeCategory" label="Категория" :options="categories" />
+              <UiSelect v-model="activeFilter" label="Просмотр" :options="filters" />
+              <UiSelect v-model="activeQuality" label="Качество" :options="qualities" />
             </div>
-            <div class="mevideo-filter-row">
-              <UiButton unstyled v-for="filter in filters" :key="filter" :class="{'is-active': activeFilter === filter}" :aria-pressed="activeFilter === filter" type="button" @click="activeFilter = filter">
-                {{ filter }}
-              </UiButton>
-            </div>
-            <div class="mevideo-filter-row">
-              <UiButton unstyled v-for="quality in qualities" :key="quality" :class="{'is-active': activeQuality === quality}" :aria-pressed="activeQuality === quality" type="button" @click="activeQuality = quality">
-                {{ quality }}
-              </UiButton>
+            <div class="mevideo-library-toolbar__summary">
+              <span role="status" aria-live="polite">Найдено видео: <strong>{{ videos.length }}</strong></span>
+              <UiButton variant="ghost" size="sm" :disabled="!hasFilters" @click="resetFilters">Сбросить фильтры</UiButton>
             </div>
           </section>
 
