@@ -50,7 +50,6 @@ const navigation = [
   {id: "home", icon: "home", title: "Главная", shortTitle: "Главная"},
   {id: "library", icon: "grid", title: "Библиотека", shortTitle: "Книги"},
   {id: "bookmarks", icon: "star", title: "Закладки", shortTitle: "Закладки"},
-  {id: "reader", icon: "book", title: "Читалка", shortTitle: "Читать"},
 ];
 
 const readerState = useState("books-reader-state", () => ({
