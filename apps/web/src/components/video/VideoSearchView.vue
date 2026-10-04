@@ -67,4 +67,18 @@ const quick = computed(() => props.results.slice(1, 5));
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
 }
 .music-search__quick-button { text-decoration: none; }
+.mevideo-search-view .music-search__results > h1 {
+  margin-bottom: var(--mc-space-5);
+}
+.mevideo-search-view .music-search__results > p[role="status"] {
+  margin-bottom: var(--mc-space-5);
+}
+.mevideo-search-view .music-search__overview {
+  margin-bottom: var(--mc-space-6);
+}
+.mevideo-search-view .music-search__best > h2,
+.mevideo-search-view .music-search__quick > h2,
+.mevideo-search-view .music-search__section > h2 {
+  margin-bottom: var(--mc-space-4);
+}
 </style>
