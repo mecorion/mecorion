@@ -105,7 +105,7 @@
   .mevideo-media-card__avatar { margin-top: var(--mc-space-1); color: var(--mc-accent); background: color-mix(in srgb, var(--mc-accent) 15%, var(--mc-surface)); }
   .mevideo-media-card__copy { min-width: 0; }
   .mevideo-media-card__title { margin: 0 0 var(--mc-space-1) !important; font-size: var(--mc-font-md); line-height: 1.45 !important; }
-  .mevideo-media-card__title :is(button, a) { display: block; width: 100%; border: 0; background: transparent; padding: 0; color: var(--mc-text-primary); font: inherit; font-weight: 650; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+  .mevideo-media-card__title :is(button, a) { text-decoration: none; display: block; width: 100%; border: 0; background: transparent; padding: 0; color: var(--mc-text-primary); font: inherit; font-weight: 650; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
   .mevideo-media-card__title :is(button, a):hover { color: var(--mc-accent); }
   .mevideo-media-card__author, .mevideo-media-card__stats { margin: 0; color: var(--mc-text-muted); font-size: var(--mc-font-xs); line-height: 1.6 !important; overflow-wrap: anywhere; }
   .mevideo-media-card__stats { display: flex; flex-wrap: wrap; column-gap: var(--mc-space-2); }
