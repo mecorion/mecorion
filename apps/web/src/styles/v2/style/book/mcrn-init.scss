@@ -637,5 +637,7 @@
   .books-reader__summary h2 { font-size: var(--mc-font-lg); line-height: 1.4; }
   .books-reader__summary p { color: var(--mc-text-secondary); font-size: var(--mc-font-sm); }
   .books-reader__position { display: grid; gap: var(--mc-space-3); min-width: 0; }
-  .books-reader__position .mc-button { justify-self: start; }
+  .books-reader__title-link { color: inherit; text-decoration: none; border-radius: var(--mc-radius-sm); }
+  .books-reader__title-link:hover { color: var(--mc-accent); text-decoration: underline; text-underline-offset: .2em; }
+  .books-reader__title-link:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 4px; }
 }
