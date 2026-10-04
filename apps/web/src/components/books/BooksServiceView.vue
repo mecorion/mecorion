@@ -1,6 +1,7 @@
 <script setup>
 
 import {computed, ref} from "vue";
+import BooksReader from "@/components/books/BooksReader.vue";
 import BooksBookmarks from "@/components/books/BooksBookmarks.vue";
 import BooksLibrary from "@/components/books/BooksLibrary.vue";
 import BooksHome from "@/components/books/BooksHome.vue";
@@ -192,36 +193,7 @@ useContextNavigation({
           </section>
         </template>
 
-        <template v-else>
-          <section class="mebook-reader">
-            <aside class="mebook-reader__book">
-              <UiCard raw class="mebook-reader__cover" :class="`space-publication-card--${selectedBook.coverTone}`">
-                <UiBadge>{{ publicationTypeLabels[selectedBook.type] }}</UiBadge>
-                <strong>{{ selectedBook.title }}</strong>
-              </UiCard>
-              <UiButton :variant="selectedBook.reader.bookmarked ? 'outline' : 'primary'" :aria-pressed="selectedBook.reader.bookmarked" @click="toggleBookmark(selectedBook.id)"><SvgIcon name="star" />{{ selectedBook.reader.bookmarked ? 'В закладках' : 'Добавить закладку' }}</UiButton>
-              <UiButton variant="ghost" :to="`/space/${selectedBook.spaceId}/publication/${selectedBook.id}`">Открыть публикацию</UiButton>
-            </aside>
-
-            <UiCard raw class="mebook-reader__page">
-              <p class="mebook-kicker">{{ selectedBook.reader.language }} · {{ selectedBook.reader.format }}</p>
-              <h1>{{ selectedBook.title }}</h1>
-              <p>
-                Это прототип режима чтения. Здесь будет текст книги, настройки шрифта,
-                оглавление, заметки, перевод, выбор языка и синхронизация последней страницы.
-              </p>
-              <p>
-                Сейчас сохранена страница {{ selectedBook.reader.page }} из {{ selectedBook.reader.pages }}.
-                При подключении API это состояние будет храниться в профиле пользователя.
-              </p>
-              <div class="mebook-reader__controls">
-                <UiButton variant="outline" type="button"><SvgIcon name="chevron-right" class="mebook-reader__previous" />Назад</UiButton>
-                <UiProgress :value="selectedBook.reader.progress" size="sm" />
-                <UiButton variant="primary" type="button">Дальше<SvgIcon name="chevron-right" /></UiButton>
-              </div>
-            </UiCard>
-          </section>
-        </template>
+        <BooksReader v-else :book="selectedBook" @bookmark="toggleBookmark" />
       </div>
     </section>
   </div>

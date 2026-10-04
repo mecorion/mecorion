@@ -2543,3 +2543,17 @@
   .books-bookmarks__cover { min-height: 190px; }
   .books-bookmarks__notice.ui-card { flex-direction: column; align-items: stretch; }
 }
+
+@media (max-width: 1100px) {
+  .books-reader__layout { grid-template-columns: minmax(0, 1fr); }
+  .books-reader__details.ui-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .books-reader__cover { grid-row: span 3; min-height: 190px; }
+  .books-reader__settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .books-reader__toolbar, .books-reader__toolbar-actions { align-items: stretch; flex-direction: column; }
+  .books-reader__toolbar .mc-button { width: 100%; }
+  .books-reader__details.ui-card, .books-reader__settings-grid { grid-template-columns: minmax(0, 1fr); }
+  .books-reader__cover { grid-row: auto; min-height: 160px; }
+  .books-reader__settings.ui-card, .books-reader__paper.ui-card { padding: var(--mc-space-4); }
+}
