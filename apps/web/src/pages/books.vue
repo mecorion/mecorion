@@ -1,6 +1,7 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
+import BooksHome from "@/components/books/BooksHome.vue";
 import {UiButton, UiCard, UiBadge, UiProgress, UiInput, UiSelect, UiEmptyState} from "@/components/ui";
 import SvgIcon from "@/components/SvgIcon.vue";
 
@@ -14,6 +15,7 @@ import {
 const activeSection = ref("home");
 const activeFilter = ref("Все");
 const activeLanguage = ref("Все языки");
+const activeFormat = ref("");
 const searchQuery = ref("");
 const selectedBookId = ref(null);
 
@@ -42,6 +44,7 @@ const books = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
 
   let items = decoratedBooks.value;
+  if (activeFormat.value) items = items.filter(item => item.reader.format === activeFormat.value);
 
   if (activeFilter.value === "Книги") {
     items = items.filter((item) => item.type === "book");
@@ -81,7 +84,13 @@ const libraryShelves = computed(() => [
   {title: "PDF", count: decoratedBooks.value.filter((book) => book.reader.format === "PDF").length, icon: "book"},
 ]);
 
+function openLibrary(filter = "Все", format = "") {
+  activeSection.value = "library"; activeFilter.value = filter; activeFormat.value = format; activeLanguage.value = "Все языки"; searchQuery.value = "";
+}
+function openSearch() { activeSection.value = "search"; activeFilter.value = "Все"; activeFormat.value = ""; activeLanguage.value = "Все языки"; }
+function openShelf(shelf) { openLibrary(shelf.title === "Читаю сейчас" ? "Продолжить" : shelf.title === "Сохранённое" ? "Закладки" : "Все", ["EPUB", "PDF"].includes(shelf.title) ? shelf.title : ""); }
 function navigate(section) {
+  activeFormat.value = "";
   activeSection.value = section;
   if (section === "bookmarks") {
     activeFilter.value = "Закладки";
@@ -104,7 +113,7 @@ useContextNavigation({
     {label: "Полки", items: libraryShelves.value.map((shelf) => ({
       title: `${shelf.title} · ${shelf.count}`,
       icon: shelf.icon,
-      action: () => navigate("library"),
+      action: () => openShelf(shelf),
     }))},
   ]),
 });
@@ -116,51 +125,7 @@ useContextNavigation({
     <section class="mebook-workspace">
 
       <main class="mebook-content">
-        <template v-if="activeSection === 'home'">
-          <section class="mebook-hero">
-            <div class="mebook-hero__copy">
-              <p class="mebook-kicker">Mecorion Book</p>
-              <h1>Здесь собраны все возможные книги</h1>
-              <p><span>Book</span> помогает найти книгу, выбрать язык, сохранить страницу и продолжить чтение там, где вы остановились.</p>
-              <div class="mebook-hero__actions">
-                <UiButton variant="primary" type="button" @click="openReader(continueBook.id)">Продолжить чтение</UiButton>
-                <UiButton variant="outline" type="button" @click="activeSection = 'search'">Найти книгу</UiButton>
-              </div>
-            </div>
-            <UiCard raw class="mebook-current-card" :class="`space-publication-card--${continueBook.coverTone}`">
-              <UiBadge>Сейчас читается</UiBadge>
-              <h2>{{ continueBook.title }}</h2>
-              <p>Страница {{ continueBook.reader.page }} из {{ continueBook.reader.pages }}</p>
-              <UiProgress :value="continueBook.reader.progress" size="sm" />
-            </UiCard>
-          </section>
-
-          <section class="mebook-shelf-grid" aria-label="Быстрые полки">
-            <UiButton v-for="shelf in libraryShelves" :key="shelf.title" type="button" @click="activeSection = 'library'">
-              <span aria-hidden="true"><SvgIcon :name="shelf.icon" /></span>
-              <strong>{{ shelf.title }}</strong>
-              <small>{{ shelf.count }} материалов</small>
-            </UiButton>
-          </section>
-
-          <section class="mebook-section">
-            <div class="mebook-section-heading"><h2>Продолжить</h2><UiButton variant="primary" type="button" @click="activeSection = 'library'">Смотреть всё</UiButton></div>
-            <div class="mebook-card-grid">
-              <UiCard raw
-                v-for="book in decoratedBooks.filter((item) => item.reader.progress > 0)"
-                :key="book.id"
-                class="mebook-card"
-                :class="`space-publication-card--${book.coverTone}`"
-              >
-                <UiBadge>{{ publicationTypeLabels[book.type] }}</UiBadge>
-                <h3>{{ book.title }}</h3>
-                <p>{{ book.subtitle }}</p>
-                <UiProgress :value="book.reader.progress" size="sm" />
-                <footer><small>{{ book.reader.language }} · {{ book.reader.format }}</small><UiButton variant="primary" type="button" @click="openReader(book.id)">Читать</UiButton></footer>
-              </UiCard>
-            </div>
-          </section>
-        </template>
+        <BooksHome v-if="activeSection === 'home'" v-model="searchQuery" :books="decoratedBooks" :current="continueBook" :shelves="libraryShelves" @read="openReader" @browse="openLibrary()" @search="openSearch" @shelf="openShelf" />
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'bookmarks'">
           <section class="mebook-page-heading">
@@ -170,6 +135,7 @@ useContextNavigation({
           </section>
 
           <section class="mebook-filter-panel" aria-label="Фильтры Book">
+            <div v-if="activeFormat"><UiBadge>{{ activeFormat }}</UiBadge><UiButton variant="ghost" size="sm" @click="activeFormat = ''">Все форматы</UiButton></div>
             <UiInput v-model="searchQuery" clearable placeholder="Найти книгу" aria-label="Поиск книги"><template #prefix><SvgIcon name="search" /></template></UiInput>
             <UiSelect v-model="activeFilter" label="Раздел" :options="filters" />
             <UiSelect v-model="activeLanguage" label="Язык" :options="languages" />

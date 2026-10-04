@@ -10,7 +10,7 @@ test('Books UI Kit screens and filters fit all widths', async ({page}, testInfo)
   for (const width of [180, 320, 390, 768, 1440, 2560]) {
     await page.setViewportSize({width, height: 900});
     await page.goto('/books');
-    await expect(page.locator('.mebook-hero')).toBeVisible();
+    await expect(page.locator('.books-home')).toBeVisible();
     for (const section of ['home', 'search', 'library', 'bookmarks', 'reader']) {
       if (section === 'search') await page.getByRole('button', {name: 'Найти книгу', exact: true}).click();
       if (section === 'library') await page.getByRole('combobox', {name: 'Раздел', exact: true}).click();

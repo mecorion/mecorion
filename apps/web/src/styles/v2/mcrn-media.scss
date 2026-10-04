@@ -2372,15 +2372,15 @@
 
 // Music and Video share compact mobile header controls.
 @media (max-width: 600px) {
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar {
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar {
     display: grid;
     grid-template-columns: 44px minmax(0, 1fr);
     gap: var(--mc-space-2);
     padding: var(--mc-space-3);
     align-items: center;
   }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-menu-button { grid-column: 1; grid-row: 1; }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar__account {
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-menu-button { grid-column: 1; grid-row: 1; }
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar__account {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
@@ -2389,8 +2389,8 @@
     gap: var(--mc-space-1);
     min-width: 0;
   }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar .mcrn-icon-button,
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar .mcrn-user-chip {
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar .mcrn-icon-button,
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar .mcrn-user-chip {
     flex: 0 0 44px;
     width: 44px;
     height: 44px;
@@ -2398,14 +2398,14 @@
     min-height: 44px;
     padding: 0;
   }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .mcrn-user-chip__content { display: none; }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar > .mc-field { grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar > .mc-field kbd { display: none; }
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .mcrn-user-chip__content { display: none; }
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar > .mc-field { grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; }
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar > .mc-field kbd { display: none; }
 }
 @media (max-width: 300px) {
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar { grid-template-columns: minmax(0, 1fr); }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar__account { grid-column: 1; grid-row: 2; justify-self: stretch; flex-wrap: wrap; justify-content: space-between; }
-  :is(.dashboard-shell--video, .dashboard-shell--music) .dashboard-topbar > .mc-field,
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar { grid-template-columns: minmax(0, 1fr); }
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar__account { grid-column: 1; grid-row: 2; justify-self: stretch; flex-wrap: wrap; justify-content: space-between; }
+  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar > .mc-field,
   .dashboard-shell--music .workspace-search { grid-column: 1; grid-row: 3; }
 }
 
@@ -2495,4 +2495,29 @@
   .mebook-reader__page p { font-size: var(--mc-font-sm); }
   .mebook-reader__cover { min-height: 240px; }
   .mebook-section-heading { flex-direction: column; align-items: stretch; }
+}
+
+@media (max-width: 1100px) {
+  .books-home__lead { grid-template-columns: minmax(0, 1fr); }
+  .books-home__shelves { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .books-home__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .books-home { gap: var(--mc-space-6); }
+  .books-home__heading, .books-home__section-heading { flex-wrap: wrap; align-items: flex-start; }
+  .books-home__heading > .mc-button { width: 100%; }
+  .books-home__resume.ui-card { padding: var(--mc-space-4); gap: var(--mc-space-4); }
+  .books-home__cover { padding: var(--mc-space-3); min-height: 220px; }
+  .books-home__discover.ui-card { padding: var(--mc-space-4); }
+  .books-home__grid { grid-template-columns: minmax(0, 1fr); }
+  .books-home__shelf.mc-button { padding: var(--mc-space-3); grid-template-columns: 20px minmax(0, 1fr); }
+  .books-home__shelf > .svg-icon:last-child { grid-column: 2; }
+}
+@media (max-width: 400px) {
+  .books-home__resume.ui-card, .books-home__shelves { grid-template-columns: minmax(0, 1fr); }
+  .books-home__cover { min-height: 180px; }
+  .books-home__resume-copy > .mc-button { width: 100%; }
+  .books-home__shelf.mc-button { grid-template-columns: 20px minmax(0, 1fr) 20px; }
+  .books-home__shelf > .svg-icon:last-child { grid-column: 3; }
+  .books-home__book-copy { padding: var(--mc-space-4); }
 }
