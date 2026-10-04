@@ -24,8 +24,6 @@ const selectedEpisodeId = ref(null);
 const navigation = [
   {id: "home", icon: "home", title: "Главная", shortTitle: "Главная"},
   {id: "library", icon: "grid", title: "Медиатека", shortTitle: "Видео"},
-  {id: "watchLater", icon: "star", title: "Смотреть позже", shortTitle: "Позже"},
-  {id: "watch", icon: "play", title: "Плеер", shortTitle: "Плеер"},
 ];
 
 const filters = [{value: "Все", label: "Все видео"}, {value: "Продолжить", label: "Продолжить просмотр"}, {value: "Позже", label: "Смотреть позже"}];
