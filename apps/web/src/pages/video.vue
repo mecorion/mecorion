@@ -1,12 +1,13 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
+import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
+import {UiButton, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
-  getSpaceBreadcrumb,
   getVideoServicePublications,
-  publicationTypeLabels,
 } from "@/spaces/spaces.mock.js";
 
 const activeSection = ref("home");
@@ -19,15 +20,17 @@ const selectedSeason = ref(1);
 const selectedEpisodeId = ref(null);
 
 const navigation = [
-  {id: "home", icon: "⌂", title: "Главная", shortTitle: "Главная"},
-  {id: "library", icon: "▤", title: "Медиатека", shortTitle: "Видео"},
-  {id: "watchLater", icon: "◇", title: "Смотреть позже", shortTitle: "Позже"},
-  {id: "watch", icon: "▣", title: "Плеер", shortTitle: "Плеер"},
+  {id: "home", icon: "home", title: "Главная", shortTitle: "Главная"},
+  {id: "library", icon: "grid", title: "Медиатека", shortTitle: "Видео"},
+  {id: "watchLater", icon: "star", title: "Смотреть позже", shortTitle: "Позже"},
+  {id: "watch", icon: "play", title: "Плеер", shortTitle: "Плеер"},
 ];
 
 const filters = ["Все", "Фильмы", "Сериалы", "Подборки", "Продолжить", "Позже"];
 const qualities = ["Любое качество", "2160p", "1440p", "1080p", "720p"];
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
+
+const playbackSettings = ref({});
 
 const videoStateById = {
   "director-a-scenes": {progress: 42, watchedMinutes: 18, totalMinutes: 42, saved: true, kind: "Фильм", quality: "2160p", voice: "Оригинал", subtitles: "Русские"},
@@ -118,7 +121,7 @@ const decoratedVideos = computed(() => [...getVideoServicePublications(), ...fal
     watchedMinutes: index % 2 ? 0 : 5,
     totalMinutes: Number.parseInt(video.duration, 10) || 45,
     saved: index % 2 === 0,
-    kind: video.id.includes("drama") ? "Дорама" : video.id.includes("animation") ? "Мультфильм" : video.id.includes("doc") ? "Документальное" : index % 3 === 0 ? "Сериал" : "Фильм",
+    kind: video.id.includes("drama") ? "Дорама" : video.id.includes("animation") ? "Мультфильм" : video.id.includes("doc") ? "Документальное" : video.seasons?.length ? "Сериал" : "Фильм",
     quality: video.video?.quality?.[0] ?? "1080p",
     voice: video.video?.voice?.[0] ?? "Оригинал",
     subtitles: video.video?.subtitles?.[0] ?? "Русские",
@@ -164,7 +167,8 @@ const videos = computed(() => {
   }
 
   if (activeCategory.value !== "Все") {
-    items = items.filter((item) => item.state.kind === activeCategory.value || activeCategory.value === "Подборки" && item.state.kind === "Подборка");
+    const kind = {Фильмы: "Фильм", Сериалы: "Сериал", Дорамы: "Дорама", Мультфильмы: "Мультфильм", Подборки: "Подборка"}[activeCategory.value] ?? activeCategory.value;
+    items = items.filter((item) => item.state.kind === kind);
   }
 
   if (activeQuality.value !== "Любое качество") {
@@ -179,6 +183,10 @@ const videos = computed(() => {
 });
 
 const continueVideo = computed(() => decoratedVideos.value.find((video) => video.state.progress > 0) ?? decoratedVideos.value[0]);
+function updatePlaybackSetting(key, value) {
+  playbackSettings.value[selectedVideo.value.id] = {...playbackSettings.value[selectedVideo.value.id], [key]: value};
+}
+
 const selectedVideo = computed(() => decoratedVideos.value.find((video) => video.id === selectedVideoId.value) ?? continueVideo.value);
 const currentSeason = computed(() => {
   const seasons = selectedVideo.value?.seasons ?? [];
@@ -190,10 +198,10 @@ const currentEpisode = computed(() => {
 });
 const savedVideos = computed(() => decoratedVideos.value.filter((video) => video.state.saved));
 const collections = computed(() => [
-  {title: "Продолжить", count: decoratedVideos.value.filter((video) => video.state.progress > 0).length, icon: "↗"},
-  {title: "Смотреть позже", count: savedVideos.value.length, icon: "◇"},
-  {title: "4K / 2K", count: decoratedVideos.value.filter((video) => video.video?.quality?.some((quality) => ["2160p", "1440p"].includes(quality))).length, icon: "▣"},
-  {title: "С субтитрами", count: decoratedVideos.value.filter((video) => video.video?.subtitles?.length).length, icon: "Aa"},
+  {title: "Продолжить", count: decoratedVideos.value.filter((video) => video.state.progress > 0).length, icon: "arrow-up-right-1"},
+  {title: "Смотреть позже", count: savedVideos.value.length, icon: "star"},
+  {title: "4K / 2K", count: decoratedVideos.value.filter((video) => video.video?.quality?.some((quality) => ["2160p", "1440p"].includes(quality))).length, icon: "play"},
+  {title: "С субтитрами", count: decoratedVideos.value.filter((video) => video.video?.subtitles?.length).length, icon: "list-music"},
 ]);
 
 function navigate(section) {
@@ -211,16 +219,16 @@ useContextNavigation({
   accentContrast: "#ffffff",
   activeId: activeSection,
   groups: computed(() => [
-    {label: null, navLabel: "Разделы Video", items: navigation.map((item) => ({...item, symbol: item.icon, action: () => navigate(item.id)}))},
+    {label: null, navLabel: "Разделы Video", items: navigation.map((item) => ({...item, action: () => navigate(item.id)}))},
     {label: "Категории", items: categories.map((category) => ({
       title: category,
-      symbol: category === "Все" ? "▦" : "▶",
+      icon: category === "Все" ? "grid" : "play",
       active: activeSection.value === "library" && activeCategory.value === category,
       action: () => { activeCategory.value = category; navigate("library"); },
     }))},
     {label: "Коллекции", items: collections.value.map((collection) => ({
       title: `${collection.title} · ${collection.count}`,
-      symbol: collection.icon,
+      icon: collection.icon,
       action: () => navigate("library"),
     }))},
   ]),
@@ -285,57 +293,43 @@ function chooseSeason(seasonNumber) {
                 <span>{{ heroVideo.duration }}</span>
               </div>
               <div class="mevideo-cinema-hero__actions">
-                <button type="button" @click="openWatch(heroVideo.id)">▶ Смотреть</button>
-                <button type="button" @click="activeSection = 'library'">Подробнее</button>
+                <UiButton unstyled type="button" @click="openWatch(heroVideo.id)"><SvgIcon name="play" /> Смотреть</UiButton>
+                <UiButton unstyled type="button" @click="activeSection = 'library'">Подробнее</UiButton>
               </div>
             </div>
 
             <aside class="mevideo-cinema-hero__continue">
               <span>Продолжить</span>
               <strong>{{ heroVideo.state.watchedMinutes }} / {{ heroVideo.state.totalMinutes }} мин</strong>
-              <div class="mevideo-progress"><i :style="{width: `${heroVideo.state.progress}%`}"></i></div>
+              <UiProgress :value="heroVideo.state.progress" size="sm" aria-label="Прогресс просмотра" />
             </aside>
           </section>
 
           <section class="mevideo-channel-strip" aria-label="Быстрые фильтры">
-            <button
+            <UiButton unstyled
               v-for="category in categories"
               :key="category"
-              :class="{'is-active': activeCategory === category}"
+              :class="{'is-active': activeCategory === category}" :aria-pressed="activeCategory === category"
               type="button"
               @click="activeCategory = category; activeSection = category === 'Все' ? 'home' : 'library'"
             >
               {{ category }}
-            </button>
+            </UiButton>
           </section>
 
           <section v-for="row in videoRows" :key="row.id" class="mevideo-row">
             <div class="mevideo-section-heading">
               <h2>{{ row.title }}</h2>
-              <button
+              <UiButton unstyled
                 type="button"
                 @click="openRow(row)"
               >
                 {{ row.action }}
-              </button>
+              </UiButton>
             </div>
 
-            <div :class="row.id === 'series' || row.id === 'drama' ? 'mevideo-wide-row' : 'mevideo-poster-row'">
-              <article
-                v-for="video in row.items"
-                :key="video.id"
-                :class="[
-                  row.id === 'series' || row.id === 'drama' ? 'mevideo-wide-card' : 'mevideo-poster',
-                  `space-publication-card--${video.coverTone}`,
-                  {'mevideo-poster--compact': row.id === 'quality'},
-                ]"
-              >
-                <span>{{ video.seasons?.length ? `${video.seasons.length} сезона` : video.state.kind }}</span>
-                <h3>{{ video.title }}</h3>
-                <p v-if="row.id === 'series' || row.id === 'drama'">{{ video.subtitle }}</p>
-                <div v-if="video.state.progress" class="mevideo-progress"><i :style="{width: `${video.state.progress}%`}"></i></div>
-                <button type="button" @click="openWatch(video.id)">{{ video.seasons?.length ? "Выбрать серию" : "▶" }}</button>
-              </article>
+            <div class="mevideo-media-grid">
+              <VideoMediaCard v-for="video in row.items" :key="video.id" :video="video" @watch="openWatch" />
             </div>
           </section>
         </template>
@@ -349,39 +343,25 @@ function chooseSeason(seasonNumber) {
 
           <section class="mevideo-filter-panel" aria-label="Фильтры Video">
             <div class="mevideo-filter-row">
-              <button v-for="category in categories" :key="category" :class="{'is-active': activeCategory === category}" type="button" @click="activeCategory = category">
+              <UiButton unstyled v-for="category in categories" :key="category" :class="{'is-active': activeCategory === category}" :aria-pressed="activeCategory === category" type="button" @click="activeCategory = category">
                 {{ category }}
-              </button>
+              </UiButton>
             </div>
             <div class="mevideo-filter-row">
-              <button v-for="filter in filters" :key="filter" :class="{'is-active': activeFilter === filter}" type="button" @click="activeFilter = filter">
+              <UiButton unstyled v-for="filter in filters" :key="filter" :class="{'is-active': activeFilter === filter}" :aria-pressed="activeFilter === filter" type="button" @click="activeFilter = filter">
                 {{ filter }}
-              </button>
+              </UiButton>
             </div>
             <div class="mevideo-filter-row">
-              <button v-for="quality in qualities" :key="quality" :class="{'is-active': activeQuality === quality}" type="button" @click="activeQuality = quality">
+              <UiButton unstyled v-for="quality in qualities" :key="quality" :class="{'is-active': activeQuality === quality}" :aria-pressed="activeQuality === quality" type="button" @click="activeQuality = quality">
                 {{ quality }}
-              </button>
+              </UiButton>
             </div>
           </section>
 
-          <section class="mevideo-card-grid">
-            <article
-              v-for="video in videos"
-              :key="video.id"
-              class="mevideo-card"
-              :class="`space-publication-card--${video.coverTone}`"
-            >
-              <span>{{ publicationTypeLabels[video.type] }}</span>
-              <h3>{{ video.title }}</h3>
-              <p>{{ video.subtitle }}</p>
-              <div class="mevideo-progress"><i :style="{width: `${video.state.progress}%`}"></i></div>
-              <footer>
-                <small>{{ video.state.quality }} · {{ video.state.subtitles }}</small>
-                <button type="button" @click="openWatch(video.id)">Смотреть</button>
-              </footer>
-              <NuxtLink :to="`/space/${video.spaceId}/publication/${video.id}`">{{ getSpaceBreadcrumb(video) || "Каталог Video" }}</NuxtLink>
-            </article>
+          <section class="mevideo-media-grid" aria-label="Каталог Video">
+            <VideoMediaCard v-for="video in videos" :key="video.id" :video="video" @watch="openWatch" />
+            <UiEmptyState v-if="!videos.length" title="Видео не найдены" description="Попробуйте изменить фильтры." />
           </section>
         </template>
 
@@ -389,8 +369,9 @@ function chooseSeason(seasonNumber) {
           <section class="mevideo-watch">
             <main class="mevideo-watch__player">
               <div class="mevideo-screen" :class="`space-publication-card--${selectedVideo.coverTone}`">
-                <button type="button" aria-label="Воспроизвести">▶</button>
-                <span>{{ selectedVideo.state.quality }}</span>
+                <UiButton unstyled type="button" aria-label="Воспроизвести">
+                  <SvgIcon name="play" /></UiButton>
+                <span>{{ playbackSettings[selectedVideo.id]?.quality ?? selectedVideo.state.quality }}</span>
               </div>
               <div class="mevideo-watch__meta">
                 <p class="mevideo-kicker">{{ selectedVideo.state.kind }}</p>
@@ -399,7 +380,7 @@ function chooseSeason(seasonNumber) {
                   {{ selectedVideo.subtitle }}
                   <template v-if="currentEpisode"> Сейчас выбран: {{ currentSeason.title }}, {{ currentEpisode.title }}.</template>
                 </p>
-                <div class="mevideo-progress"><i :style="{width: `${selectedVideo.state.progress}%`}"></i></div>
+                <UiProgress :value="selectedVideo.state.progress" size="sm" aria-label="Прогресс просмотра" />
               </div>
             </main>
 
@@ -408,51 +389,36 @@ function chooseSeason(seasonNumber) {
 
               <template v-if="selectedVideo.seasons?.length">
                 <div class="mevideo-season-tabs" aria-label="Сезоны">
-                  <button
+                  <UiButton unstyled
                     v-for="season in selectedVideo.seasons"
                     :key="season.number"
-                    :class="{'is-active': currentSeason?.number === season.number}"
+                    :class="{'is-active': currentSeason?.number === season.number}" :aria-pressed="currentSeason?.number === season.number"
                     type="button"
                     @click="chooseSeason(season.number)"
                   >
                     {{ season.title }}
-                  </button>
+                  </UiButton>
                 </div>
 
                 <div class="mevideo-episode-list">
-                  <button
+                  <UiButton unstyled
                     v-for="episode in currentSeason?.episodes"
                     :key="episode.id"
-                    :class="{'is-active': currentEpisode?.id === episode.id}"
+                    :class="{'is-active': currentEpisode?.id === episode.id}" :aria-pressed="currentEpisode?.id === episode.id"
                     type="button"
                     @click="selectedEpisodeId = episode.id"
                   >
                     <span>{{ episode.title }}</span>
                     <small>{{ episode.duration }}</small>
-                    <i><b :style="{width: `${episode.progress}%`}"></b></i>
-                  </button>
+                    <UiProgress class="mevideo-episode-progress" :value="episode.progress" size="sm" aria-label="Прогресс эпизода" />
+                  </UiButton>
                 </div>
               </template>
 
-              <label>
-                <span>Качество</span>
-                <select :value="selectedVideo.state.quality">
-                  <option v-for="quality in selectedVideo.video?.quality" :key="quality">{{ quality }}</option>
-                </select>
-              </label>
-              <label>
-                <span>Субтитры</span>
-                <select :value="selectedVideo.state.subtitles">
-                  <option v-for="subtitle in selectedVideo.video?.subtitles" :key="subtitle">{{ subtitle }}</option>
-                </select>
-              </label>
-              <label>
-                <span>Озвучка</span>
-                <select :value="selectedVideo.state.voice">
-                  <option v-for="voice in selectedVideo.video?.voice" :key="voice">{{ voice }}</option>
-                </select>
-              </label>
-              <NuxtLink :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">Открыть публикацию</NuxtLink>
+              <UiSelect label="Качество" :model-value="playbackSettings[selectedVideo.id]?.quality ?? selectedVideo.state.quality" :options="selectedVideo.video?.quality ?? []" @update:model-value="updatePlaybackSetting('quality', $event)" />
+              <UiSelect label="Субтитры" :model-value="playbackSettings[selectedVideo.id]?.subtitles ?? selectedVideo.state.subtitles" :options="selectedVideo.video?.subtitles ?? []" @update:model-value="updatePlaybackSetting('subtitles', $event)" />
+              <UiSelect label="Озвучка" :model-value="playbackSettings[selectedVideo.id]?.voice ?? selectedVideo.state.voice" :options="selectedVideo.video?.voice ?? []" @update:model-value="updatePlaybackSetting('voice', $event)" />
+              <UiButton unstyled :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">Открыть публикацию</UiButton>
             </aside>
           </section>
         </template>

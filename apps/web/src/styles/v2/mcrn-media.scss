@@ -2280,3 +2280,30 @@
   .music-search__track-row { flex-direction: column; align-items: stretch; }
   .music-search__track-actions { flex-direction: row; justify-content: space-between; }
 }
+
+@media (max-width: 480px) {
+  .mevideo-channel-strip, .mevideo-filter-row, .mevideo-season-tabs {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .mevideo-app button {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .mevideo-channel-strip button, .mevideo-filter-row button, .mevideo-season-tabs button {
+    flex-shrink: 1;
+  }
+  .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 360px) {
+  .mevideo-media-card .ui-card__footer { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .mevideo-media-card__watch { width: 100%; padding-inline: var(--mc-space-2); }
+  .mevideo-media-card .ui-card__footer > a { justify-self: center; min-width: 44px; min-height: 44px; }
+}
+@media (max-width: 240px) {
+  .mevideo-media-card__watch { flex-direction: column; padding: var(--mc-space-2); line-height: 1.4 !important; }
+}
