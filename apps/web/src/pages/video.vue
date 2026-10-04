@@ -1,10 +1,11 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
+import VideoPlayer from "@/components/video/VideoPlayer.vue";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiDrawer, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
@@ -38,7 +39,12 @@ const qualities = ["Любое качество", "2160p", "1440p", "1080p", "72
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
 
 const playbackSettings = ref({});
+const settingsOpen = ref(false);
+const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id).slice(0, 3));
+function toggleSaved() { savedOverrides.value[selectedVideo.value.id] = !isSelectedSaved.value; }
+const isSelectedSaved = computed(() => savedOverrides.value[selectedVideo.value.id] ?? selectedVideo.value.state.saved);
 
+const savedOverrides = ref({});
 const videoStateById = {
   "director-a-scenes": {progress: 42, watchedMinutes: 18, totalMinutes: 42, saved: true, kind: "Фильм", quality: "2160p", voice: "Оригинал", subtitles: "Русские"},
   "universe-a-order": {progress: 12, watchedMinutes: 4, totalMinutes: 28, saved: false, kind: "Подборка", quality: "1080p", voice: "Дубляж", subtitles: "English"},
@@ -160,7 +166,7 @@ const videos = computed(() => {
   }
 
   if (activeFilter.value === "Позже") {
-    items = items.filter((item) => item.state.saved);
+    items = items.filter((item) => savedOverrides.value[item.id] ?? item.state.saved);
   }
 
   if (activeCategory.value !== "Все") {
@@ -332,27 +338,25 @@ function chooseSeason(seasonNumber) {
         </template>
 
         <template v-else>
-          <section class="mevideo-watch">
-            <main class="mevideo-watch__player">
-              <div class="mevideo-screen" :class="`space-publication-card--${selectedVideo.coverTone}`">
-                <UiButton unstyled type="button" aria-label="Воспроизвести">
-                  <SvgIcon name="play" /></UiButton>
-                <span>{{ playbackSettings[selectedVideo.id]?.quality ?? selectedVideo.state.quality }}</span>
-              </div>
-              <div class="mevideo-watch__meta">
-                <p class="mevideo-kicker">{{ selectedVideo.state.kind }}</p>
+          <section class="mevideo-watch-view">
+            <div class="mevideo-watch-view__main">
+              <VideoPlayer :key="`${selectedVideo.id}-${currentEpisode?.id ?? ''}`" :video="selectedVideo" :speed="playbackSettings[selectedVideo.id]?.speed ?? 1" @settings="settingsOpen = true" />
+              <div class="mevideo-watch-view__meta">
+                <div class="mevideo-watch-view__eyebrow"><UiBadge variant="accent">{{ selectedVideo.state.kind }}</UiBadge><span>{{ selectedVideo.duration }}</span><span>{{ selectedVideo.publishedLabel }}</span></div>
                 <h1>{{ selectedVideo.title }}</h1>
-                <p>
-                  {{ selectedVideo.subtitle }}
-                  <template v-if="currentEpisode"> Сейчас выбран: {{ currentSeason.title }}, {{ currentEpisode.title }}.</template>
-                </p>
-                <UiProgress :value="selectedVideo.state.progress" size="sm" aria-label="Прогресс просмотра" />
+                <p v-if="currentEpisode" class="mevideo-watch-view__episode">{{ currentSeason.title }} · {{ currentEpisode.title }}</p>
+                <div class="mevideo-watch-view__identity">
+                  <div class="mevideo-watch-view__author"><UiAvatar :src="selectedVideo.authorAvatar" :alt="selectedVideo.author" fallback="М" size="sm" /><div><strong>{{ selectedVideo.author }}</strong><span>{{ new Intl.NumberFormat('ru-RU').format(selectedVideo.views) }} просмотров</span></div></div>
+                  <div class="mevideo-watch-view__actions">
+                    <UiButton variant="outline" :aria-pressed="isSelectedSaved" @click="toggleSaved"><SvgIcon name="star" />{{ isSelectedSaved ? 'Сохранено' : 'Смотреть позже' }}</UiButton>
+                    <UiButton variant="ghost" :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">О публикации<SvgIcon name="arrow-up-right-1" /></UiButton>
+                  </div>
+                </div>
+                <UiCard class="mevideo-watch-view__description" raw size="sm"><p>{{ selectedVideo.subtitle }}</p><p>{{ selectedVideo.body || 'Выберите серию и продолжите историю в удобном для вас темпе.' }}</p></UiCard>
               </div>
-            </main>
-
-            <aside class="mevideo-watch__settings">
-              <h2>{{ selectedVideo.seasons?.length ? "Сезоны и серии" : "Настройки просмотра" }}</h2>
-
+            </div>
+            <aside class="mevideo-watch-view__aside" :aria-label="selectedVideo.seasons?.length ? 'Сезоны и серии' : 'Другие видео'">
+              <h2>{{ selectedVideo.seasons?.length ? 'Сезоны и серии' : 'Смотрите также' }}</h2>
               <template v-if="selectedVideo.seasons?.length">
                 <div class="mevideo-season-tabs" aria-label="Сезоны">
                   <UiButton unstyled
@@ -381,12 +385,20 @@ function chooseSeason(seasonNumber) {
                 </div>
               </template>
 
+              <div v-if="!selectedVideo.seasons?.length" class="mevideo-watch-view__recommendations">
+                <VideoMediaCard v-for="video in recommendedVideos" :key="video.id" :video="video" @watch="openWatch" />
+              </div>
+            </aside>
+          </section>
+          <UiDrawer v-model="settingsOpen" side="right" size="min(380px, 100vw)" title="Настройки просмотра" description="Параметры видео и воспроизведения">
+            <div class="mevideo-player-settings">
+              <UiSelect label="Скорость" :model-value="playbackSettings[selectedVideo.id]?.speed ?? 1" :options="[{label: '0.5×', value: 0.5}, {label: '0.75×', value: 0.75}, {label: 'Обычная', value: 1}, {label: '1.25×', value: 1.25}, {label: '1.5×', value: 1.5}, {label: '2×', value: 2}]" @update:model-value="updatePlaybackSetting('speed', $event)" />
               <UiSelect label="Качество" :model-value="playbackSettings[selectedVideo.id]?.quality ?? selectedVideo.state.quality" :options="selectedVideo.video?.quality ?? []" @update:model-value="updatePlaybackSetting('quality', $event)" />
               <UiSelect label="Субтитры" :model-value="playbackSettings[selectedVideo.id]?.subtitles ?? selectedVideo.state.subtitles" :options="selectedVideo.video?.subtitles ?? []" @update:model-value="updatePlaybackSetting('subtitles', $event)" />
               <UiSelect label="Озвучка" :model-value="playbackSettings[selectedVideo.id]?.voice ?? selectedVideo.state.voice" :options="selectedVideo.video?.voice ?? []" @update:model-value="updatePlaybackSetting('voice', $event)" />
-              <UiButton unstyled :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">Открыть публикацию</UiButton>
-            </aside>
-          </section>
+              <p>Качество, субтитры и озвучка станут доступны после подключения видеодорожек.</p>
+            </div>
+          </UiDrawer>
         </template>
       </main>
     </section>

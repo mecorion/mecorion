@@ -2337,3 +2337,28 @@
   .mevideo-library-toolbar__filters { grid-template-columns: minmax(0, 1fr); }
   .mevideo-library-toolbar__summary > * { min-width: 0; max-width: 100%; }
 }
+
+@container video-content (max-width: 1000px) {
+  .mevideo-watch-view { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-watch-view__recommendations { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container video-content (max-width: 600px) {
+  .mevideo-watch-view__recommendations { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-player__bar { justify-content: center; }
+  .mevideo-player__tools { justify-content: center; }
+  .mevideo-player__viewport { aspect-ratio: auto; min-height: 200px; }
+  .mevideo-player__badge { top: var(--mc-space-2); left: var(--mc-space-2); }
+  .mevideo-player__empty { padding: var(--mc-space-3); padding-top: var(--mc-space-10); }
+  .mevideo-watch-view__actions > * { min-width: 0; max-width: 100%; }
+}
+@container video-content (max-width: 280px) {
+  .mevideo-player__art { flex-direction: column; }
+  .mevideo-player__art > span { letter-spacing: 0; }
+  .mevideo-player__transport { justify-content: center; }
+  .mevideo-player__time { flex-basis: 100%; text-align: center; }
+  .mevideo-player__volume { width: 44px; }
+  .mevideo-watch-view__author { flex-wrap: wrap; }
+  .mevideo-watch-view__actions { flex-direction: column; width: 100%; }
+  .mevideo-watch-view__actions .mc-button { flex-wrap: wrap; padding-inline: var(--mc-space-2); }
+  .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+}
