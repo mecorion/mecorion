@@ -6,7 +6,7 @@ import VideoPlayer from "@/components/video/VideoPlayer.vue";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiSelect} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiSelect, toast} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 const route = useRoute();
@@ -43,7 +43,11 @@ const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", 
 
 const playbackSettings = useState("video-playback-settings", () => ({}));
 const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id && video.state.kind === selectedVideo.value.state.kind).slice(0, 3));
-function toggleSaved() { savedOverrides.value[selectedVideo.value.id] = !isSelectedSaved.value; }
+function toggleSaved() {
+  const saved = !isSelectedSaved.value;
+  savedOverrides.value[selectedVideo.value.id] = saved;
+  if (saved) toast.add({type: "success", title: "Видео сохранено в «Смотреть позже»"});
+}
 const isSelectedSaved = computed(() => savedOverrides.value[selectedVideo.value.id] ?? selectedVideo.value.state.saved);
 
 const savedOverrides = useState("video-saved-overrides", () => ({}));
@@ -232,7 +236,7 @@ function episodePath(season, episode) {
                 <div class="mevideo-watch-view__identity">
                   <div class="mevideo-watch-view__author"><UiAvatar :src="selectedVideo.authorAvatar" :alt="selectedVideo.author" fallback="М" size="sm" /><div><strong>{{ selectedVideo.author }}</strong><span>{{ new Intl.NumberFormat('ru-RU').format(selectedVideo.views) }} просмотров</span></div></div>
                   <div class="mevideo-watch-view__actions">
-                    <UiButton variant="outline" :aria-pressed="isSelectedSaved" @click="toggleSaved"><SvgIcon name="star" />{{ isSelectedSaved ? 'Сохранено' : 'Смотреть позже' }}</UiButton>
+                    <UiButton :variant="isSelectedSaved ? 'primary' : 'outline'" :aria-pressed="isSelectedSaved" @click="toggleSaved"><SvgIcon name="star" />Смотреть позже</UiButton>
                     <UiButton variant="ghost" :to="`/space/${selectedVideo.spaceId}/publication/${selectedVideo.id}`">О публикации<SvgIcon name="arrow-up-right-1" /></UiButton>
                   </div>
                 </div>
