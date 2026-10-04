@@ -2521,3 +2521,14 @@
   .books-home__shelf > .svg-icon:last-child { grid-column: 3; }
   .books-home__book-copy { padding: var(--mc-space-4); }
 }
+
+@media (max-width: 1100px) {
+  .books-library__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .books-library__filter-grid, .books-library__grid { grid-template-columns: minmax(0, 1fr); }
+  .books-library__toolbar { flex-direction: column; align-items: stretch; }
+  .books-library__toolbar > .mc-field { width: 100%; }
+  .books-library__filters.ui-card, .books-library__copy, .books-library__cover { padding: var(--mc-space-4); }
+  .books-library__active .mc-button { margin-left: 0; width: 100%; }
+}

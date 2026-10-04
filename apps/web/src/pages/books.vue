@@ -1,6 +1,7 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 import {computed, ref} from "vue";
+import BooksLibrary from "@/components/books/BooksLibrary.vue";
 import BooksHome from "@/components/books/BooksHome.vue";
 import {UiButton, UiCard, UiBadge, UiProgress, UiInput, UiSelect, UiEmptyState} from "@/components/ui";
 import SvgIcon from "@/components/SvgIcon.vue";
@@ -90,6 +91,7 @@ function openLibrary(filter = "Все", format = "") {
 function openSearch() { activeSection.value = "search"; activeFilter.value = "Все"; activeFormat.value = ""; activeLanguage.value = "Все языки"; }
 function openShelf(shelf) { openLibrary(shelf.title === "Читаю сейчас" ? "Продолжить" : shelf.title === "Сохранённое" ? "Закладки" : "Все", ["EPUB", "PDF"].includes(shelf.title) ? shelf.title : ""); }
 function navigate(section) {
+  if (section === "library") { openLibrary(); return; }
   activeFormat.value = "";
   activeSection.value = section;
   if (section === "bookmarks") {
@@ -126,6 +128,8 @@ useContextNavigation({
 
       <main class="mebook-content">
         <BooksHome v-if="activeSection === 'home'" v-model="searchQuery" :books="decoratedBooks" :current="continueBook" :shelves="libraryShelves" @read="openReader" @browse="openLibrary()" @search="openSearch" @shelf="openShelf" />
+
+        <BooksLibrary v-else-if="activeSection === 'library'" v-model:query="searchQuery" v-model:filter="activeFilter" v-model:language="activeLanguage" v-model:format="activeFormat" :books="books" :total="decoratedBooks.length" :filters="filters" :languages="languages" @read="openReader" />
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'bookmarks'">
           <section class="mebook-page-heading">
