@@ -67,7 +67,7 @@ function isRouteActive(item) {
   }
 
   if (item.route === "/books") {
-    return route.path === "/books";
+    return route.path === "/books" || route.path.startsWith("/books/");
   }
 
   return route.path === item.route;
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="mecorion-workspace mcrn-shell dashboard-shell"
-    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed, 'dashboard-shell--video': route.path === '/video' || route.path.startsWith('/video/'), 'dashboard-shell--books': route.path === '/books', 'dashboard-shell--music': route.path === '/music' || route.path.startsWith('/music/')}"
+    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed, 'dashboard-shell--video': route.path === '/video' || route.path.startsWith('/video/'), 'dashboard-shell--books': route.path === '/books' || route.path.startsWith('/books/'), 'dashboard-shell--music': route.path === '/music' || route.path.startsWith('/music/')}"
     :style="workspaceAccentStyle"
   >
     <UiButton unstyled

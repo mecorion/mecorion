@@ -1,6 +1,6 @@
 <script setup>
-definePageMeta({workspace: true, requiresAuth: true});
-import {computed, ref, reactive} from "vue";
+
+import {computed, ref} from "vue";
 import BooksBookmarks from "@/components/books/BooksBookmarks.vue";
 import BooksLibrary from "@/components/books/BooksLibrary.vue";
 import BooksHome from "@/components/books/BooksHome.vue";
@@ -14,12 +14,34 @@ import {
   publicationTypeLabels,
 } from "@/spaces/spaces.mock.js";
 
-const activeSection = ref("home");
-const activeFilter = ref("Все");
-const activeLanguage = ref("Все языки");
-const activeFormat = ref("");
-const searchQuery = ref("");
-const selectedBookId = ref(null);
+const route = useRoute();
+const router = useRouter();
+const activeSection = computed(() => {
+  const part = route.path.split('/')[2];
+  return !part ? 'home' : ['library', 'bookmarks', 'search'].includes(part) ? part : 'reader';
+});
+let pendingQuery = null;
+function queryModel(key, fallback) {
+  return computed({
+    get: () => typeof route.query[key] === 'string' ? route.query[key] : fallback,
+    set: value => {
+      const scheduled = pendingQuery !== null;
+      const query = pendingQuery ?? {...route.query};
+      if (!value || value === fallback) delete query[key]; else query[key] = value;
+      pendingQuery = query;
+      if (!scheduled) queueMicrotask(() => {
+        const query = pendingQuery;
+        pendingQuery = null;
+        router.replace({path: route.path, query});
+      });
+    },
+  });
+}
+const activeFilter = queryModel("filter", "Все");
+const activeLanguage = queryModel("language", "Все языки");
+const activeFormat = queryModel("format", "");
+const searchQuery = queryModel("q", "");
+const selectedBookId = computed(() => route.path.split("/")[2]);
 
 const filters = ["Все", "Книги", "Сборники", "Продолжить", "Закладки"];
 const languages = ["Все языки", "Русский", "English", "Español"];
@@ -30,12 +52,13 @@ const navigation = [
   {id: "reader", icon: "book", title: "Читалка", shortTitle: "Читать"},
 ];
 
-const readerStateById = reactive({
+const readerState = useState("books-reader-state", () => ({
   "author-a-selected": {page: 26, pages: 320, progress: 8, bookmarked: true, language: "Русский", format: "EPUB"},
   "sci-fi-guide": {page: 104, pages: 412, progress: 25, bookmarked: false, language: "English", format: "PDF"},
   "game-lore": {page: 18, pages: 140, progress: 13, bookmarked: true, language: "Русский", format: "EPUB"},
   "frontend-course-start": {page: 3, pages: 96, progress: 3, bookmarked: false, language: "Español", format: "PDF"},
-});
+}));
+const readerStateById = readerState.value;
 
 const removedBookmark = ref(null);
 function removeBookmark(id) { removedBookmark.value = decoratedBooks.value.find(book => book.id === id); readerStateById[id].bookmarked = false; }
@@ -83,6 +106,7 @@ const books = computed(() => {
 const continueBook = computed(() => decoratedBooks.value.find((book) => book.reader.progress > 0) ?? decoratedBooks.value[0]);
 const savedBooks = computed(() => decoratedBooks.value.filter((book) => book.reader.bookmarked).length);
 const selectedBook = computed(() => decoratedBooks.value.find((book) => book.id === selectedBookId.value) ?? continueBook.value);
+useHead(() => ({title: `${activeSection.value === 'reader' ? selectedBook.value.title : ({home: 'Главная', library: 'Библиотека', bookmarks: 'Закладки', search: 'Поиск'})[activeSection.value]} · Mecorion Books`}));
 const bookmarkedBooks = computed(() => decoratedBooks.value.filter((book) => book.reader.bookmarked));
 const libraryShelves = computed(() => [
   {title: "Читаю сейчас", count: decoratedBooks.value.filter((book) => book.reader.progress > 0).length, icon: "arrow-up-right-1"},
@@ -92,24 +116,18 @@ const libraryShelves = computed(() => [
 ]);
 
 function openLibrary(filter = "Все", format = "") {
-  activeSection.value = "library"; activeFilter.value = filter; activeFormat.value = format; activeLanguage.value = "Все языки"; searchQuery.value = "";
+  return router.push({path: '/books/library', query: {...(filter !== 'Все' ? {filter} : {}), ...(format ? {format} : {})}});
 }
-function openSearch() { activeSection.value = "search"; activeFilter.value = "Все"; activeFormat.value = ""; activeLanguage.value = "Все языки"; }
-function openShelf(shelf) { if (shelf.title === "Сохранённое") { navigate("bookmarks"); return; } openLibrary(shelf.title === "Читаю сейчас" ? "Продолжить" : shelf.title === "Сохранённое" ? "Закладки" : "Все", ["EPUB", "PDF"].includes(shelf.title) ? shelf.title : ""); }
+function openSearch() { return router.push({path: '/books/search', query: searchQuery.value ? {q: searchQuery.value} : {}}); }
+function openShelf(shelf) {
+  if (shelf.title === 'Сохранённое') return navigate('bookmarks');
+  return openLibrary(shelf.title === 'Читаю сейчас' ? 'Продолжить' : 'Все', ['EPUB', 'PDF'].includes(shelf.title) ? shelf.title : '');
+}
 function navigate(section) {
-  if (section === "library") { openLibrary(); return; }
-  activeFormat.value = "";
-  activeSection.value = section;
-  if (section === "bookmarks") {
-    activeFilter.value = "Закладки";
-  }
+  if (section === 'reader') return openReader(continueBook.value.id);
+  return router.push(section === 'home' ? '/books' : `/books/${section}`);
 }
-
-function openReader(bookId) {
-  selectedBookId.value = bookId;
-  activeSection.value = "reader";
-}
-
+function openReader(bookId) { return router.push(`/books/${encodeURIComponent(bookId)}`); }
 useContextNavigation({
   title: "Mecorion",
   subtitle: "Books",
@@ -132,14 +150,14 @@ useContextNavigation({
 
     <section class="mebook-workspace">
 
-      <main class="mebook-content">
+      <div class="mebook-content">
         <BooksHome v-if="activeSection === 'home'" v-model="searchQuery" :books="decoratedBooks" :current="continueBook" :shelves="libraryShelves" @read="openReader" @browse="openLibrary()" @search="openSearch" @shelf="openShelf" />
 
         <BooksLibrary v-else-if="activeSection === 'library'" v-model:query="searchQuery" v-model:filter="activeFilter" v-model:language="activeLanguage" v-model:format="activeFormat" :books="books" :total="decoratedBooks.length" :filters="filters" :languages="languages" @read="openReader" />
 
         <BooksBookmarks v-else-if="activeSection === 'bookmarks'" :books="bookmarkedBooks" :removed="removedBookmark" @read="openReader" @remove="removeBookmark" @undo="undoBookmark" @browse="openLibrary()" />
 
-        <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'bookmarks'">
+        <template v-else-if="activeSection === 'search'">
           <section class="mebook-page-heading">
             <p class="mebook-kicker">{{ activeSection === 'search' ? 'Поиск' : activeSection === 'bookmarks' ? 'Закладки' : 'Библиотека' }}</p>
             <h1>{{ searchQuery ? `Результаты для «${searchQuery}»` : 'Просмотр всех книг и не только' }}</h1>
@@ -204,7 +222,7 @@ useContextNavigation({
             </UiCard>
           </section>
         </template>
-      </main>
+      </div>
     </section>
   </div>
 </template>
