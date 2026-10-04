@@ -20,14 +20,14 @@ function selectedLabel(group) { return group.options.find(option => option.value
 async function showSettingsPage(key) {
   settingsPage.value = key;
   await nextTick();
-  settingsPanel.value?.querySelector("button")?.focus();
+  settingsPanel.value?.querySelector("button")?.focus({preventScroll: true});
 }
 function selectSetting(value) { emit("setting", {key: currentGroup.value.key, value}); showSettingsPage(null); }
 function menuKey(event) {
   const buttons = [...settingsPanel.value.querySelectorAll("button:not([disabled])")];
   const index = buttons.indexOf(document.activeElement);
   if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-    event.preventDefault(); buttons[(index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length]?.focus();
+    event.preventDefault(); buttons[(index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length]?.focus({preventScroll: true});
   } else if (event.key === "ArrowLeft" && currentGroup.value) { event.preventDefault(); showSettingsPage(null); }
 }
 watch(settingsOpen, () => { settingsPage.value = null; });

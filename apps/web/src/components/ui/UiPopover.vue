@@ -40,7 +40,7 @@ function open() {
 
 function close({restoreFocus = false} = {}) {
   model.value = false;
-  if (restoreFocus) anchor.value?.querySelector("button, a, input, [tabindex]")?.focus?.();
+  if (restoreFocus) anchor.value?.querySelector("button, a, input, [tabindex]")?.focus?.({preventScroll: true});
 }
 
 function toggle() {
@@ -143,7 +143,8 @@ watch(model, async (value) => {
   addListeners();
   resizeObserver = new ResizeObserver(updatePosition);
   resizeObserver.observe(content.value);
-  if (props.autoFocus) content.value.querySelector("button:not([disabled]), [tabindex]")?.focus();
+  await nextTick();
+  if (props.autoFocus) content.value.querySelector("button:not([disabled]), [tabindex]")?.focus({preventScroll: true});
 });
 
 watch(() => [props.side, props.align, props.offset, props.width, props.matchTriggerWidth, props.teleport, props.boundary], async () => {
