@@ -641,3 +641,17 @@
   .books-reader__title-link:hover { color: var(--mc-accent); text-decoration: underline; text-underline-offset: .2em; }
   .books-reader__title-link:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 4px; }
 }
+
+@layer components {
+  .books-search .music-search__results > h1, .books-search .music-search__results > p[role='status'] { margin-bottom: var(--mc-space-5); overflow-wrap: anywhere; }
+  .books-search .music-search__overview { margin-bottom: var(--mc-space-6); }
+  .books-search .music-search__best > h2, .books-search .music-search__quick > h2, .books-search .music-search__section > h2 { margin-bottom: var(--mc-space-4); }
+  .books-search__tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: visible; margin-bottom: var(--mc-space-5); }
+  .books-search__title, .books-search .music-search__quick-button { color: inherit; text-decoration: none; }
+  .books-search__title:hover { color: var(--mc-accent); text-decoration: underline; }
+  .books-search__title:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 4px; }
+  .books-search .books-library__cover { text-decoration: none; }
+  .books-search .books-library__copy h3 { font-size: var(--mc-font-lg); line-height: 1.4; }
+  .books-search .books-library__copy p { color: var(--mc-text-secondary); line-height: 1.6; }
+  .books-search .mc-button { white-space: normal; min-width: 0; max-width: 100%; line-height: 1.4 !important; overflow-wrap: anywhere; }
+}

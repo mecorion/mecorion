@@ -1,18 +1,18 @@
 <script setup>
 
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
+import BooksSearchView from "@/components/books/BooksSearchView.vue";
+import {searchBooks} from "@/components/books/search.js";
 import BooksReader from "@/components/books/BooksReader.vue";
 import BooksBookmarks from "@/components/books/BooksBookmarks.vue";
 import BooksLibrary from "@/components/books/BooksLibrary.vue";
 import BooksHome from "@/components/books/BooksHome.vue";
-import {UiButton, UiCard, UiBadge, UiProgress, UiInput, UiSelect, UiEmptyState} from "@/components/ui";
-import SvgIcon from "@/components/SvgIcon.vue";
+
+
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
   getBookServicePublications,
-  getSpaceBreadcrumb,
-  publicationTypeLabels,
 } from "@/spaces/spaces.mock.js";
 
 const route = useRoute();
@@ -48,6 +48,7 @@ const filters = ["Все", "Книги", "Сборники", "Продолжит
 const languages = ["Все языки", "Русский", "English", "Español"];
 const navigation = [
   {id: "home", icon: "home", title: "Главная", shortTitle: "Главная"},
+  {id: "search", icon: "search", title: "Поиск", shortTitle: "Поиск"},
   {id: "library", icon: "grid", title: "Библиотека", shortTitle: "Книги"},
   {id: "bookmarks", icon: "star", title: "Закладки", shortTitle: "Закладки"},
 ];
@@ -128,12 +129,33 @@ function navigate(section) {
   return router.push(section === 'home' ? '/books' : `/books/${section}`);
 }
 function openReader(bookId) { return router.push(`/books/${encodeURIComponent(bookId)}`); }
+const searchInput = ref(searchQuery.value);
+const searchTab = ref('all');
+watch(searchQuery, value => { searchInput.value = value; searchTab.value = 'all'; });
+const searchResults = computed(() => searchBooks(decoratedBooks.value, searchQuery.value));
+function runSearch(value = '') {
+  searchInput.value = value;
+  searchTab.value = 'all';
+  return router.push({path: '/books/search', query: value.trim() ? {q: value.trim()} : {}});
+}
+const searchConfig = {
+  query: searchInput,
+  suggestions: computed(() => searchBooks(decoratedBooks.value, searchInput.value).slice(0, 5).map(book => ({id: book.id, type: 'book', title: book.title, subtitle: `${book.author} · ${book.reader.format}`}))),
+  placeholder: 'Поиск по Mecorion Books',
+  icon: 'book',
+  onInput: value => { searchInput.value = value; },
+  onSubmit: runSearch,
+  onSelect: item => runSearch(item.title),
+  onClear: () => runSearch(),
+  onActivate: () => { if (activeSection.value !== 'search') runSearch(searchInput.value); },
+};
 useContextNavigation({
   title: "Mecorion",
   subtitle: "Books",
   accent: "#f2b84b",
   accentStrong: "#ffd36d",
   activeId: activeSection,
+  search: searchConfig,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Books", items: navigation.map((item) => ({...item, icon: item.icon, action: () => navigate(item.id)}))},
     {label: "Полки", items: libraryShelves.value.map((shelf) => ({
@@ -157,40 +179,7 @@ useContextNavigation({
 
         <BooksBookmarks v-else-if="activeSection === 'bookmarks'" :books="bookmarkedBooks" :removed="removedBookmark" @read="openReader" @remove="removeBookmark" @undo="undoBookmark" @browse="openLibrary()" />
 
-        <template v-else-if="activeSection === 'search'">
-          <section class="mebook-page-heading">
-            <p class="mebook-kicker">{{ activeSection === 'search' ? 'Поиск' : activeSection === 'bookmarks' ? 'Закладки' : 'Библиотека' }}</p>
-            <h1>{{ searchQuery ? `Результаты для «${searchQuery}»` : 'Просмотр всех книг и не только' }}</h1>
-            <p>Фильтруйте каталог по типу, языку, закладкам и прогрессу чтения.</p>
-          </section>
-
-          <section class="mebook-filter-panel" aria-label="Фильтры Book">
-            <div v-if="activeFormat"><UiBadge>{{ activeFormat }}</UiBadge><UiButton variant="ghost" size="sm" @click="activeFormat = ''">Все форматы</UiButton></div>
-            <UiInput v-model="searchQuery" clearable placeholder="Найти книгу" aria-label="Поиск книги"><template #prefix><SvgIcon name="search" /></template></UiInput>
-            <UiSelect v-model="activeFilter" label="Раздел" :options="filters" />
-            <UiSelect v-model="activeLanguage" label="Язык" :options="languages" />
-          </section>
-
-          <section class="mebook-card-grid">
-            <UiEmptyState v-if="!books.length" title="Книги не найдены" description="Попробуйте изменить поиск или фильтры." />
-            <UiCard raw
-              v-for="book in books"
-              :key="book.id"
-              class="mebook-card"
-              :class="`space-publication-card--${book.coverTone}`"
-            >
-              <UiBadge>{{ publicationTypeLabels[book.type] }}</UiBadge>
-              <h3>{{ book.title }}</h3>
-              <p>{{ book.subtitle }}</p>
-              <UiProgress :value="book.reader.progress" size="sm" />
-              <footer>
-                <small>{{ book.reader.language }} · {{ book.reader.format }}</small>
-                <UiButton variant="primary" type="button" @click="openReader(book.id)">Читать</UiButton>
-              </footer>
-              <UiButton variant="ghost" :to="`/space/${book.spaceId}/publication/${book.id}`">{{ getSpaceBreadcrumb(book) }}</UiButton>
-            </UiCard>
-          </section>
-        </template>
+        <BooksSearchView v-else-if="activeSection === 'search'" v-model:tab="searchTab" :query="searchQuery.trim()" :results="searchResults" @search="runSearch" @clear="runSearch()" />
 
         <BooksReader v-else :book="selectedBook" @bookmark="toggleBookmark" />
       </div>
