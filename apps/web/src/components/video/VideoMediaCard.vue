@@ -2,7 +2,7 @@
 import {videoPath} from "@/video/catalog.js";
 import {computed} from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAvatar, UiButton, UiCard, UiDropdownMenu} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiDropdownMenu} from "@/components/ui";
 import {useVideoWatchLater} from "@/video/watchLater.js";
 const watchLater = useVideoWatchLater();
 
@@ -28,6 +28,7 @@ const menuItems = computed(() => [
       <span v-else class="mevideo-media-card__visual" aria-hidden="true"><SvgIcon name="sidebar-videos" /></span>
       <span class="mevideo-media-card__play" aria-hidden="true"><SvgIcon name="play" /></span>
       <span class="mevideo-media-card__duration">{{ durationLabel }}</span>
+      <UiBadge class="mevideo-media-card__kind">{{ video.state.kind }}</UiBadge>
       <span v-if="video.state.progress > 0" class="mevideo-media-card__timeline" role="progressbar" :aria-valuenow="video.state.progress" :aria-valuemin="0" :aria-valuemax="100" aria-label="Просмотрено"><span :style="{width: `${video.state.progress}%`}"></span></span>
     </UiButton>
     <div class="mevideo-media-card__info">

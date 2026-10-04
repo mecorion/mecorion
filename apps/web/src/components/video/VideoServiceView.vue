@@ -90,13 +90,10 @@ const videoRows = computed(() => [
 const videos = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
   let items = decoratedVideos.value;
+  if (activeSection.value === "watchLater") return items.filter(item => watchLater.isSaved(item));
 
   if (activeFilter.value === "Продолжить") {
     items = items.filter((item) => item.state.progress > 0);
-  }
-
-  if (activeSection.value === "watchLater") {
-    items = items.filter((item) => watchLater.isSaved(item));
   }
 
   if (activeCategory.value !== "Все") {
@@ -236,7 +233,7 @@ function episodePath(season, episode) {
             <p>Фильмы, сериалы и истории для вашего следующего вечера.</p>
           </section>
 
-          <section class="mevideo-library-toolbar" aria-label="Фильтры медиатеки">
+          <section v-if="activeSection === 'library'" class="mevideo-library-toolbar" aria-label="Фильтры медиатеки">
             <div class="mevideo-library-toolbar__filters">
               <UiSelect v-model="activeCategory" label="Категория" :options="categories" />
               <UiSelect v-model="activeFilter" label="Просмотр" :options="filters" />
@@ -250,7 +247,7 @@ function episodePath(season, episode) {
 
           <section class="mevideo-media-grid" aria-label="Каталог Video">
             <VideoMediaCard v-for="video in videos" :key="video.id" :video="video" />
-            <UiEmptyState v-if="!videos.length" title="Видео не найдены" description="Попробуйте изменить фильтры." />
+            <UiEmptyState v-if="!videos.length" :title="activeSection === 'watchLater' ? 'Пока нет сохранённых видео' : 'Видео не найдены'" :description="activeSection === 'watchLater' ? 'Добавляйте видео в «Смотреть позже» из плеера или меню карточки.' : 'Попробуйте изменить фильтры.'" />
           </section>
         </template>
 

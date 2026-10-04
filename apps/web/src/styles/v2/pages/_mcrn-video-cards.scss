@@ -87,6 +87,18 @@
     background: var(--mc-accent);
     color: var(--mc-accent-contrast);
   }
+  .mevideo-media-card__kind {
+    position: absolute;
+    top: var(--mc-space-2);
+    right: var(--mc-space-2);
+    z-index: 1;
+    max-width: calc(100% - var(--mc-space-2) * 2);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+    background: var(--mc-surface-deep);
+    color: var(--mc-text-primary);
+  }
   .mevideo-media-card__duration {
     position: absolute;
     bottom: var(--mc-space-3);
