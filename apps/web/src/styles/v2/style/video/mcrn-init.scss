@@ -747,7 +747,10 @@
 }
 
 @layer components {
-  .mevideo-content .mevideo-library-heading { margin-top: var(--mc-space-5); }
+  .mevideo-content .mevideo-library-heading {
+    margin-top: var(--mc-space-5);
+    margin-bottom: var(--mc-space-6);
+  }
   .mevideo-content .mevideo-library-heading h1 {
     margin: var(--mc-space-2) 0 !important;
     font-size: clamp(var(--mc-font-title-3), 3vw, var(--mcrn-font-size-32px));
