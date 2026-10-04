@@ -637,5 +637,5 @@
   .books-reader__summary h2 { font-size: var(--mc-font-lg); line-height: 1.4; }
   .books-reader__summary p { color: var(--mc-text-secondary); font-size: var(--mc-font-sm); }
   .books-reader__position { display: grid; gap: var(--mc-space-3); min-width: 0; }
-  .books-reader__position .mc-button { justify-self: start; padding-inline: 0; }
+  .books-reader__position .mc-button { justify-self: start; }
 }
