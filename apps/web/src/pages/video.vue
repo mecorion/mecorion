@@ -193,13 +193,6 @@ const currentEpisode = computed(() => {
   const episodes = currentSeason.value?.episodes ?? [];
   return episodes.find((episode) => episode.id === selectedEpisodeId.value) ?? episodes[0] ?? null;
 });
-const savedVideos = computed(() => decoratedVideos.value.filter((video) => video.state.saved));
-const collections = computed(() => [
-  {title: "Продолжить", count: decoratedVideos.value.filter((video) => video.state.progress > 0).length, icon: "arrow-up-right-1"},
-  {title: "Смотреть позже", count: savedVideos.value.length, icon: "star"},
-  {title: "4K / 2K", count: decoratedVideos.value.filter((video) => video.video?.quality?.some((quality) => ["2160p", "1440p"].includes(quality))).length, icon: "play"},
-  {title: "С субтитрами", count: decoratedVideos.value.filter((video) => video.video?.subtitles?.length).length, icon: "list-music"},
-]);
 
 function navigate(section) {
   activeSection.value = section;
@@ -217,17 +210,6 @@ useContextNavigation({
   activeId: activeSection,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Video", items: navigation.map((item) => ({...item, action: () => navigate(item.id)}))},
-    {label: "Категории", items: categories.map((category) => ({
-      title: category,
-      icon: category === "Все" ? "grid" : "play",
-      active: activeSection.value === "library" && activeCategory.value === category,
-      action: () => { activeCategory.value = category; navigate("library"); },
-    }))},
-    {label: "Коллекции", items: collections.value.map((collection) => ({
-      title: `${collection.title} · ${collection.count}`,
-      icon: collection.icon,
-      action: () => navigate("library"),
-    }))},
   ]),
 });
 
