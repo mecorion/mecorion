@@ -24,7 +24,7 @@ const visible = computed(() => tab.value === 'all' ? props.results : props.resul
           <section class="music-search__best"><h2>Лучший результат</h2><BookSearchCard :book="results[0]" /></section>
           <section v-if="results.length > 1" class="music-search__quick"><h2>Быстрые результаты</h2><UiCard v-for="book in results.slice(1, 5)" :key="book.id" raw unstyled class="music-search__quick-card"><UiButton unstyled class="music-search__quick-button" :to="`/books/${book.id}`"><SvgIcon name="book" /><span><strong>{{ book.title }}</strong><small>{{ book.author }} · {{ book.reader.format }}</small></span><SvgIcon name="chevron-right" /></UiButton></UiCard></section>
         </div>
-        <section class="music-search__section"><h2>{{ tabs.find(item => item.value === tab)?.label === 'Все' ? 'Все книги' : tabs.find(item => item.value === tab)?.label }}</h2><div class="books-library__grid"><BookSearchCard v-for="book in visible" :key="book.id" :book="book" /></div></section>
+        <section v-if="tab !== 'all' || visible.length > 1" class="music-search__section"><h2>{{ tabs.find(item => item.value === tab)?.label === 'Все' ? 'Все книги' : tabs.find(item => item.value === tab)?.label }}</h2><div class="books-search__grid"><BookSearchCard v-for="book in visible" :key="book.id" :book="book" /></div></section>
       </template>
     </div>
   </section>

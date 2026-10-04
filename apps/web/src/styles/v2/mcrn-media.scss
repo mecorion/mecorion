@@ -2570,3 +2570,16 @@
 @media (max-width: 280px) {
   .books-search__tabs { grid-template-columns: minmax(0, 1fr); }
 }
+
+@media (max-width: 1100px) {
+  .books-search__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .books-search-card.ui-card { grid-template-columns: 64px minmax(0, 1fr); padding: var(--mc-space-4); gap: var(--mc-space-3); }
+  .books-search-card__cover { min-height: 100px; }
+}
+@media (max-width: 320px) {
+  .books-search-card.ui-card { grid-template-columns: minmax(0, 1fr); }
+  .books-search-card__cover { width: 64px; }
+  .books-search__tabs .ui-tabs__trigger { flex: 1 1 auto; max-width: 100%; }
+}
