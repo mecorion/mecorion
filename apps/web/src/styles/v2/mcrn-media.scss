@@ -2293,9 +2293,9 @@
   .mevideo-media-card__watch { flex-direction: column; padding: var(--mc-space-2); line-height: 1.4 !important; }
 }
 
-@media (max-width: 900px) {
+@container video-content (max-width: 900px) {
   .mevideo-cinema-hero { grid-template-columns: minmax(0, 1fr); }
-  .mevideo-cinema-hero h1 { max-width: 24ch; font-size: clamp(var(--mc-font-title-2), 5vw, var(--mc-font-display)); }
+  .mevideo-cinema-hero h1 { max-width: 24ch; font-size: clamp(var(--mc-font-title-2), 4cqw, var(--mc-font-title-1)); }
   .mevideo-cinema-hero__visual { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
 }
 @media (max-width: 480px) {
@@ -2361,4 +2361,91 @@
   .mevideo-watch-view__actions { flex-direction: column; width: 100%; }
   .mevideo-watch-view__actions .mc-button { flex-wrap: wrap; padding-inline: var(--mc-space-2); }
   .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+}
+
+@container (max-width: 280px) {
+  .mevideo-player-menu__row { grid-template-columns: var(--mc-space-5) minmax(0, 1fr) var(--mc-space-5); gap: var(--mc-space-2); padding: var(--mc-space-3) var(--mc-space-2); }
+  .mevideo-player-menu__row .mevideo-player-menu__value { grid-column: 2; grid-row: 2; text-align: left; }
+  .mevideo-player-menu__row > .svg-icon:last-child { grid-column: 3; grid-row: 1 / 3; }
+  .mevideo-player-menu__option, .mevideo-player-menu__back { padding-inline: var(--mc-space-2); gap: var(--mc-space-2); }
+}
+
+// Video: compact workspace header with every action available on small screens.
+@media (max-width: 600px) {
+  .dashboard-shell--video .dashboard-topbar {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: var(--mc-space-2);
+    padding: var(--mc-space-3);
+    align-items: center;
+  }
+  .dashboard-shell--video .dashboard-menu-button { grid-column: 1; grid-row: 1; }
+  .dashboard-shell--video .dashboard-topbar__account {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--mc-space-1);
+    min-width: 0;
+  }
+  .dashboard-shell--video .dashboard-topbar .mcrn-icon-button,
+  .dashboard-shell--video .dashboard-topbar .mcrn-user-chip {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+  .dashboard-shell--video .mcrn-user-chip__content { display: none; }
+  .dashboard-shell--video .dashboard-topbar > .mc-field { grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; }
+  .dashboard-shell--video .dashboard-topbar > .mc-field kbd { display: none; }
+}
+@media (max-width: 300px) {
+  .dashboard-shell--video .dashboard-topbar { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-shell--video .dashboard-topbar__account { grid-column: 1; grid-row: 2; justify-self: stretch; flex-wrap: wrap; justify-content: space-between; }
+  .dashboard-shell--video .dashboard-topbar > .mc-field { grid-row: 3; }
+}
+
+@container video-content (max-width: 600px) {
+  .mevideo-cinema-hero { grid-template-columns: minmax(0, 1fr); padding: var(--mc-space-4); gap: var(--mc-space-4); }
+  .mevideo-cinema-hero__copy { gap: var(--mc-space-3); }
+  .mevideo-cinema-hero__visual { grid-template-columns: minmax(0, 1fr); gap: var(--mc-space-3); }
+  .mevideo-cinema-hero__description { font-size: var(--mc-font-sm); }
+  .mevideo-cinema-hero__meta { font-size: var(--mc-font-xs); gap: var(--mc-space-2); }
+  .mevideo-cinema-hero__frame { aspect-ratio: 16 / 9; }
+  .mevideo-cinema-hero__actions { gap: var(--mc-space-2); }
+  .mevideo-cinema-hero__actions .mc-button { flex: 1 1 100%; min-width: 0; }
+  .mevideo-shelf { margin-top: var(--mc-space-6); }
+  .mevideo-shelf__heading { gap: var(--mc-space-2); }
+  .mevideo-shelf__heading h2 { flex-basis: 100%; }
+  .mevideo-shelf__actions { width: 100%; justify-content: space-between; }
+  .mevideo-shelf__actions > .mc-button:last-child { margin-left: auto; }
+  .mevideo-shelf__controls .mc-button { width: 44px; height: 44px; min-width: 44px; }
+  .mevideo-library-toolbar { margin-block: var(--mc-space-4); padding-block: var(--mc-space-3); }
+  .mevideo-library-toolbar__filters { grid-template-columns: minmax(0, 1fr); gap: var(--mc-space-3); }
+  .mevideo-library-toolbar__summary { margin-top: var(--mc-space-3); }
+  .mevideo-watch-view__actions { width: 100%; }
+  .mevideo-watch-view__actions .mc-button { flex: 1 1 140px; min-width: 0; white-space: normal; }
+  .mevideo-watch-view__meta { gap: var(--mc-space-3); }
+  .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr) auto; min-height: 64px; }
+  .mevideo-season-tabs button { min-height: 44px; }
+}
+@container video-content (max-width: 360px) {
+  .mevideo-cinema-hero { padding: var(--mc-space-3); }
+  .mevideo-cinema-hero__frame-label { top: var(--mc-space-2); left: var(--mc-space-2); letter-spacing: .02em; }
+  .mevideo-cinema-hero__frame-quality { bottom: var(--mc-space-2); right: var(--mc-space-2); }
+  .mevideo-watch-view__actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--mc-space-2); }
+  .mevideo-player__bar { row-gap: var(--mc-space-1); }
+  .mevideo-player__transport, .mevideo-player__tools { width: 100%; justify-content: space-between; }
+}
+@container (max-width: 360px) {
+  .mevideo-player-menu__row { grid-template-columns: var(--mc-space-5) minmax(0, 1fr) var(--mc-space-5); gap: var(--mc-space-2); }
+  .mevideo-player-menu__row .mevideo-player-menu__value { grid-column: 2; grid-row: 2; text-align: left; }
+  .mevideo-player-menu__row > .svg-icon:last-child { grid-column: 3; grid-row: 1 / 3; }
+}
+@container video-content (max-width: 280px) {
+  .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-player__transport, .mevideo-player__tools { justify-content: center; }
 }

@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="mecorion-workspace mcrn-shell dashboard-shell"
-    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed}"
+    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed, 'dashboard-shell--video': route.path === '/video'}"
     :style="workspaceAccentStyle"
   >
     <UiButton unstyled
@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
           <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Переключить тему" @click="app.toggleTheme">
             <SvgIcon name="moon" />
           </UiButton>
-          <NuxtLink class="mcrn-user-chip dashboard-user-chip" to="/profile">
+          <NuxtLink class="mcrn-user-chip dashboard-user-chip" to="/profile" :aria-label="`Профиль: ${currentUser.name}`" :title="currentUser.name">
             <span class="mcrn-user-chip__avatar">{{ currentUser.initials }}</span>
             <span class="mcrn-user-chip__content">
               <strong>{{ currentUser.name }}</strong>

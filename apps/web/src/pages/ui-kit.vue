@@ -74,7 +74,7 @@ const categories = [
   {value: "item", label: "Item", count: 14},
   {value: "drawer", label: "Drawer", count: 10},
   {value: "dialog", label: "Dialog", count: 6},
-  {value: "popover", label: "Popover", count: 10},
+  {value: "popover", label: "Popover", count: 11},
   {value: "dropdown-menu", label: "Dropdown Menu", count: 9},
   {value: "tooltip", label: "Tooltip", count: 8},
   {value: "field", label: "Field", count: 10},
@@ -458,6 +458,13 @@ function showPromiseToast() {
           </UiCard>
         </section>
         <section v-else-if="activeCategory === 'popover'" class="uikit-demo-grid">
+          <UiCard>
+            <template #header><h3 class="mc-title-3">Inline / Fullscreen</h3></template>
+            <UiPopover :teleport="false" panel-class="uikit-inline-popover" title="Встроенное меню" width="min(280px, calc(100vw - 16px))">
+              <template #trigger="{toggle, isOpen}"><UiButton variant="outline" :aria-expanded="isOpen" @click="toggle">Открыть внутри контейнера</UiButton></template>
+              <p>teleport=false сохраняет меню внутри родителя, включая fullscreen. boundary ограничивает его границами контейнера; panelClass задаёт оформление. Размер и положение обновляются при изменении содержимого.</p>
+            </UiPopover>
+          </UiCard>
           <UiCard>
             <template #header><h3 class="mc-title-3">Basic</h3></template>
             <UiPopover title="Настройки пространства" description="Управляйте отображением и доступом.">

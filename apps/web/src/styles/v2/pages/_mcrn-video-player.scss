@@ -83,3 +83,43 @@
   .mevideo-player-settings > * { min-width: 0; }
   .mevideo-player-settings p { margin: 0; font-size: var(--mc-font-sm); color: var(--mc-text-muted); overflow-wrap: anywhere; }
 }
+
+@layer components {
+  .mevideo-player { container-type: inline-size; }
+  .mevideo-player-menu.ui-popover {
+    z-index: 10;
+    background: rgb(18 17 22 / 94%);
+    color: #f5f3ff;
+    border-color: rgb(255 255 255 / 12%);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 var(--mc-space-2) var(--mc-space-6) rgb(0 0 0 / 35%);
+    overscroll-behavior: contain;
+  }
+  .mevideo-player-menu .ui-popover__header { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+  .mevideo-player-menu .ui-popover__content { padding: var(--mc-space-2) 0; }
+  .mevideo-player-menu__row, .mevideo-player-menu__option, .mevideo-player-menu__back {
+    display: grid;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    gap: var(--mc-space-3);
+    padding: var(--mc-space-3) var(--mc-space-4);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: var(--mc-font-sm);
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+  }
+  .mevideo-player-menu__row { grid-template-columns: var(--mc-space-5) minmax(0, 1fr) minmax(0, 1fr) var(--mc-space-5); }
+  .mevideo-player-menu__row > span { min-width: 0; overflow-wrap: anywhere; }
+  .mevideo-player-menu__value { color: #bcb8cb; text-align: right; font-size: var(--mc-font-xs); }
+  .mevideo-player-menu__option, .mevideo-player-menu__back { grid-template-columns: var(--mc-space-5) minmax(0, 1fr); }
+  .mevideo-player-menu__option > span, .mevideo-player-menu__back > span { overflow-wrap: anywhere; }
+  .mevideo-player-menu__back { border-bottom: 1px solid rgb(255 255 255 / 12%); margin-bottom: var(--mc-space-2); }
+  .mevideo-player-menu__back .svg-icon { transform: rotate(180deg); }
+  .mevideo-player-menu button:hover:not(:disabled), .mevideo-player-menu button:focus-visible { background: rgb(255 255 255 / 10%); }
+  .mevideo-player-menu button:disabled { opacity: .4; cursor: default; }
+}

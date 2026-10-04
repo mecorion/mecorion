@@ -5,7 +5,7 @@ import VideoPlayer from "@/components/video/VideoPlayer.vue";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import {UiAvatar, UiBadge, UiButton, UiCard, UiDrawer, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
+import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
 import {
@@ -37,7 +37,6 @@ const qualities = ["Любое качество", "2160p", "1440p", "1080p", "72
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
 
 const playbackSettings = ref({});
-const settingsOpen = ref(false);
 const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id).slice(0, 3));
 function toggleSaved() { savedOverrides.value[selectedVideo.value.id] = !isSelectedSaved.value; }
 const isSelectedSaved = computed(() => savedOverrides.value[selectedVideo.value.id] ?? selectedVideo.value.state.saved);
@@ -338,7 +337,7 @@ function chooseSeason(seasonNumber) {
         <template v-else>
           <section class="mevideo-watch-view">
             <div class="mevideo-watch-view__main">
-              <VideoPlayer :key="`${selectedVideo.id}-${currentEpisode?.id ?? ''}`" :video="selectedVideo" :speed="playbackSettings[selectedVideo.id]?.speed ?? 1" @settings="settingsOpen = true" />
+              <VideoPlayer :key="`${selectedVideo.id}-${currentEpisode?.id ?? ''}`" :video="selectedVideo" :settings="playbackSettings[selectedVideo.id] ?? {}" @setting="updatePlaybackSetting($event.key, $event.value)" />
               <div class="mevideo-watch-view__meta">
                 <div class="mevideo-watch-view__eyebrow"><UiBadge variant="accent">{{ selectedVideo.state.kind }}</UiBadge><span>{{ selectedVideo.duration }}</span><span>{{ selectedVideo.publishedLabel }}</span></div>
                 <h1>{{ selectedVideo.title }}</h1>
@@ -388,15 +387,6 @@ function chooseSeason(seasonNumber) {
               </div>
             </aside>
           </section>
-          <UiDrawer v-model="settingsOpen" side="right" size="min(380px, 100vw)" title="Настройки просмотра" description="Параметры видео и воспроизведения">
-            <div class="mevideo-player-settings">
-              <UiSelect label="Скорость" :model-value="playbackSettings[selectedVideo.id]?.speed ?? 1" :options="[{label: '0.5×', value: 0.5}, {label: '0.75×', value: 0.75}, {label: 'Обычная', value: 1}, {label: '1.25×', value: 1.25}, {label: '1.5×', value: 1.5}, {label: '2×', value: 2}]" @update:model-value="updatePlaybackSetting('speed', $event)" />
-              <UiSelect label="Качество" :model-value="playbackSettings[selectedVideo.id]?.quality ?? selectedVideo.state.quality" :options="selectedVideo.video?.quality ?? []" @update:model-value="updatePlaybackSetting('quality', $event)" />
-              <UiSelect label="Субтитры" :model-value="playbackSettings[selectedVideo.id]?.subtitles ?? selectedVideo.state.subtitles" :options="selectedVideo.video?.subtitles ?? []" @update:model-value="updatePlaybackSetting('subtitles', $event)" />
-              <UiSelect label="Озвучка" :model-value="playbackSettings[selectedVideo.id]?.voice ?? selectedVideo.state.voice" :options="selectedVideo.video?.voice ?? []" @update:model-value="updatePlaybackSetting('voice', $event)" />
-              <p>Качество, субтитры и озвучка станут доступны после подключения видеодорожек.</p>
-            </div>
-          </UiDrawer>
         </template>
       </main>
     </section>
