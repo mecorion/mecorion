@@ -5,7 +5,7 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import VideoMediaCard from "./VideoMediaCard.vue";
 
 const props = defineProps({row: {type: Object, required: true}});
-const emit = defineEmits(["watch", "browse"]);
+const emit = defineEmits(["browse"]);
 const viewport = ref(null);
 const width = ref(0);
 const gap = ref(20);
@@ -65,7 +65,7 @@ onBeforeUnmount(() => { observer?.disconnect(); clearTimeout(clickTimer); });
     </div>
     <div :id="`video-shelf-${row.id}`" ref="viewport" class="mevideo-shelf__viewport" aria-live="polite" @touchstart.passive="startSwipe" @touchend.passive="endSwipe" @touchcancel="swipeStart = null" @click.capture="preventSwipeClick">
       <div class="mevideo-shelf__track" :style="trackStyle">
-        <VideoMediaCard v-for="(video, index) in row.items" :key="video.id" :video="video" :inert="index < position || index >= position + columns" :aria-hidden="index < position || index >= position + columns" @watch="emit('watch', $event)" />
+        <VideoMediaCard v-for="(video, index) in row.items" :key="video.id" :video="video" :inert="index < position || index >= position + columns" :aria-hidden="index < position || index >= position + columns" />
       </div>
     </div>
   </section>

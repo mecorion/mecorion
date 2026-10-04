@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="mecorion-workspace mcrn-shell dashboard-shell"
-    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed, 'dashboard-shell--video': route.path === '/video', 'dashboard-shell--music': route.path === '/music' || route.path.startsWith('/music/')}"
+    :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed, 'dashboard-shell--video': route.path === '/video' || route.path.startsWith('/video/'), 'dashboard-shell--music': route.path === '/music' || route.path.startsWith('/music/')}"
     :style="workspaceAccentStyle"
   >
     <UiButton unstyled

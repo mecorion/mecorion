@@ -368,8 +368,8 @@
   }
   .mevideo-app .ui-progress { min-width: 0; --mc-accent: var(--mc-info); }
   .mevideo-episode-progress { grid-column: 1 / -1; }
-  .mevideo-app button .svg-icon { width: var(--mc-space-5); height: var(--mc-space-5); flex-shrink: 0; }
-  .mevideo-app button:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 2px; }
+  .mevideo-app :is(button, a) .svg-icon { width: var(--mc-space-5); height: var(--mc-space-5); flex-shrink: 0; }
+  .mevideo-app :is(button, a):focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 2px; }
   .mevideo-collection-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -383,7 +383,7 @@
     margin-top: var(--mcrn-space-24px);
     padding-bottom: var(--mcrn-space-4px);
   }
-  .mevideo-channel-strip button {
+  .mevideo-channel-strip :is(button, a) {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
@@ -397,8 +397,8 @@
     font-weight: 500;
     cursor: pointer;
   }
-  .mevideo-channel-strip button.is-active,
-  .mevideo-channel-strip button:hover {
+  .mevideo-channel-strip :is(button, a).is-active,
+  .mevideo-channel-strip :is(button, a):hover {
     border-color: transparent;
     background: var(--mc-info);
     color: var(--mcrn-mevideo-hero__player-color);
@@ -682,7 +682,7 @@
     gap: var(--mcrn-space-8px);
     overflow-x: auto;
   }
-  .mevideo-season-tabs button {
+  .mevideo-season-tabs :is(button, a) {
     flex: 0 0 auto;
     min-height: var(--mcrn-size-34px);
     border: 1px solid var(--mc-border-soft);
@@ -692,7 +692,7 @@
     color: var(--mc-text-secondary);
     cursor: pointer;
   }
-  .mevideo-season-tabs button.is-active {
+  .mevideo-season-tabs :is(button, a).is-active {
     border-color: transparent;
     background: var(--mc-info);
     color: var(--mcrn-mevideo-hero__player-color);
@@ -701,7 +701,7 @@
     display: grid;
     gap: var(--mcrn-space-8px);
   }
-  .mevideo-episode-list button {
+  .mevideo-episode-list :is(button, a) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--mcrn-space-7px-10px);
@@ -713,11 +713,11 @@
     text-align: left;
     cursor: pointer;
   }
-  .mevideo-episode-list button.is-active,
-  .mevideo-episode-list button:hover {
+  .mevideo-episode-list :is(button, a).is-active,
+  .mevideo-episode-list :is(button, a):hover {
     border-color: var(--mcrn-mevideo-episode-list-border-color);
   }
-  .mevideo-episode-list button > span {
+  .mevideo-episode-list :is(button, a) > span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

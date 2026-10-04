@@ -2271,17 +2271,17 @@
     flex-wrap: wrap;
     overflow: visible;
   }
-  .mevideo-app button {
+  .mevideo-app :is(button, a) {
     min-width: 0;
     max-width: 100%;
     min-height: 44px;
     white-space: normal;
     overflow-wrap: anywhere;
   }
-  .mevideo-channel-strip button, .mevideo-filter-row button, .mevideo-season-tabs button {
+  .mevideo-channel-strip :is(button, a), .mevideo-filter-row button, .mevideo-season-tabs :is(button, a) {
     flex-shrink: 1;
   }
-  .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-episode-list :is(button, a) { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 360px) {
@@ -2360,7 +2360,7 @@
   .mevideo-watch-view__author { flex-wrap: wrap; }
   .mevideo-watch-view__actions { flex-direction: column; width: 100%; }
   .mevideo-watch-view__actions .mc-button { flex-wrap: wrap; padding-inline: var(--mc-space-2); }
-  .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) { grid-template-columns: minmax(0, 1fr); }
 }
 
 @container (max-width: 280px) {
@@ -2430,8 +2430,8 @@
   .mevideo-watch-view__actions { width: 100%; }
   .mevideo-watch-view__actions .mc-button { flex: 1 1 140px; min-width: 0; white-space: normal; }
   .mevideo-watch-view__meta { gap: var(--mc-space-3); }
-  .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr) auto; min-height: 64px; }
-  .mevideo-season-tabs button { min-height: 44px; }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) { grid-template-columns: minmax(0, 1fr) auto; min-height: 64px; }
+  .mevideo-season-tabs :is(button, a) { min-height: 44px; }
 }
 @container video-content (max-width: 360px) {
   .mevideo-cinema-hero { padding: var(--mc-space-3); }
@@ -2447,6 +2447,6 @@
   .mevideo-player-menu__row > .svg-icon:last-child { grid-column: 3; grid-row: 1 / 3; }
 }
 @container video-content (max-width: 280px) {
-  .mevideo-watch-view__aside .mevideo-episode-list button { grid-template-columns: minmax(0, 1fr); }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) { grid-template-columns: minmax(0, 1fr); }
   .mevideo-player__transport, .mevideo-player__tools { justify-content: center; }
 }

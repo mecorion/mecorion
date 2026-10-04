@@ -1,6 +1,7 @@
 <script setup>
-definePageMeta({workspace: true, requiresAuth: true});
-import {computed, ref} from "vue";
+import {computed} from "vue";
+import {useRoute, useRouter, useState} from "#app";
+import {videoCatalog, videoPath} from "@/video/catalog.js";
 import VideoPlayer from "@/components/video/VideoPlayer.vue";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
@@ -8,137 +9,45 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiProgress, UiSelect} from "@/components/ui";
 
 import {useContextNavigation} from "@/navigation/contextNavigation.js";
-import {
-  getVideoServicePublications,
-} from "@/spaces/spaces.mock.js";
-
-const activeSection = ref("home");
-const activeFilter = ref("Все");
-const activeQuality = ref("Любое качество");
-const activeCategory = ref("Все");
-const searchQuery = ref("");
-const selectedVideoId = ref(null);
-const selectedSeason = ref(1);
-const selectedEpisodeId = ref(null);
+const route = useRoute();
+const router = useRouter();
+const activeSection = computed(() => {
+  const path = route.path.replace(/\/$/, "");
+  return path === "/video" ? "home" : path === "/video/library" ? "library" : "watch";
+});
+function queryFilter(key, fallback, values) {
+  return computed({
+    get: () => values.includes(route.query[key]) ? route.query[key] : fallback,
+    set: value => router.push({path: "/video/library", query: {...route.query, [key]: value === fallback ? undefined : value}}),
+  });
+}
+const activeFilter = queryFilter("filter", "Все", ["Все", "Продолжить", "Позже"]);
+const activeQuality = queryFilter("quality", "Любое качество", ["Любое качество", "2160p", "1440p", "1080p", "720p"]);
+const activeCategory = queryFilter("category", "Все", ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"]);
+const searchQuery = computed(() => typeof route.query.q === "string" ? route.query.q : "");
+const selectedVideoId = computed(() => route.params.id);
+const selectedSeason = computed(() => Number(route.query.season ?? 1));
+const selectedEpisodeId = computed(() => route.query.episode);
 
 const navigation = [
-  {id: "home", icon: "home", title: "Главная", shortTitle: "Главная"},
-  {id: "library", icon: "grid", title: "Медиатека", shortTitle: "Видео"},
+  {id: "home", route: "/video", icon: "home", title: "Главная", shortTitle: "Главная"},
+  {id: "library", route: "/video/library", icon: "grid", title: "Медиатека", shortTitle: "Видео"},
 ];
 
 const filters = [{value: "Все", label: "Все видео"}, {value: "Продолжить", label: "Продолжить просмотр"}, {value: "Позже", label: "Смотреть позже"}];
 const hasFilters = computed(() => activeCategory.value !== "Все" || activeFilter.value !== "Все" || activeQuality.value !== "Любое качество");
-function resetFilters() {
-  activeCategory.value = "Все";
-  activeFilter.value = "Все";
-  activeQuality.value = "Любое качество";
-}
+function resetFilters() { return router.push({path: "/video/library", query: searchQuery.value ? {q: searchQuery.value} : {}}); }
+
 const qualities = ["Любое качество", "2160p", "1440p", "1080p", "720p"];
 const categories = ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"];
 
-const playbackSettings = ref({});
+const playbackSettings = useState("video-playback-settings", () => ({}));
 const recommendedVideos = computed(() => decoratedVideos.value.filter(video => video.id !== selectedVideo.value.id).slice(0, 3));
 function toggleSaved() { savedOverrides.value[selectedVideo.value.id] = !isSelectedSaved.value; }
 const isSelectedSaved = computed(() => savedOverrides.value[selectedVideo.value.id] ?? selectedVideo.value.state.saved);
 
-const savedOverrides = ref({});
-const videoStateById = {
-  "director-a-scenes": {progress: 42, watchedMinutes: 18, totalMinutes: 42, saved: true, kind: "Фильм", quality: "2160p", voice: "Оригинал", subtitles: "Русские"},
-  "universe-a-order": {progress: 12, watchedMinutes: 4, totalMinutes: 28, saved: false, kind: "Подборка", quality: "1080p", voice: "Дубляж", subtitles: "English"},
-};
-
-const fallbackVideos = [
-  {
-    id: "video-series-01",
-    type: "video",
-    title: "Сериал: пилотный выпуск",
-    subtitle: "Первый эпизод подборки с настройками качества",
-    author: "Редакция Mecorion",
-    duration: "52 мин",
-    coverTone: "cyan",
-    spaceId: "series",
-    video: {quality: ["1080p", "720p"], subtitles: ["Русские", "Без субтитров"], voice: ["Оригинал", "Дубляж"]},
-    seasons: [
-      {
-        number: 1,
-        title: "Сезон 1",
-        episodes: [
-          {id: "video-series-01-s1-e1", title: "Эпизод 1", duration: "52 мин", progress: 36},
-          {id: "video-series-01-s1-e2", title: "Эпизод 2", duration: "48 мин", progress: 0},
-          {id: "video-series-01-s1-e3", title: "Эпизод 3", duration: "51 мин", progress: 0},
-        ],
-      },
-      {
-        number: 2,
-        title: "Сезон 2",
-        episodes: [
-          {id: "video-series-01-s2-e1", title: "Эпизод 1", duration: "50 мин", progress: 0},
-          {id: "video-series-01-s2-e2", title: "Эпизод 2", duration: "47 мин", progress: 0},
-        ],
-      },
-    ],
-  },
-  {
-    id: "video-doc-01",
-    type: "video",
-    title: "Документальный выпуск",
-    subtitle: "Спокойный длинный формат для вечернего просмотра",
-    author: "Редакция Mecorion",
-    duration: "1 ч 08 мин",
-    coverTone: "blue",
-    spaceId: "films",
-    video: {quality: ["1440p", "1080p", "720p"], subtitles: ["Русские", "English"], voice: ["Оригинал"]},
-  },
-  {
-    id: "video-drama-01",
-    type: "video",
-    title: "Дорама: тихий город",
-    subtitle: "Мягкая история с сезонами, сериями и выбором озвучки",
-    author: "Редакция Mecorion",
-    duration: "46 мин",
-    coverTone: "rose",
-    spaceId: "series",
-    video: {quality: ["1080p", "720p"], subtitles: ["Русские", "English"], voice: ["Оригинал", "Дубляж"]},
-    seasons: [
-      {
-        number: 1,
-        title: "Сезон 1",
-        episodes: [
-          {id: "video-drama-01-s1-e1", title: "Эпизод 1", duration: "46 мин", progress: 0},
-          {id: "video-drama-01-s1-e2", title: "Эпизод 2", duration: "44 мин", progress: 0},
-          {id: "video-drama-01-s1-e3", title: "Эпизод 3", duration: "47 мин", progress: 0},
-        ],
-      },
-    ],
-  },
-  {
-    id: "video-animation-01",
-    type: "video",
-    title: "Анимационный выпуск",
-    subtitle: "Короткий семейный формат для вечернего просмотра",
-    author: "Редакция Mecorion",
-    duration: "24 мин",
-    coverTone: "green",
-    spaceId: "anime",
-    video: {quality: ["1080p", "720p"], subtitles: ["Русские"], voice: ["Дубляж"]},
-  },
-];
-
-const decoratedVideos = computed(() => [...getVideoServicePublications(), ...fallbackVideos].map((video, index) => ({
-  ...video,
-  views: video.views ?? [128400, 46700, 23100, 89500, 15200, 6400][index],
-  publishedLabel: video.publishedLabel ?? ["4 дня назад", "неделю назад", "2 дня назад", "3 недели назад", "5 дней назад", "вчера"][index],
-  state: videoStateById[video.id] ?? {
-    progress: index % 2 ? 0 : 7,
-    watchedMinutes: index % 2 ? 0 : 5,
-    totalMinutes: Number.parseInt(video.duration, 10) || 45,
-    saved: index % 2 === 0,
-    kind: video.id.includes("drama") ? "Дорама" : video.id.includes("animation") ? "Мультфильм" : video.id.includes("doc") ? "Документальное" : video.seasons?.length ? "Сериал" : "Фильм",
-    quality: video.video?.quality?.[0] ?? "1080p",
-    voice: video.video?.voice?.[0] ?? "Оригинал",
-    subtitles: video.video?.subtitles?.[0] ?? "Русские",
-  },
-})));
+const savedOverrides = useState("video-saved-overrides", () => ({}));
+const decoratedVideos = computed(() => videoCatalog);
 
 const heroVideo = computed(() => continueVideo.value);
 const seriesVideos = computed(() => decoratedVideos.value.filter((video) => video.seasons?.length || video.state.kind === "Сериал"));
@@ -197,12 +106,6 @@ const currentEpisode = computed(() => {
   return episodes.find((episode) => episode.id === selectedEpisodeId.value) ?? episodes[0] ?? null;
 });
 
-function navigate(section) {
-  activeSection.value = section;
-  if (section === "watchLater") {
-    activeFilter.value = "Позже";
-  }
-}
 
 useContextNavigation({
   title: "Mecorion",
@@ -212,49 +115,18 @@ useContextNavigation({
   accentContrast: "#ffffff",
   activeId: activeSection,
   groups: computed(() => [
-    {label: null, navLabel: "Разделы Video", items: navigation.map((item) => ({...item, action: () => navigate(item.id)}))},
+    {label: null, navLabel: "Разделы Video", items: navigation},
   ]),
 });
 
-function openWatch(videoId) {
-  selectedVideoId.value = videoId;
-  selectedSeason.value = 1;
-  selectedEpisodeId.value = null;
-  activeSection.value = "watch";
-}
-
 function openRow(row) {
-  activeSection.value = "library";
-  activeFilter.value = "Все";
-  activeQuality.value = "Любое качество";
-
-  if (row.id === "continue") {
-    activeFilter.value = "Продолжить";
-    activeCategory.value = "Все";
-    return;
-  }
-
-  if (row.id === "quality") {
-    activeQuality.value = "2160p";
-    activeCategory.value = "Все";
-    return;
-  }
-
-  const categoryByRow = {
-    films: "Фильмы",
-    series: "Сериалы",
-    drama: "Дорамы",
-    docs: "Документальное",
-    animation: "Мультфильмы",
-  };
-
-  activeCategory.value = categoryByRow[row.id] ?? "Все";
+  const categoryByRow = {films: "Фильмы", series: "Сериалы", drama: "Дорамы", docs: "Документальное", animation: "Мультфильмы"};
+  return router.push({path: "/video/library", query: row.id === "continue" ? {filter: "Продолжить"} : row.id === "quality" ? {quality: "2160p"} : categoryByRow[row.id] ? {category: categoryByRow[row.id]} : {}});
+}
+function episodePath(season, episode) {
+  return {path: videoPath(selectedVideo.value.id), query: {season: String(season.number), episode: episode.id}};
 }
 
-function chooseSeason(seasonNumber) {
-  selectedSeason.value = seasonNumber;
-  selectedEpisodeId.value = null;
-}
 </script>
 
 <template>
@@ -276,12 +148,12 @@ function chooseSeason(seasonNumber) {
                 <span>{{ heroVideo.state.subtitles }} субтитры</span>
               </div>
               <div class="mevideo-cinema-hero__actions">
-                <UiButton variant="primary" @click="openWatch(heroVideo.id)"><SvgIcon name="play" />Продолжить просмотр</UiButton>
+                <UiButton variant="primary" :to="videoPath(heroVideo.id)"><SvgIcon name="play" />Продолжить просмотр</UiButton>
                 <UiButton variant="outline" :to="`/space/${heroVideo.spaceId}/publication/${heroVideo.id}`">Подробнее<SvgIcon name="arrow-up-right-1" /></UiButton>
               </div>
             </div>
             <div class="mevideo-cinema-hero__visual">
-              <UiButton unstyled class="mevideo-cinema-hero__frame" :aria-label="`Смотреть ${heroVideo.title}`" @click="openWatch(heroVideo.id)">
+              <UiButton unstyled class="mevideo-cinema-hero__frame" :aria-label="`Смотреть ${heroVideo.title}`" :to="videoPath(heroVideo.id)">
                 <span class="mevideo-cinema-hero__frame-label">MECORION VIDEO</span>
                 <span class="mevideo-cinema-hero__frame-art" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
                 <span class="mevideo-cinema-hero__frame-play"><SvgIcon name="play" /></span>
@@ -300,13 +172,13 @@ function chooseSeason(seasonNumber) {
               :key="category"
               :class="{'is-active': activeCategory === category}" :aria-pressed="activeCategory === category"
               type="button"
-              @click="activeCategory = category; activeSection = category === 'Все' ? 'home' : 'library'"
+              :to="category === 'Все' ? '/video' : {path: '/video/library', query: {category}}"
             >
               {{ category }}
             </UiButton>
           </section>
 
-          <VideoShelf v-for="row in videoRows" :key="row.id" :row="row" @watch="openWatch" @browse="openRow" />
+          <VideoShelf v-for="row in videoRows" :key="row.id" :row="row" @browse="openRow" />
         </template>
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'watchLater'">
@@ -329,7 +201,7 @@ function chooseSeason(seasonNumber) {
           </section>
 
           <section class="mevideo-media-grid" aria-label="Каталог Video">
-            <VideoMediaCard v-for="video in videos" :key="video.id" :video="video" @watch="openWatch" />
+            <VideoMediaCard v-for="video in videos" :key="video.id" :video="video" />
             <UiEmptyState v-if="!videos.length" title="Видео не найдены" description="Попробуйте изменить фильтры." />
           </section>
         </template>
@@ -361,7 +233,7 @@ function chooseSeason(seasonNumber) {
                     :key="season.number"
                     :class="{'is-active': currentSeason?.number === season.number}" :aria-pressed="currentSeason?.number === season.number"
                     type="button"
-                    @click="chooseSeason(season.number)"
+                    :to="episodePath(season, season.episodes[0])"
                   >
                     {{ season.title }}
                   </UiButton>
@@ -373,7 +245,7 @@ function chooseSeason(seasonNumber) {
                     :key="episode.id"
                     :class="{'is-active': currentEpisode?.id === episode.id}" :aria-pressed="currentEpisode?.id === episode.id"
                     type="button"
-                    @click="selectedEpisodeId = episode.id"
+                    :to="episodePath(currentSeason, episode)"
                   >
                     <span>{{ episode.title }}</span>
                     <small>{{ episode.duration }}</small>
@@ -383,7 +255,7 @@ function chooseSeason(seasonNumber) {
               </template>
 
               <div v-if="!selectedVideo.seasons?.length" class="mevideo-watch-view__recommendations">
-                <VideoMediaCard v-for="video in recommendedVideos" :key="video.id" :video="video" @watch="openWatch" />
+                <VideoMediaCard v-for="video in recommendedVideos" :key="video.id" :video="video" />
               </div>
             </aside>
           </section>

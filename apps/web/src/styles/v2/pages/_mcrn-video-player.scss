@@ -76,8 +76,8 @@
   .mevideo-watch-view__aside h2 { margin: 0; font-size: var(--mc-font-lg); }
   .mevideo-watch-view__recommendations { display: grid; gap: var(--mc-space-5); }
   .mevideo-watch-view__aside .mevideo-season-tabs { flex-wrap: wrap; overflow: visible; }
-  .mevideo-watch-view__aside .mevideo-episode-list button { min-width: 0; }
-  .mevideo-watch-view__aside .mevideo-episode-list button > span { white-space: normal; overflow-wrap: anywhere; }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) { min-width: 0; }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) > span { white-space: normal; overflow-wrap: anywhere; }
   .mevideo-watch-view__aside .mevideo-episode-progress { grid-column: 1 / -1; width: 100%; }
   .mevideo-player-settings { display: grid; gap: var(--mc-space-5); min-width: 0; }
   .mevideo-player-settings > * { min-width: 0; }

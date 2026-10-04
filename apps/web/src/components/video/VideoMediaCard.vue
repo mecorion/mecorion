@@ -1,10 +1,10 @@
 <script setup>
+import {videoPath} from "@/video/catalog.js";
 import {computed} from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import {UiAvatar, UiButton, UiCard, UiDropdownMenu} from "@/components/ui";
 
 const props = defineProps({video: {type: Object, required: true}});
-const emit = defineEmits(["watch"]);
 const viewLabel = computed(() => props.video.views == null ? "Нет просмотров" : `${new Intl.NumberFormat("ru-RU", {notation: "compact", maximumFractionDigits: 1}).format(props.video.views)} просмотров`);
 const durationLabel = computed(() => {
   const text = props.video.duration ?? "";
@@ -13,14 +13,14 @@ const durationLabel = computed(() => {
   return hours ? `${hours}:${String(minutes).padStart(2, "0")}:00` : minutes ? `${minutes}:00` : text;
 });
 const menuItems = computed(() => [
-  {id: "watch", label: props.video.seasons?.length ? "Выбрать серию" : props.video.state.progress > 0 ? "Продолжить просмотр" : "Смотреть", icon: "play", onSelect: () => emit("watch", props.video.id)},
+  {id: "watch", label: props.video.seasons?.length ? "Выбрать серию" : props.video.state.progress > 0 ? "Продолжить просмотр" : "Смотреть", icon: "play", onSelect: () => navigateTo(videoPath(props.video.id))},
   {id: "details", label: "О публикации", icon: "arrow-up-right-1", onSelect: () => navigateTo(`/space/${props.video.spaceId}/publication/${props.video.id}`)},
 ]);
 </script>
 
 <template>
   <UiCard class="mevideo-media-card" raw unstyled>
-    <UiButton unstyled class="mevideo-media-card__preview" :class="`mevideo-media-card__preview--${video.coverTone}`" :aria-label="`${video.state.progress > 0 ? 'Продолжить' : 'Смотреть'}: ${video.title}`" @click="emit('watch', video.id)">
+    <UiButton unstyled class="mevideo-media-card__preview" :class="`mevideo-media-card__preview--${video.coverTone}`" :aria-label="`${video.state.progress > 0 ? 'Продолжить' : 'Смотреть'}: ${video.title}`" :to="videoPath(video.id)">
       <img v-if="video.coverUrl" class="mevideo-media-card__image" :src="video.coverUrl" alt="" loading="lazy" />
       <span v-else class="mevideo-media-card__visual" aria-hidden="true"><SvgIcon name="sidebar-videos" /></span>
       <span class="mevideo-media-card__play" aria-hidden="true"><SvgIcon name="play" /></span>
@@ -30,7 +30,7 @@ const menuItems = computed(() => [
     <div class="mevideo-media-card__info">
       <UiAvatar class="mevideo-media-card__avatar" :src="video.authorAvatar" :alt="video.author" :fallback="video.author?.split(' ').map(word => word[0]).slice(0, 2).join('')" size="sm" />
       <div class="mevideo-media-card__copy">
-        <h3 class="mevideo-media-card__title"><UiButton unstyled @click="emit('watch', video.id)">{{ video.title }}</UiButton></h3>
+        <h3 class="mevideo-media-card__title"><UiButton unstyled :to="videoPath(video.id)">{{ video.title }}</UiButton></h3>
         <p class="mevideo-media-card__author">{{ video.author }}</p>
         <p class="mevideo-media-card__stats"><span>{{ viewLabel }}</span><span v-if="video.publishedLabel">{{ video.publishedLabel }}</span></p>
       </div>

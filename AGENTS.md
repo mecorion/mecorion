@@ -123,6 +123,10 @@ DATABASE_URL=postgres://mecorion:mecorion@127.0.0.1:5432/mecorion
 - `/profile` — профиль пользователя с mock API ролей;
 - `/spaces` — корневое пространство/каталог контента;
 - `/music` — Mecorion Music MVP;
+- `/video` — главная Video, `/video/library` — медиатека;
+- `/video/<id>` — отдельная страница видео; сезон и серия в `season`/`episode`,
+  фильтры медиатеки в `category`/`filter`/`quality` query. Общий view:
+  `components/video/VideoServiceView.vue`, каталог: `src/video/catalog.js`.
 - `/ui-kit` — каталог компонентов Mecorion UI Kit;
 
 Единый layout всех страниц, кроме главной `/` и sign-in/sign-up:
