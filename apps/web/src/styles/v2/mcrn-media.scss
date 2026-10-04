@@ -2546,14 +2546,20 @@
 
 @media (max-width: 1100px) {
   .books-reader__layout { grid-template-columns: minmax(0, 1fr); }
-  .books-reader__details.ui-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
-  .books-reader__cover { grid-row: span 3; min-height: 190px; }
+  .books-reader__details.ui-card { grid-template-columns: 64px minmax(0, 1fr); }
+  .books-reader__cover { min-height: 96px; }
+  .books-reader__position { grid-column: 1 / -1; }
   .books-reader__settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   .books-reader__toolbar, .books-reader__toolbar-actions { align-items: stretch; flex-direction: column; }
   .books-reader__toolbar .mc-button { width: 100%; }
-  .books-reader__details.ui-card, .books-reader__settings-grid { grid-template-columns: minmax(0, 1fr); }
-  .books-reader__cover { grid-row: auto; min-height: 160px; }
+  .books-reader__settings-grid { grid-template-columns: minmax(0, 1fr); }
+  .books-reader__details.ui-card { padding: var(--mc-space-4); gap: var(--mc-space-3); }
   .books-reader__settings.ui-card, .books-reader__paper.ui-card { padding: var(--mc-space-4); }
+}
+
+@media (max-width: 280px) {
+  .books-reader__details.ui-card { grid-template-columns: minmax(0, 1fr); }
+  .books-reader__cover { width: 64px; min-height: 80px; }
 }

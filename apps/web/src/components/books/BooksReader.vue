@@ -37,10 +37,9 @@ function reset() { settings.value = {size: 18, spacing: '1.8', font: 'serif', wi
     <section class="books-reader__layout" aria-label="Чтение книги">
       <aside class="books-reader__sidebar">
         <UiCard raw class="books-reader__details">
-          <div class="books-reader__cover" :class="`space-publication-card--${book.coverTone}`" aria-hidden="true"><SvgIcon name="book" /><strong>{{ book.title }}</strong><span>{{ book.author }}</span></div>
-          <div class="books-reader__meta"><UiBadge>{{ book.reader.format }}</UiBadge><span>{{ book.reader.language }}</span></div>
-          <UiProgress :value="book.reader.progress" size="sm" :label="`Сохранена страница ${book.reader.page} из ${book.reader.pages}`" show-value />
-          <UiButton variant="outline" :to="`/space/${book.spaceId}/publication/${book.id}`">Открыть публикацию<SvgIcon name="arrow-up-right-1" /></UiButton>
+          <div class="books-reader__cover" :class="`space-publication-card--${book.coverTone}`" aria-hidden="true"><SvgIcon name="book" /></div>
+          <div class="books-reader__summary"><h2>{{ book.title }}</h2><p>{{ book.author }}</p><div class="books-reader__meta"><UiBadge>{{ book.reader.format }}</UiBadge><span>{{ book.reader.language }}</span></div></div>
+          <div class="books-reader__position"><UiProgress :value="book.reader.progress" size="sm" :label="`Страница ${book.reader.page} из ${book.reader.pages}`" show-value /><UiButton variant="ghost" :to="`/space/${book.spaceId}/publication/${book.id}`">О публикации<SvgIcon name="arrow-up-right-1" /></UiButton></div>
         </UiCard>
       </aside>
       <UiCard raw class="books-reader__paper" :class="`books-reader__paper--${settings.theme}`" :style="paperStyle">
