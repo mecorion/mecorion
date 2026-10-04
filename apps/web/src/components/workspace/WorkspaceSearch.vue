@@ -60,7 +60,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onShortcut));
         <li v-for="(item, index) in suggestions" :key="`${item.type}-${item.id}`">
           <UiButton unstyled class="workspace-search__suggestion" :class="{active: activeIndex === index, 'workspace-search__suggestion--artist': item.type === 'artist'}" @pointerdown.prevent @click="choose(item)">
             <img v-if="item.cover" :src="item.cover" alt="" />
-            <span v-else class="workspace-search__suggestion-icon"><SvgIcon name="music" /></span>
+            <span v-else class="workspace-search__suggestion-icon"><SvgIcon :name="config.icon || 'music'" /></span>
             <span class="workspace-search__suggestion-copy"><strong>{{ item.title }}</strong><small>{{ item.subtitle }}</small></span>
             <span class="workspace-search__suggestion-arrow"><SvgIcon name="chevron-right" /></span>
           </UiButton>

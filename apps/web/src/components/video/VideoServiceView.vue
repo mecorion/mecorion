@@ -1,8 +1,10 @@
 <script setup>
-import {computed} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRoute, useRouter, useState} from "#app";
 import {videoCatalog, videoPath} from "@/video/catalog.js";
 import VideoPlayer from "@/components/video/VideoPlayer.vue";
+import VideoSearchView from "@/components/video/VideoSearchView.vue";
+import {searchVideo, videoSearchSuggestions} from "@/video/searchCatalog.js";
 import VideoShelf from "@/components/video/VideoShelf.vue";
 import VideoMediaCard from "@/components/video/VideoMediaCard.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
@@ -13,7 +15,7 @@ const route = useRoute();
 const router = useRouter();
 const activeSection = computed(() => {
   const path = route.path.replace(/\/$/, "");
-  return path === "/video" ? "home" : path === "/video/library" ? "library" : "watch";
+  return path === "/video" ? route.query.section === "search" ? "search" : "home" : path === "/video/library" ? "library" : "watch";
 });
 function queryFilter(key, fallback, values) {
   return computed({
@@ -25,12 +27,33 @@ const activeFilter = queryFilter("filter", "Все", ["Все", "Продолж�
 const activeQuality = queryFilter("quality", "Любое качество", ["Любое качество", "2160p", "1440p", "1080p", "720p"]);
 const activeCategory = queryFilter("category", "Все", ["Все", "Фильмы", "Сериалы", "Дорамы", "Документальное", "Мультфильмы", "Подборки"]);
 const searchQuery = computed(() => typeof route.query.q === "string" ? route.query.q : "");
+const searchInput = ref(searchQuery.value);
+const searchTab = ref("all");
+watch(searchQuery, value => { searchInput.value = value; searchTab.value = "all"; });
+const searchResults = computed(() => searchVideo(searchQuery.value));
+function runSearch(value = "") {
+  searchInput.value = value;
+  searchTab.value = "all";
+  return router.push({path: "/video", query: {section: "search", q: value.trim() || undefined}});
+}
+const searchConfig = {
+  query: searchInput,
+  suggestions: computed(() => videoSearchSuggestions(searchInput.value)),
+  placeholder: "Поиск по Mecorion Video",
+  icon: "sidebar-videos",
+  onInput: value => { searchInput.value = value; },
+  onSubmit: runSearch,
+  onSelect: item => runSearch(item.title),
+  onClear: () => runSearch(),
+  onActivate: () => { if (activeSection.value !== "search") runSearch(searchInput.value); },
+};
 const selectedVideoId = computed(() => route.params.id);
 const selectedSeason = computed(() => Number(route.query.season ?? 1));
 const selectedEpisodeId = computed(() => route.query.episode);
 
 const navigation = [
   {id: "home", route: "/video", icon: "home", title: "Главная", shortTitle: "Главная"},
+  {id: "search", route: "/video?section=search", icon: "search", title: "Поиск", shortTitle: "Поиск"},
   {id: "library", route: "/video/library", icon: "grid", title: "Медиатека", shortTitle: "Видео"},
 ];
 
@@ -128,6 +151,7 @@ useContextNavigation({
   accentStrong: "#aaa4ff",
   accentContrast: "#ffffff",
   activeId: activeSection,
+  search: searchConfig,
   groups: computed(() => [
     {label: null, navLabel: "Разделы Video", items: navigation},
   ]),
@@ -207,7 +231,8 @@ function episodePath(season, episode) {
           </template>
         </template>
 
-        <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'watchLater'">
+        <VideoSearchView v-else-if="activeSection === 'search'" v-model:tab="searchTab" :query="searchQuery.trim()" :results="searchResults" @search="runSearch" @clear="runSearch()" />
+        <template v-else-if="activeSection === 'library' || activeSection === 'watchLater'">
           <section class="mevideo-page-heading mevideo-library-heading">
             <p class="mevideo-kicker">{{ activeSection === 'search' ? 'Поиск' : activeSection === 'watchLater' ? 'Смотреть позже' : 'Медиатека' }}</p>
             <h1>{{ searchQuery ? `Результаты для «${searchQuery}»` : activeSection === 'watchLater' ? 'Смотреть позже' : 'Медиатека' }}</h1>

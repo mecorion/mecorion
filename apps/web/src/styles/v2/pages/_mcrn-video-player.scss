@@ -1,4 +1,7 @@
 @layer components {
+  .mevideo-search-view h1 { font-size: clamp(var(--mc-font-lg), 3vw, 36px); overflow-wrap: anywhere; }
+  .mevideo-search-view .ui-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); width: 100%; min-width: 0; }
+  .mevideo-search-view .ui-tabs__trigger { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
   .mevideo-watch-view {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
