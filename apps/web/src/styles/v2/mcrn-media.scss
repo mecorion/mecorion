@@ -2583,3 +2583,29 @@
   .books-search-card__cover { width: 64px; }
   .books-search__tabs .ui-tabs__trigger { flex: 1 1 auto; max-width: 100%; }
 }
+
+// Books: mobile rhythm and readable controls across every service route.
+@media (max-width: 600px) {
+  .dashboard-shell--books .mebook-content { padding: var(--mc-space-4) var(--mc-space-3) var(--mc-space-6); }
+  .mebook-app :is(.books-home, .books-library, .books-bookmarks, .books-reader) { gap: var(--mc-space-5); }
+  .mebook-app .mc-button { padding-inline: var(--mc-space-3); gap: var(--mc-space-2); }
+  .mebook-app :is(.books-home__heading, .books-library__heading, .books-bookmarks .books-library__heading) h1 { font-size: clamp(24px, 6vw, 30px); line-height: 1.25; }
+  .books-home__section-heading { gap: var(--mc-space-3); }
+  .books-home__section-heading > .mc-button { width: 100%; justify-content: flex-start; padding-inline: 0; }
+  .books-home__discover > .mc-button { width: 100%; }
+  .books-home__book-art { min-height: 140px; }
+  .books-library__cover { min-height: 170px; }
+  .books-library__filter-grid, .books-library__filters.ui-card { gap: var(--mc-space-3); }
+  .books-bookmarks__cover { min-height: 150px; }
+  .books-reader__settings-grid { gap: var(--mc-space-4); }
+  .books-reader__text { gap: var(--mc-space-5); }
+  .books-search.memusic-search-view { padding: var(--mc-space-4); }
+  .books-search .music-search__results > h1, .books-search .music-search__intro h1 { font-size: clamp(24px, 6vw, 30px); line-height: 1.25; }
+  .books-search :is(.music-search__best, .music-search__quick, .music-search__section) > h2 { font-size: var(--mc-font-xl); line-height: 1.35; }
+  .books-search .music-search__explore-chips { display: flex; flex-wrap: wrap; gap: var(--mc-space-2); }
+  .books-search .music-search__explore-chips .mc-button { flex: 1 1 120px; overflow-wrap: normal; word-break: normal; }
+  .books-search .music-search__quick-button > span { min-width: 0; }
+  .books-search .music-search__quick-button :is(strong, small) { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+  .books-search-card__copy > .mc-button { width: 100%; }
+  .books-search__tabs .ui-tabs__trigger { flex: 0 1 auto; min-width: 0; padding-inline: var(--mc-space-3); }
+}
