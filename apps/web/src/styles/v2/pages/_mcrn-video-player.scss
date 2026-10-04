@@ -40,7 +40,7 @@
   }
   .mevideo-player__art > .svg-icon { width: var(--mc-space-8); height: var(--mc-space-8); }
   .mevideo-player__art > span { font-size: var(--mc-font-xs); letter-spacing: .15em; }
-  .mevideo-player__empty { position: relative; display: grid; justify-items: center; gap: var(--mc-space-3); padding: var(--mc-space-6); text-align: center; background: linear-gradient(transparent, #0c0b12); width: 100%; }
+  .mevideo-player__empty { position: relative; display: grid; justify-items: center; gap: var(--mc-space-3); padding: var(--mc-space-6); text-align: center; width: 100%; }
   .mevideo-player__empty > .svg-icon { width: var(--mc-space-12); height: var(--mc-space-12); padding: var(--mc-space-3); border: 1px solid rgb(255 255 255 / 15%); border-radius: var(--mc-radius-pill); background: rgb(255 255 255 / 5%); }
   .mevideo-player__empty strong { min-width: 0; max-width: 100%; overflow-wrap: anywhere; font-size: var(--mc-font-lg); }
   .mevideo-player__empty p { min-width: 0; margin: 0; max-width: 30rem; color: var(--mc-text-muted); font-size: var(--mc-font-sm); overflow-wrap: anywhere; }
