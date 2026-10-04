@@ -575,3 +575,26 @@
   .books-library__copy > .mc-button { width: 100%; }
   .books-library .mc-button { white-space: normal; min-width: 0; max-width: 100%; line-height: 1.4 !important; overflow-wrap: anywhere; }
 }
+
+@layer components {
+  .books-bookmarks { display: grid; gap: var(--mc-space-6); min-width: 0; }
+  .books-bookmarks h1, .books-bookmarks h2, .books-bookmarks p { margin: 0; overflow-wrap: anywhere; }
+  .books-bookmarks h1 { font-size: clamp(26px, 3vw, 42px); line-height: 1.15; letter-spacing: -.025em; }
+  .books-bookmarks h2 { font-size: var(--mc-font-xl); line-height: 1.4; }
+  .books-bookmarks p { color: var(--mc-text-secondary); line-height: 1.6; }
+  .books-bookmarks__tools { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 250px); gap: var(--mc-space-4); align-items: end; }
+  .books-bookmarks__results { display: grid; gap: var(--mc-space-5); min-width: 0; }
+  .books-bookmarks__notice.ui-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--mc-space-4); padding: var(--mc-space-4); border-color: var(--mc-accent); }
+  .books-bookmarks__notice p { flex: 1; min-width: 0; }
+  .books-bookmarks__book.ui-card { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr); gap: var(--mc-space-6); padding: var(--mc-space-5); }
+  .books-bookmarks__cover { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: var(--mc-space-4); text-align: left; padding: var(--mc-space-4); min-height: 250px; border-radius: var(--mc-radius-sm); color: var(--mcrn-color-on-artwork); overflow: hidden; }
+  .books-bookmarks__cover > * { position: relative; z-index: 1; overflow-wrap: anywhere; }
+  .books-bookmarks__cover > .svg-icon { width: 28px; height: 28px; margin-bottom: auto; }
+  .books-bookmarks__cover strong { line-height: 1.5; }
+  .books-bookmarks__copy { display: grid; align-content: start; gap: var(--mc-space-3); min-width: 0; }
+  .books-bookmarks__copy .ui-progress { margin-block: var(--mc-space-2); }
+  .books-bookmarks__meta, .books-bookmarks__actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--mc-space-3); }
+  .books-bookmarks__meta { color: var(--mc-text-muted); font-size: var(--mc-font-sm); }
+  .books-bookmarks .mc-button { white-space: normal; min-width: 0; max-width: 100%; line-height: 1.4 !important; overflow-wrap: anywhere; }
+  .books-bookmarks .ui-empty-state__media .svg-icon { width: 36px; height: 36px; color: var(--mc-accent); }
+}

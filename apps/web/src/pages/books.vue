@@ -1,6 +1,7 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
-import {computed, ref} from "vue";
+import {computed, ref, reactive} from "vue";
+import BooksBookmarks from "@/components/books/BooksBookmarks.vue";
 import BooksLibrary from "@/components/books/BooksLibrary.vue";
 import BooksHome from "@/components/books/BooksHome.vue";
 import {UiButton, UiCard, UiBadge, UiProgress, UiInput, UiSelect, UiEmptyState} from "@/components/ui";
@@ -29,12 +30,17 @@ const navigation = [
   {id: "reader", icon: "book", title: "Читалка", shortTitle: "Читать"},
 ];
 
-const readerStateById = {
+const readerStateById = reactive({
   "author-a-selected": {page: 26, pages: 320, progress: 8, bookmarked: true, language: "Русский", format: "EPUB"},
   "sci-fi-guide": {page: 104, pages: 412, progress: 25, bookmarked: false, language: "English", format: "PDF"},
   "game-lore": {page: 18, pages: 140, progress: 13, bookmarked: true, language: "Русский", format: "EPUB"},
   "frontend-course-start": {page: 3, pages: 96, progress: 3, bookmarked: false, language: "Español", format: "PDF"},
-};
+});
+
+const removedBookmark = ref(null);
+function removeBookmark(id) { removedBookmark.value = decoratedBooks.value.find(book => book.id === id); readerStateById[id].bookmarked = false; }
+function undoBookmark() { if (removedBookmark.value) readerStateById[removedBookmark.value.id].bookmarked = true; removedBookmark.value = null; }
+function toggleBookmark(id) { readerStateById[id].bookmarked = !readerStateById[id].bookmarked; removedBookmark.value = null; }
 
 const decoratedBooks = computed(() => getBookServicePublications().map((book) => ({
   ...book,
@@ -89,7 +95,7 @@ function openLibrary(filter = "Все", format = "") {
   activeSection.value = "library"; activeFilter.value = filter; activeFormat.value = format; activeLanguage.value = "Все языки"; searchQuery.value = "";
 }
 function openSearch() { activeSection.value = "search"; activeFilter.value = "Все"; activeFormat.value = ""; activeLanguage.value = "Все языки"; }
-function openShelf(shelf) { openLibrary(shelf.title === "Читаю сейчас" ? "Продолжить" : shelf.title === "Сохранённое" ? "Закладки" : "Все", ["EPUB", "PDF"].includes(shelf.title) ? shelf.title : ""); }
+function openShelf(shelf) { if (shelf.title === "Сохранённое") { navigate("bookmarks"); return; } openLibrary(shelf.title === "Читаю сейчас" ? "Продолжить" : shelf.title === "Сохранённое" ? "Закладки" : "Все", ["EPUB", "PDF"].includes(shelf.title) ? shelf.title : ""); }
 function navigate(section) {
   if (section === "library") { openLibrary(); return; }
   activeFormat.value = "";
@@ -130,6 +136,8 @@ useContextNavigation({
         <BooksHome v-if="activeSection === 'home'" v-model="searchQuery" :books="decoratedBooks" :current="continueBook" :shelves="libraryShelves" @read="openReader" @browse="openLibrary()" @search="openSearch" @shelf="openShelf" />
 
         <BooksLibrary v-else-if="activeSection === 'library'" v-model:query="searchQuery" v-model:filter="activeFilter" v-model:language="activeLanguage" v-model:format="activeFormat" :books="books" :total="decoratedBooks.length" :filters="filters" :languages="languages" @read="openReader" />
+
+        <BooksBookmarks v-else-if="activeSection === 'bookmarks'" :books="bookmarkedBooks" :removed="removedBookmark" @read="openReader" @remove="removeBookmark" @undo="undoBookmark" @browse="openLibrary()" />
 
         <template v-else-if="activeSection === 'search' || activeSection === 'library' || activeSection === 'bookmarks'">
           <section class="mebook-page-heading">
@@ -173,7 +181,7 @@ useContextNavigation({
                 <UiBadge>{{ publicationTypeLabels[selectedBook.type] }}</UiBadge>
                 <strong>{{ selectedBook.title }}</strong>
               </UiCard>
-              <UiButton variant="primary" type="button">Добавить закладку</UiButton>
+              <UiButton :variant="selectedBook.reader.bookmarked ? 'outline' : 'primary'" :aria-pressed="selectedBook.reader.bookmarked" @click="toggleBookmark(selectedBook.id)"><SvgIcon name="star" />{{ selectedBook.reader.bookmarked ? 'В закладках' : 'Добавить закладку' }}</UiButton>
               <UiButton variant="ghost" :to="`/space/${selectedBook.spaceId}/publication/${selectedBook.id}`">Открыть публикацию</UiButton>
             </aside>
 
