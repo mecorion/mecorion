@@ -136,13 +136,13 @@ onBeforeUnmount(() => {
     :class="{'dashboard-shell--sidebar-collapsed': isSidebarCollapsed}"
     :style="workspaceAccentStyle"
   >
-    <button
+    <UiButton unstyled
       v-if="isSidebarOpen"
       class="mcrn-sidebar-scrim dashboard-sidebar-scrim"
       type="button"
       aria-label="Закрыть меню"
       @click="closeSidebar"
-    ></button>
+    ></UiButton>
 
     <aside class="mcrn-sidebar dashboard-sidebar" :class="{'mcrn-sidebar--open dashboard-sidebar--open': isSidebarOpen}" aria-label="Навигация Mecorion">
       <div class="dashboard-sidebar__heading">
@@ -210,9 +210,9 @@ onBeforeUnmount(() => {
 
     <section class="dashboard-board">
       <header class="mcrn-topbar dashboard-topbar" :class="{'dashboard-topbar--music-search': searchConfig}">
-        <button class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Переключить меню" @click="toggleSidebar">
+        <UiButton unstyled class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Переключить меню" @click="toggleSidebar">
           <SvgIcon name="menu" />
-        </button>
+        </UiButton>
 
         <WorkspaceSearch v-if="searchConfig" :config="searchConfig" />
         <UiInput v-else v-model="globalSearchQuery" class="workspace-global-search" size="md" type="search" aria-label="Поиск по Mecorion" placeholder="Поиск по Mecorion" @focus="activateGlobalSearch">
@@ -221,13 +221,13 @@ onBeforeUnmount(() => {
         </UiInput>
 
         <div class="mcrn-topbar__actions dashboard-topbar__account">
-          <button class="mcrn-icon-button dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">
+          <UiButton unstyled class="mcrn-icon-button dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">
             <SvgIcon name="bell" />
             <i>3</i>
-          </button>
-          <button class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Переключить тему" @click="app.toggleTheme">
+          </UiButton>
+          <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Переключить тему" @click="app.toggleTheme">
             <SvgIcon name="moon" />
-          </button>
+          </UiButton>
           <NuxtLink class="mcrn-user-chip dashboard-user-chip" to="/profile">
             <span class="mcrn-user-chip__avatar">{{ currentUser.initials }}</span>
             <span class="mcrn-user-chip__content">
@@ -235,9 +235,9 @@ onBeforeUnmount(() => {
               <small>Mecorion ID: {{ currentUser.id }}</small>
             </span>
           </NuxtLink>
-          <button class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Выйти из аккаунта" title="Выйти" @click="logout">
+          <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Выйти из аккаунта" title="Выйти" @click="logout">
             <SvgIcon name="exit" />
-          </button>
+          </UiButton>
         </div>
       </header>
 

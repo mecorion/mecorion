@@ -7,6 +7,7 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import MusicPlayerBar from "@/components/music/MusicPlayerBar.vue";
 import MusicPlayerMode from "@/components/music/MusicPlayerMode.vue";
 import MusicQueuePanel from "@/components/music/MusicQueuePanel.vue";
+import UiBreadcrumb from "@/components/ui/UiBreadcrumb.vue";
 import UiBadge from "@/components/ui/UiBadge.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
@@ -85,9 +86,11 @@ function toggleReleaseLike() {
 <template>
   <main class="memusic-release-page">
     <div class="memusic-release-panel">
-    <nav class="memusic-release-breadcrumb" aria-label="Навигационная цепочка">
-      <NuxtLink to="/music">Music</NuxtLink><SvgIcon name="chevron-right" /><span>{{ release.typeLabel }}</span>
-    </nav>
+    <div class="memusic-release-breadcrumb">
+    <UiBreadcrumb :items="[{label: 'Music', to: '/music'}, {label: release.typeLabel}]" aria-label="Навигационная цепочка">
+      <template #separator><SvgIcon name="chevron-right" /></template>
+    </UiBreadcrumb>
+    </div>
 
     <section class="memusic-release-hero">
       <div class="memusic-release-hero__glow" :style="{backgroundImage: `url(${release.cover})`}" aria-hidden="true" />
