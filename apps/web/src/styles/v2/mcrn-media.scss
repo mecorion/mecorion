@@ -2450,3 +2450,33 @@
   .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) { grid-template-columns: minmax(0, 1fr); }
   .mevideo-player__transport, .mevideo-player__tools { justify-content: center; }
 }
+
+// Keep Video controls readable and separated at compact widths.
+@container video-content (max-width: 600px) {
+  .mevideo-player__viewport:has(.ui-select) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 280px;
+    padding: var(--mc-space-3);
+  }
+  .mevideo-player__badge:has(.ui-select) {
+    order: -1;
+    z-index: 1;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-bottom: var(--mc-space-4);
+  }
+  .mevideo-player__badge .ui-select { flex: 1 1 140px; }
+  .mevideo-player__viewport:has(.ui-select) .mevideo-player__empty {
+    padding: var(--mc-space-3) 0;
+  }
+  .mevideo-player__badge .ui-select__trigger { min-height: 44px; }
+  .mevideo-search-view .music-search__results > h1 { font-size: var(--mc-font-lg); }
+  .mevideo-media-card__kind { font-size: var(--mc-font-xs); }
+}
+@container video-content (max-width: 360px) {
+  .mevideo-media-card__info { gap: var(--mc-space-2); }
+  .mevideo-shelf__actions { flex-wrap: wrap; row-gap: var(--mc-space-2); }
+}

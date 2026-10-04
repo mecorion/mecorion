@@ -64,6 +64,8 @@ const quick = computed(() => props.results.slice(1, 5));
 
 <style scoped>
 .mevideo-search-view .music-search__tabs {
+  display: grid;
+  overflow: visible;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
 }
 .music-search__quick-button { text-decoration: none; }

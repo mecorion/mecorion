@@ -29,6 +29,7 @@
   .mevideo-player__viewport video, .mevideo-player__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .mevideo-player__poster { object-fit: cover; opacity: .3; }
   .mevideo-player__art {
+    pointer-events: none;
     position: absolute;
     inset: 0;
     display: flex;
@@ -47,6 +48,11 @@
   .mevideo-player__badge { position: absolute; top: var(--mc-space-4); left: var(--mc-space-4); right: var(--mc-space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--mc-space-2); }
   .mevideo-player__badge .ui-select { flex: 0 1 150px; min-width: 0; max-width: 100%; margin: 0; }
   .mevideo-player__badge .mevideo-player__episode { flex-basis: 210px; }
+  .mevideo-player__badge .ui-select__trigger {
+    background: var(--mc-surface);
+    color: var(--mc-text-primary);
+    border-color: rgb(255 255 255 / 15%);
+  }
   .mevideo-player__badge .ui-badge { background: rgb(0 0 0 / 35%); color: #d8d5e5; border-color: rgb(255 255 255 / 15%); }
   .mevideo-player__center { z-index: 1; width: var(--mc-space-12); height: var(--mc-space-12); border-radius: var(--mc-radius-pill); }
   .mevideo-player__notice { padding: var(--mc-space-3); margin: 0; font-size: var(--mc-font-sm); overflow-wrap: anywhere; }
