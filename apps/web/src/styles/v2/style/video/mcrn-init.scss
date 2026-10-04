@@ -683,6 +683,10 @@
     overflow-x: auto;
   }
   .mevideo-season-tabs :is(button, a) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     flex: 0 0 auto;
     min-height: var(--mcrn-size-34px);
     border: 1px solid var(--mc-border-soft);
