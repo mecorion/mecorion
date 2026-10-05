@@ -209,16 +209,16 @@ onBeforeUnmount(() => {
     </aside>
 
     <section class="dashboard-board">
-      <header class="mcrn-topbar dashboard-topbar" :class="{'dashboard-topbar--music-search': searchConfig}">
+      <header class="mcrn-topbar dashboard-topbar dashboard-topbar--responsive">
         <UiButton unstyled class="mcrn-icon-button dashboard-menu-button" type="button" aria-label="Переключить меню" @click="toggleSidebar">
           <SvgIcon name="menu" />
         </UiButton>
 
         <WorkspaceSearch v-if="searchConfig" :config="searchConfig" />
-        <UiInput v-else v-model="globalSearchQuery" class="workspace-global-search" size="md" type="search" aria-label="Поиск по Mecorion" placeholder="Поиск по Mecorion" @focus="activateGlobalSearch">
+        <div v-else class="workspace-global-search"><UiInput v-model="globalSearchQuery" size="md" type="search" aria-label="Поиск по Mecorion" placeholder="Поиск по Mecorion" @focus="activateGlobalSearch">
           <template #prefix><SvgIcon name="search" /></template>
           <template #suffix><kbd>⌘K</kbd></template>
-        </UiInput>
+        </UiInput></div>
 
         <div class="mcrn-topbar__actions dashboard-topbar__account">
           <UiButton unstyled class="mcrn-icon-button dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">

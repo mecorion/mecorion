@@ -151,8 +151,8 @@
   --mcrn-dashboard-nav__item-background-249: color-mix(in srgb, var(--mc-accent) 11%, #fff);
   --mcrn-dashboard-sidebar__support-background: linear-gradient(135deg, color-mix(in srgb, var(--mc-accent) 8%, #fff), #fff);
   --mcrn-dashboard-topbar-background-253: color-mix(in srgb, #fff 86%, transparent);
-  --mcrn-dashboard-search-background-256: color-mix(in srgb, #fff 84%, var(--mc-surface-deep));
-  --mcrn-dashboard-search-box-shadow-257: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 26px rgba(32, 29, 54, 0.05);
+  --mcrn-dashboard-search-background-256: var(--mc-surface-deep);
+  --mcrn-dashboard-search-box-shadow-257: none;
   --mcrn-dashboard-icon-button-border-color: color-mix(in srgb, var(--mc-accent) 34%, var(--mc-border-soft));
   --mcrn-user-chip__avatar-background: linear-gradient(135deg, #222033, #5f5a76);
   --mcrn-dashboard-hero-background-270: radial-gradient(circle at 92% 20%, color-mix(in srgb, var(--mc-accent) 12%, transparent), transparent 28%), linear-gradient(135deg, #fff, color-mix(in srgb, var(--mc-surface-deep) 64%, #fff));

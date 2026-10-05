@@ -2155,44 +2155,44 @@
   .music-search__artist-grid, .music-search__album-grid, .music-search__playlist-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (min-width: 861px) and (max-width: 980px) {
-  .dashboard-topbar--music-search {
+  .dashboard-shell .dashboard-topbar--responsive {
     display: grid;
     grid-template-columns: 42px minmax(0, 1fr) auto;
     gap: var(--mc-space-3);
   }
-  .dashboard-topbar--music-search .dashboard-menu-button {
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-menu-button {
     grid-column: 1;
     grid-row: 1;
   }
-  .dashboard-topbar--music-search .workspace-search {
+  .dashboard-shell .dashboard-topbar--responsive :is(.workspace-search, .workspace-global-search) {
     grid-column: 2;
     grid-row: 1;
     width: 100%;
     max-width: none;
     min-width: 0;
   }
-  .dashboard-topbar--music-search .dashboard-topbar__account {
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-topbar__account {
     grid-column: 3;
     grid-row: 1;
     flex-wrap: nowrap;
   }
 }
 @media (max-width: 860px) {
-  .dashboard-topbar--music-search {
+  .dashboard-shell .dashboard-topbar--responsive {
     display: grid;
     grid-template-columns: 42px minmax(0, 1fr);
     gap: var(--mc-space-2);
     align-items: center;
   }
-  .dashboard-topbar--music-search .dashboard-menu-button { grid-column: 1; grid-row: 1; }
-  .dashboard-topbar--music-search .dashboard-topbar__account {
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-menu-button { grid-column: 1; grid-row: 1; }
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-topbar__account {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
     flex-wrap: nowrap;
     min-width: 0;
   }
-  .dashboard-topbar--music-search .workspace-search {
+  .dashboard-shell .dashboard-topbar--responsive :is(.workspace-search, .workspace-global-search) {
     grid-column: 1 / -1;
     grid-row: 2;
     width: 100%;
@@ -2205,14 +2205,14 @@
   .music-search__artist-grid, .music-search__album-grid, .music-search__playlist-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
-  .dashboard-topbar--music-search { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 8px; align-items: center; }
-  .dashboard-topbar--music-search .dashboard-menu-button { grid-column: 1; }
-  .dashboard-topbar--music-search .dashboard-topbar__account { grid-column: 2; justify-self: end; display: flex; flex-wrap: nowrap; gap: 4px; }
-  .dashboard-topbar--music-search .dashboard-user-chip__content, .dashboard-topbar--music-search .mcrn-user-chip__content { display: none; }
-  .dashboard-topbar--music-search .dashboard-icon-button, .dashboard-topbar--music-search .mcrn-user-chip { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
-  .dashboard-topbar--music-search .mcrn-user-chip__avatar { width: 38px; height: 38px; }
+  .dashboard-shell .dashboard-topbar--responsive { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 8px; align-items: center; }
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-menu-button { grid-column: 1; }
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-topbar__account { grid-column: 2; justify-self: end; display: flex; flex-wrap: nowrap; gap: 4px; }
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-user-chip__content, .dashboard-topbar--responsive .mcrn-user-chip__content { display: none; }
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-icon-button, .dashboard-topbar--responsive .mcrn-user-chip { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; }
+  .dashboard-shell .dashboard-topbar--responsive .mcrn-user-chip__avatar { width: 38px; height: 38px; }
   .workspace-search { flex-basis: 100%; order: 3; width: 100%; max-width: none; }
-  .dashboard-topbar--music-search .workspace-search { grid-column: 1 / -1; grid-row: 2; }
+  .dashboard-shell .dashboard-topbar--responsive :is(.workspace-search, .workspace-global-search) { grid-column: 1 / -1; grid-row: 2; }
   .workspace-search .ui-input__control { min-height: 48px; }
   .memusic-search-view { min-height: 420px; padding: 16px; }
   .music-search__tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
@@ -2243,20 +2243,20 @@
 }
 
 @media (max-width: 240px) {
-  .dashboard-topbar--music-search {
+  .dashboard-shell .dashboard-topbar--responsive {
     grid-template-columns: minmax(0, 1fr);
   }
-  .dashboard-topbar--music-search .dashboard-menu-button {
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-menu-button {
     grid-column: 1;
     grid-row: 1;
   }
-  .dashboard-topbar--music-search .dashboard-topbar__account {
+  .dashboard-shell .dashboard-topbar--responsive .dashboard-topbar__account {
     grid-column: 1;
     grid-row: 2;
     justify-self: stretch;
     justify-content: space-between;
   }
-  .dashboard-topbar--music-search .workspace-search {
+  .dashboard-shell .dashboard-topbar--responsive :is(.workspace-search, .workspace-global-search) {
     grid-column: 1;
     grid-row: 3;
   }
@@ -2370,17 +2370,17 @@
   .mevideo-player-menu__option, .mevideo-player-menu__back { padding-inline: var(--mc-space-2); gap: var(--mc-space-2); }
 }
 
-// Music and Video share compact mobile header controls.
+// All workspace pages share the same responsive header.
 @media (max-width: 600px) {
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar {
+  .dashboard-shell .dashboard-topbar {
     display: grid;
     grid-template-columns: 44px minmax(0, 1fr);
     gap: var(--mc-space-2);
     padding: var(--mc-space-3);
     align-items: center;
   }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-menu-button { grid-column: 1; grid-row: 1; }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar__account {
+  .dashboard-shell .dashboard-menu-button { grid-column: 1; grid-row: 1; }
+  .dashboard-shell .dashboard-topbar__account {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
@@ -2389,8 +2389,8 @@
     gap: var(--mc-space-1);
     min-width: 0;
   }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar .mcrn-icon-button,
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar .mcrn-user-chip {
+  .dashboard-shell .dashboard-topbar .mcrn-icon-button,
+  .dashboard-shell .dashboard-topbar .mcrn-user-chip {
     flex: 0 0 44px;
     width: 44px;
     height: 44px;
@@ -2398,15 +2398,15 @@
     min-height: 44px;
     padding: 0;
   }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .mcrn-user-chip__content { display: none; }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar > .mc-field { grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar > .mc-field kbd { display: none; }
+  .dashboard-shell .mcrn-user-chip__content { display: none; }
+  .dashboard-shell .dashboard-topbar > .mc-field { grid-column: 1 / -1; grid-row: 2; width: 100%; min-width: 0; }
+  .dashboard-shell .dashboard-topbar > .mc-field kbd { display: none; }
 }
 @media (max-width: 300px) {
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar { grid-template-columns: minmax(0, 1fr); }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar__account { grid-column: 1; grid-row: 2; justify-self: stretch; flex-wrap: wrap; justify-content: space-between; }
-  :is(.dashboard-shell--video, .dashboard-shell--music, .dashboard-shell--books) .dashboard-topbar > .mc-field,
-  .dashboard-shell--music .workspace-search { grid-column: 1; grid-row: 3; }
+  .dashboard-shell .dashboard-topbar { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-shell .dashboard-topbar__account { grid-column: 1; grid-row: 2; justify-self: stretch; flex-wrap: wrap; justify-content: space-between; }
+  .dashboard-shell .dashboard-topbar > .mc-field,
+  .dashboard-shell .workspace-search { grid-column: 1; grid-row: 3; }
 }
 
 @container video-content (max-width: 600px) {
@@ -2736,4 +2736,16 @@
   .account-profile__layout,.account-profile__links {grid-template-columns:minmax(0,1fr);}
   .account-profile__security {grid-template-columns:minmax(0,1fr);}
   .account-profile__security > p,.account-profile__security > .mc-button {grid-column:auto;}
+}
+
+@media (max-width:860px) {
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive {display:grid;grid-template-columns:44px minmax(0,1fr);gap:var(--mc-space-2);}
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > .dashboard-menu-button {grid-column:1;grid-row:1;}
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > .dashboard-topbar__account {grid-column:2;grid-row:1;justify-self:end;}
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > :is(.workspace-search,.workspace-global-search) {grid-column:1/-1;grid-row:2;width:100%;max-width:none;min-width:0;}
+}
+@media (max-width:300px) {
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive {grid-template-columns:minmax(0,1fr);}
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > .dashboard-topbar__account {grid-column:1;grid-row:2;justify-self:stretch;flex-wrap:wrap;justify-content:space-between;}
+  .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > :is(.workspace-search,.workspace-global-search) {grid-column:1;grid-row:3;}
 }
