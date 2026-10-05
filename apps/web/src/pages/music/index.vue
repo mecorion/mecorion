@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({workspace: true, requiresAuth: true});
 
-import {computed, onMounted, onBeforeUnmount, onUnmounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "#app";
 import MusicFilters from "@/components/music/MusicFilters.vue";
 import MusicMediaCard from "@/components/music/MusicMediaCard.vue";
@@ -168,6 +168,8 @@ watch(libraryPlaylistPageCount, (count) => {
   libraryPlaylistPage.value = Math.min(libraryPlaylistPage.value, count - 1);
 });
 
+// Серверный каталог временно отключён: Music работает с локальным musicTracks.
+/*
 async function loadCatalog() {
   try {
     const response = await fetch("/api/v1/music/tracks?limit=100", {credentials: "include"});
@@ -200,6 +202,7 @@ onMounted(() => {
   window.addEventListener("focus", loadCatalog);
 });
 onBeforeUnmount(() => window.removeEventListener("focus", loadCatalog));
+*/
 
 function navigate(section) {
   activeSection.value = section;

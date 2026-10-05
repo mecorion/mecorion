@@ -2,7 +2,7 @@ import {initializeAuthSession, isAuthenticated} from "@/auth/session.js";
 import {canAccessPage, loadPlatformNavigation, pageCodeForPath} from "@/platform/navigation.js";
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (!import.meta.client) return;
+  if (!import.meta.client || import.meta.dev) return;
 
   await initializeAuthSession();
   if (to.meta.requiresAuth && !isAuthenticated()) {
