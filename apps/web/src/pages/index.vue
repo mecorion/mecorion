@@ -147,6 +147,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('scro
   box-sizing:border-box}
 .main-landing {
   margin:0;
+  font-family:var(--mcrn-font-family);
   background:var(--mc-bg);
   color:var(--mc-text-primary);
   overflow-x:clip}
