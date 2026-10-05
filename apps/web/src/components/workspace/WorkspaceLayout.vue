@@ -6,6 +6,9 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import UiInput from "@/components/ui/UiInput.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import UiDropdownMenu from "@/components/ui/UiDropdownMenu.vue";
+import UiPopover from "@/components/ui/UiPopover.vue";
+import UiEmptyState from "@/components/ui/UiEmptyState.vue";
+import UiDrawer from "@/components/ui/UiDrawer.vue";
 import WorkspaceSearch from "@/components/workspace/WorkspaceSearch.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
@@ -19,6 +22,22 @@ const isSidebarOpen = ref(false);
 const isSidebarCollapsed = ref(false);
 const globalSearchQuery = ref("");
 const accountMenuOpen = ref(false);
+const notificationsOpen = ref(false);
+const mobileNotifications = ref(false);
+let notificationsMedia;
+function updateNotificationsViewport() {
+  mobileNotifications.value = notificationsMedia.matches;
+  notificationsOpen.value = false;
+}
+onMounted(() => {
+  notificationsMedia = window.matchMedia('(max-width: 600px)');
+  updateNotificationsViewport();
+  notificationsMedia.addEventListener('change', updateNotificationsViewport);
+});
+onBeforeUnmount(() => notificationsMedia?.removeEventListener('change', updateNotificationsViewport));
+watch(notificationsOpen, value => { if (value) accountMenuOpen.value = false; });
+watch(accountMenuOpen, value => { if (value) notificationsOpen.value = false; });
+watch(() => route.path, () => { notificationsOpen.value = false; });
 const accountMenuItems = [
   {id: 'profile', label: 'Мой профиль', icon: 'user', onSelect: () => router.push('/profile')},
   {type: 'separator'},
@@ -229,10 +248,22 @@ onBeforeUnmount(() => {
         </UiInput></div>
 
         <div class="mcrn-topbar__actions dashboard-topbar__account">
-          <UiButton unstyled class="mcrn-icon-button dashboard-icon-button dashboard-icon-button--notice" type="button" aria-label="Уведомления">
-            <SvgIcon name="bell" />
-            <i>3</i>
-          </UiButton>
+          <UiButton v-if="mobileNotifications" unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Уведомления" aria-haspopup="dialog" :aria-expanded="notificationsOpen" @click="notificationsOpen = !notificationsOpen"><SvgIcon name="bell" /></UiButton>
+          <UiPopover v-else v-model="notificationsOpen" title="Уведомления" align="end" width="min(360px, calc(100vw - 16px))" auto-focus>
+            <template #trigger="{toggle, isOpen}">
+              <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Уведомления" aria-haspopup="dialog" :aria-expanded="isOpen" @click="toggle"><SvgIcon name="bell" /></UiButton>
+            </template>
+            <template #default="{close}">
+              <UiEmptyState title="Пока нет уведомлений" description="Здесь будут появляться обновления вашего аккаунта и сервисов.">
+                <template #media><SvgIcon name="bell" /></template>
+                <template #actions><UiButton variant="outline" @click="close({restoreFocus: true})">Закрыть</UiButton></template>
+              </UiEmptyState>
+            </template>
+          </UiPopover>
+          <UiDrawer v-if="mobileNotifications" v-model="notificationsOpen" title="Уведомления" side="right" size="100vw" :show-handle="false">
+            <UiEmptyState title="Пока нет уведомлений" description="Здесь будут появляться обновления вашего аккаунта и сервисов."><template #media><SvgIcon name="bell" /></template></UiEmptyState>
+            <template #footer><UiButton variant="outline" @click="notificationsOpen = false">Закрыть</UiButton></template>
+          </UiDrawer>
           <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Переключить тему" @click="app.toggleTheme">
             <SvgIcon name="moon" />
           </UiButton>

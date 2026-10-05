@@ -1619,3 +1619,12 @@
     padding: var(--mcrn-space-18px);
   }
 }
+
+// Keep trigger wrappers aligned with direct header controls.
+.dashboard-topbar__account > :is(.ui-popover__anchor,.ui-dropdown-menu__anchor) {
+  display:flex;
+  align-items:center;
+  align-self:center;
+  flex-shrink:0;
+  line-height:1;
+}
