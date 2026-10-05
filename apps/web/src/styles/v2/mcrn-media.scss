@@ -2685,3 +2685,55 @@
 @media (prefers-reduced-motion:reduce) {
   .home-dashboard__service {transition:none;}
 }
+
+@media (max-width:1000px) {
+  .account-profile__layout {grid-template-columns:minmax(0,1fr);}
+  .account-profile__aside {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .account-profile__identity-body {grid-template-columns:64px minmax(0,1fr);}
+  .account-profile__id {grid-column:2;border-left:0;padding-left:0;}
+  .account-profile .account-profile__avatar {width:64px;height:64px;}
+}
+@media (max-width:600px) {
+  .account-profile {padding:var(--mc-space-5) var(--mc-space-4) var(--mc-space-8);}
+  .account-profile__heading {align-items:flex-start;flex-direction:column;gap:var(--mc-space-4);}
+  .account-profile__panel,.account-profile__shortcut {padding:var(--mc-space-5);}
+  .account-profile__aside {grid-template-columns:minmax(0,1fr);}
+  .account-profile__appearance {flex-wrap:wrap;}
+  .account-profile__appearance > .mc-button {flex-basis:100%;}
+  .account-profile__identity-body {gap:var(--mc-space-4);padding:var(--mc-space-5);}
+  .account-profile__details {grid-template-columns:minmax(0,1fr);}
+  .account-profile__panel-heading {flex-wrap:wrap;}
+  .account-profile__panel-heading > .mc-button {margin-left:auto;}
+}
+@media (max-width:360px) {
+  .account-profile {padding-inline:var(--mc-space-3);}
+  .account-profile__identity-body {grid-template-columns:minmax(0,1fr);}
+  .account-profile__id {grid-column:auto;}
+  .account-profile__heading > .mc-button {width:100%;}
+  .account-profile__interests {display:grid;grid-template-columns:minmax(0,1fr);}
+  .account-profile__panel-heading > div {flex-basis:calc(100% - 56px);}
+  .account-profile__panel-heading > .mc-button {flex-basis:100%;}
+  .account-profile__panel,.account-profile__shortcut {padding:var(--mc-space-4);}
+  .account-profile__appearance {align-items:flex-start;flex-direction:column;}
+  .account-profile__appearance > .mc-button {flex-basis:auto;width:100%;}
+  .account-profile__aside .ui-item__body {flex-wrap:wrap;}
+  .account-profile__preview {padding:var(--mc-space-4);}
+  .account-profile__preview > div:first-child {flex-basis:100%;}
+  .account-profile__preview .mc-field {flex-basis:100%;}
+  .account-profile__editor-actions {display:grid;grid-template-columns:minmax(0,1fr);}
+}
+@media (max-width:260px) {
+  .account-profile__panel-heading > div {flex-basis:100%;}
+  .account-profile__editor-actions .mc-button {padding-inline:var(--mc-space-3);}
+}
+
+@media (max-width:1000px) {
+  .account-profile__layout {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .account-profile__layout :where(.account-profile__main,.account-profile__aside) > * {grid-column:auto;grid-row:auto;}
+  .account-profile__layout .account-profile__details-panel,.account-profile__layout .account-profile__interests-panel,.account-profile__layout .account-profile__links {grid-column:1/-1;}
+}
+@media (max-width:600px) {
+  .account-profile__layout,.account-profile__links {grid-template-columns:minmax(0,1fr);}
+  .account-profile__security {grid-template-columns:minmax(0,1fr);}
+  .account-profile__security > p,.account-profile__security > .mc-button {grid-column:auto;}
+}

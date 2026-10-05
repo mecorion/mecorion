@@ -1,0 +1,66 @@
+.account-profile {width:100%;margin-inline:auto;padding:var(--mc-space-8) var(--mc-page-gutter) var(--mc-space-12);color:var(--mc-text-primary);}
+.account-profile :where(h1,h2,p,dt,dd) {margin:0;overflow-wrap:anywhere;}
+.account-profile h1 {font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.15;letter-spacing:-.04em;}
+.account-profile h2 {font-size:var(--mc-font-title-3);line-height:1.25;letter-spacing:-.025em;}
+.account-profile p {color:var(--mc-text-secondary);line-height:1.65;}
+.account-profile .svg-icon {width:20px;height:20px;flex-shrink:0;}
+.account-profile .mc-button {max-width:100%;white-space:normal;line-height:1.4;}
+.account-profile :where(.ui-card) {min-width:0;border-radius:var(--mc-radius-md);}
+.account-profile__heading {display:flex;align-items:center;justify-content:space-between;gap:var(--mc-space-6);margin-bottom:var(--mc-space-6);}
+.account-profile__heading > div {display:grid;gap:var(--mc-space-2);min-width:0;}
+.account-profile .account-profile__eyebrow {color:var(--mc-accent);font-size:var(--mc-font-xs);font-weight:700;letter-spacing:.12em;line-height:1.5;}
+.account-profile__identity {padding:0;margin-bottom:var(--mc-space-6);}
+.account-profile__cover {height:104px;position:relative;overflow:hidden;background:linear-gradient(115deg,color-mix(in srgb,var(--mc-accent) 22%,var(--mc-surface)),var(--mc-surface-deep));}
+.account-profile__cover span {position:absolute;width:240px;height:240px;border:1px solid color-mix(in srgb,var(--mc-accent) 23%,transparent);border-radius:50%;top:-110px;right:12%;}
+.account-profile__cover span:nth-child(2) {right:3%;top:-80px;}
+.account-profile__cover span:nth-child(3) {right:-6%;top:-50px;}
+.account-profile__identity-body {display:grid;grid-template-columns:80px minmax(0,1fr) minmax(180px,260px);gap:var(--mc-space-6);align-items:start;padding:var(--mc-space-6);}
+.account-profile .account-profile__avatar {width:80px;height:80px;font-size:var(--mc-font-title-3);border:4px solid var(--mc-surface);margin-top:calc(-1 * var(--mc-space-12));position:relative;background:var(--mc-surface-raised);}
+.account-profile__identity-copy {display:grid;gap:var(--mc-space-3);min-width:0;}
+.account-profile__identity-copy .ui-badge {justify-self:start;}
+.account-profile__identity-copy h2 {font-size:clamp(1.5rem,2.5vw,2rem);}
+.account-profile__identity-copy p {max-width:65ch;font-size:var(--mc-font-sm);}
+.account-profile__id {display:grid;gap:var(--mc-space-3);min-width:0;border-left:1px solid var(--mc-border-soft);padding-left:var(--mc-space-6);}
+.account-profile__id > span {font-size:var(--mc-font-xs);color:var(--mc-text-muted);}
+.account-profile__id strong {font-size:var(--mc-font-sm);font-weight:500;overflow-wrap:anywhere;user-select:all;}
+.account-profile__id p {font-size:var(--mc-font-sm);}
+.account-profile__layout {display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--mc-space-5);align-items:stretch;}
+.account-profile__main,.account-profile__aside {display:contents;}
+.account-profile__panel {display:grid;gap:var(--mc-space-5);padding:var(--mc-space-6);}
+.account-profile__panel-heading {display:flex;align-items:center;gap:var(--mc-space-3);}
+.account-profile__panel-heading > div {min-width:0;flex:1;display:grid;gap:var(--mc-space-1);}
+.account-profile__panel-heading p {font-size:var(--mc-font-sm);}
+.account-profile__icon {width:44px;height:44px;display:grid;place-items:center;flex-shrink:0;background:color-mix(in srgb,var(--mc-accent) 12%,var(--mc-surface));border-radius:var(--mc-radius-md);color:var(--mc-accent);}
+.account-profile__details {margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--mc-space-5);}
+.account-profile__details > div {min-width:0;display:grid;align-content:start;gap:var(--mc-space-2);}
+.account-profile__details dt {font-size:var(--mc-font-xs);color:var(--mc-text-muted);}
+.account-profile__details dd {font-size:var(--mc-font-md);line-height:1.6;white-space:pre-wrap;}
+.account-profile .account-profile__note {font-size:var(--mc-font-xs);color:var(--mc-text-muted);}
+.account-profile__interests {display:flex;flex-wrap:wrap;gap:var(--mc-space-2);}
+.account-profile__interests .mc-button {justify-content:flex-start;}
+.account-profile__appearance {display:flex;align-items:center;gap:var(--mc-space-4);background:linear-gradient(110deg,color-mix(in srgb,var(--mc-accent) 8%,var(--mc-surface)),var(--mc-surface));}
+.account-profile__appearance > div {min-width:0;display:grid;gap:var(--mc-space-2);flex:1;}
+.account-profile__appearance p,.account-profile__aside p {font-size:var(--mc-font-sm);}
+.account-profile__completion > div:first-child {display:grid;gap:var(--mc-space-2);}
+.account-profile__done {color:var(--mc-success);}
+.account-profile__aside .ui-item {padding-inline:0;}
+.account-profile__preview {margin-top:var(--mc-space-6);padding:var(--mc-space-5);display:flex;align-items:center;flex-wrap:wrap;gap:var(--mc-space-5);}
+.account-profile__preview > div:first-child {flex:1;min-width:0;display:grid;gap:var(--mc-space-2);}
+.account-profile__preview .ui-badge {justify-self:start;}
+.account-profile__preview p {font-size:var(--mc-font-sm);}
+.account-profile__preview > p {flex-basis:100%;}
+.account-profile__preview .mc-field {min-width:0;flex:0 1 240px;}
+.account-profile__editor-actions .mc-button {white-space:normal;line-height:1.4;}
+
+.account-profile__editor-actions {display:flex;justify-content:flex-end;gap:var(--mc-space-2);}
+
+.account-profile__details-panel {grid-column:1/span 8;grid-row:1;}
+.account-profile__interests-panel {grid-column:1/span 8;grid-row:2;}
+.account-profile__completion {grid-column:9/span 4;grid-row:1/span 2;align-content:start;}
+.account-profile__appearance {grid-column:1/span 6;grid-row:3;}
+.account-profile__security {grid-column:7/span 6;grid-row:3;grid-template-columns:44px minmax(0,1fr);align-content:start;}
+.account-profile__security > p,.account-profile__security > .mc-button {grid-column:2;}
+.account-profile__security > .mc-button {justify-self:start;}
+.account-profile__links {grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--mc-space-5);}
+.account-profile__shortcut {padding:var(--mc-space-6);color:inherit;text-decoration:none;}
+.account-profile__shortcut .ui-item {padding:0;}
