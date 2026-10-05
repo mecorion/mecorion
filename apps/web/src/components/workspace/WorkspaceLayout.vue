@@ -5,6 +5,7 @@ import {NuxtLink} from "#components";
 import SvgIcon from "@/components/SvgIcon.vue";
 import UiInput from "@/components/ui/UiInput.vue";
 import UiButton from "@/components/ui/UiButton.vue";
+import UiDropdownMenu from "@/components/ui/UiDropdownMenu.vue";
 import WorkspaceSearch from "@/components/workspace/WorkspaceSearch.vue";
 import {useAppStore} from "@/stores/app.js";
 import {contextNavigation} from "@/navigation/contextNavigation.js";
@@ -17,6 +18,13 @@ const app = useAppStore();
 const isSidebarOpen = ref(false);
 const isSidebarCollapsed = ref(false);
 const globalSearchQuery = ref("");
+const accountMenuOpen = ref(false);
+const accountMenuItems = [
+  {id: 'profile', label: 'Мой профиль', icon: 'user', onSelect: () => router.push('/profile')},
+  {type: 'separator'},
+  {id: 'logout', label: 'Выйти из аккаунта', icon: 'exit', variant: 'danger', onSelect: () => logout()},
+];
+watch(() => route.path, () => { accountMenuOpen.value = false; });
 
 const authenticatedUser = readAuthSession()?.user;
 const currentUser = {
@@ -228,16 +236,17 @@ onBeforeUnmount(() => {
           <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Переключить тему" @click="app.toggleTheme">
             <SvgIcon name="moon" />
           </UiButton>
-          <NuxtLink class="mcrn-user-chip dashboard-user-chip" to="/profile" :aria-label="`Профиль: ${currentUser.name}`" :title="currentUser.name">
+          <UiDropdownMenu v-model="accountMenuOpen" :items="accountMenuItems" align="end" width="min(240px, calc(100vw - 16px))">
+            <template #trigger="{toggle, isOpen}">
+          <UiButton unstyled class="mcrn-user-chip dashboard-user-chip" aria-haspopup="menu" :aria-expanded="isOpen" @click="toggle" :aria-label="`Профиль: ${currentUser.name}`" :title="currentUser.name">
             <span class="mcrn-user-chip__avatar">{{ currentUser.initials }}</span>
             <span class="mcrn-user-chip__content">
               <strong>{{ currentUser.name }}</strong>
               <small>Mecorion ID: {{ currentUser.id }}</small>
             </span>
-          </NuxtLink>
-          <UiButton unstyled class="mcrn-icon-button dashboard-icon-button" type="button" aria-label="Выйти из аккаунта" title="Выйти" @click="logout">
-            <SvgIcon name="exit" />
           </UiButton>
+            </template>
+          </UiDropdownMenu>
         </div>
       </header>
 
