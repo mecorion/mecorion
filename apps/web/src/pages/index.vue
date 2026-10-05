@@ -943,7 +943,7 @@ section[id]  {
 @media(max-width:640px) {
   .header-cta {
   display:inline-flex;
-  min-height:40px;
+  min-height:44px;
   padding:8px 12px;
   }
 .header-inner,.header.scrolled .header-inner {
@@ -1297,4 +1297,10 @@ footer .mc-button {
   flex-wrap:wrap;
   }
 }
+@media (max-width:640px) {
+  section[id] {scroll-margin-top:136px;}
+  .hero h1 {line-height:1.08;}
+  .section-heading h2,.flow-copy h2,.membership h2 {line-height:1.12;}
+}
+.album-art {width:100%;min-width:0;color:var(--mcrn-color-on-artwork);}
 </style>
