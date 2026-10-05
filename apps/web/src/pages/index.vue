@@ -58,7 +58,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('scro
         <div class="hero-actions">
           <UiButton variant="primary" size="lg" to="/sign-up-seed">Начать бесплатно <span aria-hidden="true"><SvgIcon name="arrow-up-right-1" /></span></UiButton>
           <UiButton variant="ghost" href="#worlds">Исследовать Mecorion <span aria-hidden="true"><SvgIcon name="arrow-up-right-1" /></span></UiButton>
-        <UiButton variant="ghost" to="/sign-in-seed">Войти в аккаунт</UiButton></div>
+        </div>
         <div class="trust-row"><UiAvatarGroup aria-label="Пользователи Mecorion"><UiAvatar size="sm" fallback="А" alt="Алексей" /><UiAvatar size="sm" fallback="М" alt="Мария" /><UiAvatar size="sm" fallback="К" alt="Кирилл" /></UiAvatarGroup><span><b>Уже 2,4 млн</b><br />нашли своё в Mecorion</span></div>
       </div>
 
