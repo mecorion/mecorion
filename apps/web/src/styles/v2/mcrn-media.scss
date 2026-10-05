@@ -2734,8 +2734,6 @@
 }
 @media (max-width:600px) {
   .account-profile__layout,.account-profile__links {grid-template-columns:minmax(0,1fr);}
-  .account-profile__security {grid-template-columns:minmax(0,1fr);}
-  .account-profile__security > p,.account-profile__security > .mc-button {grid-column:auto;}
 }
 
 @media (max-width:860px) {
@@ -2748,4 +2746,12 @@
   .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive {grid-template-columns:minmax(0,1fr);}
   .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > .dashboard-topbar__account {grid-column:1;grid-row:2;justify-self:stretch;flex-wrap:wrap;justify-content:space-between;}
   .dashboard-shell .dashboard-topbar.dashboard-topbar--responsive > :is(.workspace-search,.workspace-global-search) {grid-column:1;grid-row:3;}
+}
+
+@media (max-width:600px) {
+  .account-profile__appearance > .mc-button {width:auto;}
+}
+@media (max-width:260px) {
+  .account-profile__appearance,.account-profile__security {grid-template-columns:minmax(0,1fr);grid-template-rows:auto;}
+  .account-profile__appearance > .mc-button,.account-profile__security > .mc-button {grid-column:1;width:100%;justify-self:stretch;}
 }
