@@ -2609,3 +2609,79 @@
   .books-search-card__copy > .mc-button { width: 100%; }
   .books-search__tabs .ui-tabs__trigger { flex: 0 1 auto; min-width: 0; padding-inline: var(--mc-space-3); }
 }
+
+// Personal dashboard: keep its layout independent of the legacy workspace styles.
+@media (max-width: 1400px) {
+
+
+  .home-dashboard__discoveries {grid-template-columns:1fr;}
+  .home-dashboard__discovery {display:grid;grid-template-columns:180px minmax(0,1fr);}
+  .home-dashboard__art {height:100%;min-height:180px;}
+}
+@media (max-width: 1100px) {
+  .home-dashboard__layout {grid-template-columns:minmax(0,1fr);}
+  .home-dashboard__aside {grid-template-columns:repeat(2,minmax(0,1fr));}
+
+
+  .home-dashboard__utility {grid-column:1/-1;}
+}
+@media (max-width: 700px) {
+  .home-dashboard {padding:var(--mc-space-5) var(--mc-space-4) var(--mc-space-8);}
+  .home-dashboard__welcome {align-items:flex-start;flex-direction:column;gap:var(--mc-space-4);}
+  .home-dashboard__aside {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .home-dashboard__spaces {flex-wrap:wrap;}
+  .home-dashboard__spaces > .mc-button {flex-basis:100%;}
+  .home-dashboard__toolbar .mc-field {max-width:none;flex-basis:100%;}
+}
+@media (max-width: 480px) {
+  .home-dashboard__aside {grid-template-columns:minmax(0,1fr);}
+  .home-dashboard__discovery {grid-template-columns:96px minmax(0,1fr);}
+  .home-dashboard__art img {padding:var(--mc-space-3);}
+  .home-dashboard__discovery-copy {padding:var(--mc-space-4);}
+  .home-dashboard__section-heading {align-items:flex-start;flex-wrap:wrap;}
+  .home-dashboard__filters .mc-button {flex:1 1 auto;}
+  .home-dashboard__utility {grid-column:auto;}
+}
+@media (max-width: 360px) {
+  .home-dashboard {padding-inline:var(--mc-space-3);}
+  .home-dashboard__discovery {display:flex;}
+  .home-dashboard__art {height:140px;min-height:0;}
+  .home-dashboard__discovery-copy .mc-button {align-self:stretch;}
+  .home-dashboard__spaces {align-items:flex-start;flex-direction:column;}
+  .home-dashboard__spaces > .mc-button {flex-basis:auto;width:100%;}
+  .home-dashboard__account-heading {flex-wrap:wrap;}
+  .home-dashboard__filters {width:100%;}
+  .home-dashboard__filters .mc-button {flex-basis:calc(50% - var(--mc-space-1));}
+  .home-dashboard__help .mc-button {justify-self:stretch;}
+  .home-dashboard__utility .ui-item__body {flex-wrap:wrap;}
+}
+
+// Service mosaic fills every row, including filtered collections.
+@container (min-width:720px) {
+  .home-dashboard__service {grid-column:span 4;}
+  .home-dashboard__services[data-count="7"] > .home-dashboard__service:nth-child(n+4) {grid-column:span 3;}
+  .home-dashboard__services[data-count="5"] > .home-dashboard__service:nth-child(n+4),
+  .home-dashboard__services[data-count="4"] > .home-dashboard__service,
+  .home-dashboard__services[data-count="2"] > .home-dashboard__service {grid-column:span 6;}
+  .home-dashboard__services[data-count="1"] > .home-dashboard__service {grid-column:span 12;}
+}
+@container (min-width:460px) and (max-width:719px) {
+  .home-dashboard__services[data-count="7"] > .home-dashboard__service:nth-child(n+5) {grid-column:span 4;}
+  .home-dashboard__services[data-count="5"] > .home-dashboard__service:last-child,
+  .home-dashboard__services[data-count="3"] > .home-dashboard__service:last-child,
+  .home-dashboard__services[data-count="1"] > .home-dashboard__service {grid-column:span 12;}
+}
+@container (max-width:459px) {
+  .home-dashboard__service {grid-column:1/-1;min-height:0;display:flex;gap:var(--mc-space-3);}
+  .home-dashboard__service-link {align-self:flex-start;}
+  .home-dashboard__service p {padding-right:var(--mc-space-8);}
+}
+@media (max-width:260px) {
+  .home-dashboard__service-heading {align-items:flex-start;flex-direction:column;}
+  .home-dashboard__service-category {font-size:var(--mc-font-xs);}
+  .home-dashboard__service p {padding-right:0;}
+  .home-dashboard__service-link {align-self:stretch;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-dashboard__service {transition:none;}
+}
