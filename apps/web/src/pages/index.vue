@@ -11,7 +11,7 @@ import UiItem from '@/components/ui/UiItem.vue';
 import UiItemGroup from '@/components/ui/UiItemGroup.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 definePageMeta({layout: 'auth', standalone: true});
-useHead({title: 'Mecorion — всё, что вдохновляет', meta: [{name: 'description', content: 'Музыка, видео, книги, обучение, сообщества и цифровые сервисы в одной экосистеме.'}]});
+useHead({htmlAttrs: {class: 'mecorion-landing-scroll'}, title: 'Mecorion — всё, что вдохновляет', meta: [{name: 'description', content: 'Музыка, видео, книги, обучение, сообщества и цифровые сервисы в одной экосистеме.'}]});
 const root = ref(null);
 const menuOpen = ref(false);
 const playing = ref(false);
@@ -23,10 +23,17 @@ onMounted(() => {
  updateScroll();
  window.addEventListener('scroll', updateScroll, {passive: true});
  window.addEventListener('keydown', escapeMenu);
+ if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
  observer = new IntersectionObserver(entries => entries.forEach(entry => {
-  if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
- }), {threshold: 0.08});
- root.value.querySelectorAll('.reveal').forEach(item => observer.observe(item));
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove('reveal-pending');
+  entry.target.classList.add('visible');
+  observer.unobserve(entry.target);
+ }), {threshold: 0, rootMargin: '0px 0px -32px 0px'});
+ root.value.querySelectorAll('.reveal').forEach(item => {
+  item.classList.add('reveal-pending');
+  observer.observe(item);
+ });
 });
 onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('scroll', updateScroll); window.removeEventListener('keydown', escapeMenu); });
 </script>
@@ -78,7 +85,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('scro
       </div>
     </section>
 
-    <section class="marquee" aria-label="Сервисы Mecorion"><div>СЛУШАЙ <span><SvgIcon name="star" /></span> СМОТРИ <span><SvgIcon name="star" /></span> ЧИТАЙ <span><SvgIcon name="star" /></span> УЧИСЬ <span><SvgIcon name="star" /></span> ОБЩАЙСЯ <span><SvgIcon name="star" /></span> СОЗДАВАЙ <span><SvgIcon name="star" /></span></div></section>
+    <section class="marquee reveal" aria-label="Сервисы Mecorion"><div>СЛУШАЙ <span><SvgIcon name="star" /></span> СМОТРИ <span><SvgIcon name="star" /></span> ЧИТАЙ <span><SvgIcon name="star" /></span> УЧИСЬ <span><SvgIcon name="star" /></span> ОБЩАЙСЯ <span><SvgIcon name="star" /></span> СОЗДАВАЙ <span><SvgIcon name="star" /></span></div></section>
 
     <section class="worlds section" id="worlds">
       <div class="section-heading reveal"><div><span class="kicker">ТВОЯ ЭКОСИСТЕМА</span><h2>Шесть миров.<br />Один <em>Mecorion.</em></h2></div><p>Переключайся между любимыми форматами без лишних приложений и новых регистраций.</p></div>
@@ -102,10 +109,18 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('scro
     </section>
   </main>
 
-  <footer><UiButton variant="ghost" class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Mecorion</span></UiButton><p>Твоя культура. Твой ритм. Твой мир.</p><div><UiButton variant="ghost" href="#worlds">О продукте</UiButton><UiButton variant="ghost" to="/support">Поддержка</UiButton><UiButton variant="ghost" to="/resolutions">Документы</UiButton></div><small>© 2026 Mecorion</small></footer>
+  <footer class="reveal"><UiButton variant="ghost" class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Mecorion</span></UiButton><p>Твоя культура. Твой ритм. Твой мир.</p><div><UiButton variant="ghost" href="#worlds">О продукте</UiButton><UiButton variant="ghost" to="/support">Поддержка</UiButton><UiButton variant="ghost" to="/resolutions">Документы</UiButton></div><small>© 2026 Mecorion</small></footer>
   </div>
 </template>
 <style scoped>
+:global(html.mecorion-landing-scroll) {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(html.mecorion-landing-scroll) {
+    scroll-behavior: auto;
+  }
+}
 .marquee div  {
   display:flex;
   align-items:center;
@@ -717,7 +732,17 @@ footer small {
 .reveal {
   opacity:1;
   transform:none;
-  transition:opacity .7s ease,transform .7s ease}
+  transition:opacity .65s ease,transform .65s cubic-bezier(.2,.65,.3,1);
+}
+.reveal.reveal-pending {
+  transition:none;
+  opacity:0;
+  transform:translateY(var(--mc-space-6));
+}
+.reveal.reveal-pending:focus-within {
+  opacity:1;
+  transform:none;
+}
 .reveal.visible {
   opacity:1;
   transform:none}
@@ -847,7 +872,7 @@ footer div {
   *,*:before,*:after {
   animation:none!important;
   transition:none!important}
-.reveal {
+.reveal.reveal-pending {
   opacity:1;
   transform:none}
 }
