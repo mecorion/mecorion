@@ -8,8 +8,8 @@ export const componentDocumentation = {
   inputs: {
     title: "Input",
     description: "Однострочное поле для ввода текста, поиска, email, пароля и других значений формы.",
-    types: ["Размеры: sm, md и lg.", "Состояния: default, success, error, disabled и readonly.", "Слоты prefix и suffix добавляют произвольный контент по краям."],
-    usage: '<UiInput v-model="name" label="Название" placeholder="Введите название" />',
+    types: ["Размеры: sm, md и lg.", "Состояния: default, success, error, disabled и readonly.", "Атрибут clearable показывает кнопку очистки при непустом значении, обновляет v-model и отправляет событие clear.", "Слоты prefix и suffix добавляют произвольный контент по краям."],
+    usage: '<UiInput v-model="query" clearable label="Поиск" placeholder="Найти музыку" @clear="onClear" />',
   },
   avatar: {
     title: "Avatar",
@@ -130,6 +130,12 @@ export const componentDocumentation = {
     description: "Отображает степень выполнения операции или прохождения процесса.",
     types: ["Размеры: sm, default и lg.", "Может показывать label и числовое значение.", "Поддерживает min, max и пользовательское форматирование."],
     usage: '<UiProgress :value="progress" label="Загрузка" show-value size="sm" />',
+  },
+  steps: {
+    title: "Steps",
+    description: "Показывает текущий этап процесса и завершённые шаги. Линия и маркеры плавно меняют состояние.",
+    types: ["Шаги передаются массивом строк или объектов с label.", "current — номер текущего шага, начиная с 1.", "Поддерживает узкие экраны и настройку акцентного цвета через --mc-accent."],
+    usage: '<UiSteps :steps="[\'Жанры\', \'Исполнители\', \'Импорт\', \'Готово\']" :current="2" />',
   },
   spinner: {
     title: "Spinner",

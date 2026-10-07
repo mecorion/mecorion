@@ -1,0 +1,58 @@
+.memusic-library-page { min-width: 0; }
+
+.memusic-library-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, .8fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 72px);
+  min-height: 390px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+  padding: clamp(24px, 4vw, 64px);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mc-accent) 26%, var(--mc-border-soft));
+  border-radius: var(--mc-radius-md);
+  background: radial-gradient(circle at 79% 37%, color-mix(in srgb, var(--mc-accent) 22%, transparent), transparent 38%), linear-gradient(125deg, var(--mc-surface) 24%, color-mix(in srgb, var(--mc-accent) 9%, var(--mc-surface)));
+}
+.memusic-library-hero::before { position: absolute; inset: auto -8% -75% 38%; height: 105%; border: 1px solid color-mix(in srgb, var(--mc-accent) 18%, transparent); border-radius: 50%; content: ''; pointer-events: none; }
+.memusic-library-hero__copy { position: relative; z-index: 1; min-width: 0; }
+.memusic-library-hero .memusic-kicker { margin: 0 0 18px; }
+.memusic-library-hero h1 { margin: 0 0 20px !important; font-size: clamp(2.4rem, 5vw, 5rem); line-height: 1.02 !important; letter-spacing: -.055em; overflow-wrap: anywhere; }
+.memusic-library-hero h1 span { color: var(--mc-accent); }
+.memusic-library-hero__description { max-width: 48ch; margin: 0; color: var(--mc-text-secondary); font-size: clamp(.95rem, 1.2vw, 1.1rem); line-height: 1.6; }
+.memusic-library-hero__stats { display: flex; flex-wrap: wrap; gap: 18px 36px; margin-top: 30px; }
+.memusic-library-hero__stats span { display: grid; gap: 2px; min-width: 104px; }
+.memusic-library-hero__stats strong { color: var(--mc-text-primary); font-size: clamp(1.5rem, 2vw, 2rem); line-height: 1; }
+.memusic-library-hero__stats small { color: var(--mc-text-secondary); font-size: var(--mc-font-xs); }
+.memusic-library-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.memusic-library-hero__actions .ui-button { min-height: 46px; gap: 9px; border-radius: var(--mc-radius-sm); }
+.memusic-library-hero__actions .svg-icon { width: 18px; height: 18px; }
+.memusic-library-hero__art { position: relative; width: min(100%, 370px); height: 300px; justify-self: center; }
+.memusic-library-hero__art img { position: absolute; top: 50%; left: 50%; width: 58%; aspect-ratio: 1; border: 5px solid var(--mc-surface); border-radius: var(--mc-radius-md); object-fit: cover; box-shadow: 0 18px 40px color-mix(in srgb, #000 36%, transparent); }
+.memusic-library-hero__cover--1 { z-index: 3; transform: translate(-50%, -50%) rotate(-8deg); }
+.memusic-library-hero__cover--2 { z-index: 2; transform: translate(-8%, -54%) rotate(12deg); }
+.memusic-library-hero__cover--3 { z-index: 1; transform: translate(-88%, -41%) rotate(-19deg); }
+.memusic-library-hero__art-mark { position: absolute; z-index: 4; right: 9%; bottom: 1%; display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid color-mix(in srgb, var(--mc-accent) 65%, white); border-radius: 50%; background: var(--mc-accent); color: var(--mc-accent-contrast, #fff); box-shadow: 0 12px 30px color-mix(in srgb, var(--mc-accent) 35%, transparent); }
+.memusic-library-hero__art-mark .svg-icon { width: 25px; height: 25px; }
+.memusic-library-page > .memusic-filters { margin-bottom: 28px; }
+.memusic-library-page > .memusic-filters + .memusic-track-section { margin-top: 0; }
+.memusic-library-page > .memusic-carousel-section { margin-top: clamp(36px, 5vw, 64px); }
+.memusic-library-page > .memusic-carousel-section .memusic-collection-section-title { margin-bottom: 22px; }
+
+@media (max-width: 900px) {
+  .memusic-library-hero { grid-template-columns: minmax(0, 1fr) minmax(180px, .6fr); gap: 18px; }
+  .memusic-library-hero__art { height: 240px; }
+}
+@media (max-width: 640px) {
+  .memusic-library-hero { grid-template-columns: minmax(0, 1fr); padding: 24px; }
+  .memusic-library-hero__art { width: min(100%, 280px); height: 170px; margin-top: 12px; }
+  .memusic-library-hero__art img { width: 42%; border-width: 3px; }
+  .memusic-library-hero__art-mark { right: 12%; bottom: 0; width: 42px; height: 42px; }
+  .memusic-library-hero__art-mark .svg-icon { width: 19px; height: 19px; }
+}
+@media (max-width: 300px) {
+  .memusic-library-hero { padding: 16px; }
+  .memusic-library-hero h1 { font-size: clamp(1.8rem, 13vw, 2.4rem); }
+  .memusic-library-hero__actions .ui-button { width: 100%; padding-inline: 8px; font-size: 12px; white-space: normal; }
+  .memusic-library-hero__art { height: 110px; }
+}

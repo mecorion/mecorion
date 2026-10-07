@@ -10,6 +10,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
+    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === '1',
     command: process.env.MECORION_TEST_DEV
       ? 'npm run dev -- --port 4173 --host 127.0.0.1'
       : 'node .output/server/index.mjs',

@@ -27,6 +27,7 @@ const placement = ref("bottom");
 const menuMaxHeight = ref(null);
 const menuPosition = ref({top: 0, left: 0, width: 0});
 const overlayMenuZIndex = ref(null);
+const menuAccent = ref("");
 const canScrollUp = ref(false);
 const canScrollDown = ref(false);
 let autoScrollFrame = null;
@@ -41,6 +42,7 @@ const selectedOption = computed(() => normalizedOptions.value[selectedIndex.valu
 const menuStyle = computed(() => {
   const height = menuMaxHeight.value === null ? undefined : `${menuMaxHeight.value}px`;
   return {
+    "--mc-accent": menuAccent.value || undefined,
     top: `${menuPosition.value.top}px`,
     right: "auto",
     bottom: "auto",
@@ -53,6 +55,7 @@ const menuStyle = computed(() => {
 });
 
 function updateMenuLayer() {
+  menuAccent.value = root.value ? window.getComputedStyle(root.value).getPropertyValue("--mc-accent").trim() : "";
   const overlay = root.value?.closest(".ui-dialog, .ui-drawer, .ui-popover");
   const layer = overlay ? Number.parseInt(window.getComputedStyle(overlay).zIndex, 10) : NaN;
   overlayMenuZIndex.value = Number.isFinite(layer) ? layer + 1 : null;

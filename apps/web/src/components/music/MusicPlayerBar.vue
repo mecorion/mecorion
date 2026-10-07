@@ -7,6 +7,8 @@ import UiButton from "@/components/ui/UiButton.vue";
 import UiSlider from "@/components/ui/UiSlider.vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 
+defineProps({release: {type: Boolean, default: false}});
+
 const player = useMusicPlayerStore();
 const audio = ref(null);
 
@@ -56,6 +58,10 @@ function loadCurrentTrack() {
 function seek(value) {
   if (!player.duration) return;
   player.requestSeek((Number(value) / 100) * player.duration);
+}
+
+function formatSeekPreview(value) {
+  return formatPlaybackTime((Number(value) / 100) * player.duration);
 }
 
 function changeVolume(value) {
@@ -121,13 +127,13 @@ watch(() => [player.volume, player.isMuted], () => {
 </script>
 
 <template>
-  <footer class="memusic-player">
+  <footer class="memusic-player" :class="{'memusic-player--release': release}">
     <div v-if="player.currentTrack" class="memusic-player__track">
       <UiButton unstyled class="memusic-player__artwork-button" aria-label="Открыть режим плеера" @click="player.openPlayerMode">
         <MusicArtwork :track="player.currentTrack" />
       </UiButton>
       <div><strong>{{ player.currentTrack.title }}</strong><small>{{ player.currentTrack.artist }}</small></div>
-      <UiButton unstyled
+      <UiButton v-if="!release" unstyled
         class="memusic-player__like-button"
         :class="{'is-active': player.likedTrackIds.includes(player.currentTrack.id)}"
         type="button"
@@ -143,11 +149,10 @@ watch(() => [player.volume, player.isMuted], () => {
         <UiButton unstyled class="memusic-player__play" :aria-label="player.isPlaying ? 'Пауза' : 'Воспроизвести'" @click="togglePlaybackFromControl"><SvgIcon :name="player.isPlaying ? 'pause' : 'play'" /></UiButton>
         <UiButton unstyled aria-label="Следующий трек" @click="player.nextTrack()"><SvgIcon name="skip-forward" /></UiButton>
         <UiButton unstyled :class="{'is-active': player.repeatMode !== 'off'}" :aria-label="repeatLabel" @click="player.cycleRepeatMode"><SvgIcon :name="player.repeatMode === 'one' ? 'repeat-one' : 'repeat'" /></UiButton>
+        <UiButton v-if="release && player.currentTrack" unstyled class="memusic-player__like-button" :class="{'is-active': player.likedTrackIds.includes(player.currentTrack.id)}" :aria-label="player.likedTrackIds.includes(player.currentTrack.id) ? 'Убрать из любимых' : 'Добавить в любимые'" @click="player.toggleLike(player.currentTrack.id)"><SvgIcon name="heart" /></UiButton>
       </div>
       <div class="memusic-player__progress">
-        <span>{{ formatPlaybackTime(player.currentTime) }}</span>
-        <UiSlider :model-value="progress" :min="0" :max="100" :step="0.1" label="Позиция трека" @update:model-value="seek" />
-        <span>{{ formatPlaybackTime(player.duration) }}</span>
+        <UiSlider :model-value="progress" :min="0" :max="100" :step="0.1" label="Позиция трека" :tooltip-formatter="formatSeekPreview" @update:model-value="seek" />
       </div>
     </div>
 

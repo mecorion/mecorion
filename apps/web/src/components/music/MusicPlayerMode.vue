@@ -87,7 +87,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", handleKeydown));
               @click="player.playTrack(track.id)"
             >
               <span class="memusic-player-mode__queue-number">{{ String(index + 1).padStart(2, '0') }}</span>
-              <MusicArtwork :track="track" />
+              <MusicArtwork :track="track" play-overlay />
               <span><strong>{{ track.title }}</strong><small>{{ track.artist }}</small></span>
               <small>{{ track.durationLabel }}</small>
             </UiButton>

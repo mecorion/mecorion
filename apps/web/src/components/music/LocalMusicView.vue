@@ -6,6 +6,7 @@ import MusicTrackList from "@/components/music/MusicTrackList.vue";
 import {createLocalTracks, filesFromDirectoryInput, scanDirectoryHandle} from "@/music/localLibrary.js";
 import {filterAndSortTracks} from "@/music/trackFilters.js";
 import {useMusicPlayerStore} from "@/stores/musicPlayer.js";
+import UiAlert from "@/components/ui/UiAlert.vue";
 import UiButton from "@/components/ui/UiButton.vue";
 import UiCard from "@/components/ui/UiCard.vue";
 import UiProgress from "@/components/ui/UiProgress.vue";
@@ -112,7 +113,7 @@ async function handleFallbackSelection(event) {
       <small>Файлы остаются на вашем устройстве</small>
     </UiCard>
 
-    <p v-if="scanError" class="memusic-local__error">{{ scanError }}</p>
+    <UiAlert v-if="scanError" class="memusic-local__error" variant="danger" :icon="false">{{ scanError }}</UiAlert>
 
     <template v-if="hasLocalLibrary">
       <UiCard raw unstyled class="memusic-local__summary">

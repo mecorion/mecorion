@@ -3,8 +3,8 @@ import {canAccessPage, loadPlatformNavigation, pageCodeForPath} from "@/platform
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (!import.meta.client) return;
-  await initializeAuthSession();
 
+  await initializeAuthSession();
   if (to.meta.requiresAuth && !isAuthenticated()) {
     return navigateTo({path: "/sign-in-seed", query: {redirect: to.fullPath}});
   }

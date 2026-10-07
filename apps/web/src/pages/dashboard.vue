@@ -1,196 +1,144 @@
 <script setup>
+import {computed, onMounted, ref, watch} from 'vue';
+import {UiAvatar, UiBadge, UiButton, UiCard, UiEmptyState, UiInput, UiItem, UiItemGroup} from '@/components/ui/index.js';
+import SvgIcon from '@/components/SvgIcon.vue';
+import {readAuthSession} from '@/auth/session.js';
+import {canAccessPage} from '@/platform/navigation.js';
+import musicArt from '@/assets/illustrations/dashboard/music-bars.svg';
+import videoArt from '@/assets/illustrations/dashboard/video-wave.svg';
+import booksArt from '@/assets/illustrations/dashboard/books.svg';
+
 definePageMeta({workspace: true, requiresAuth: true});
-import {computed} from "vue";
-import UiAvatar from "@/components/ui/UiAvatar.vue";
-import UiBadge from "@/components/ui/UiBadge.vue";
-import UiButton from "@/components/ui/UiButton.vue";
-import UiCard from "@/components/ui/UiCard.vue";
-import UiProgress from "@/components/ui/UiProgress.vue";
-
-import musicArt from "@/assets/illustrations/dashboard/music-bars.svg";
-import videoArt from "@/assets/illustrations/dashboard/video-wave.svg";
-import booksArt from "@/assets/illustrations/dashboard/books.svg";
-import cloudArt from "@/assets/illustrations/dashboard/cloud.svg";
-import sentinelArt from "@/assets/illustrations/dashboard/sentinel.svg";
-
-const currentUser = {
-  name: "Иван",
-  initials: "ИИ",
-  id: "000000",
-  role: "base",
-  plan: "Free",
-  profileProgress: 40,
-};
-
-const roleLabels = {
-  base: "Базовый",
-  agent: "Агент",
-  moderator: "Модератор",
-  keeper: "Хранитель",
-  admin: "Администратор",
-};
-
-// Dashboard собирается из конфигурации роли. Позже эти данные можно заменить
-// ответом API, не переписывая верстку всего экрана.
-const dashboardByRole = {
-  base: {
-    welcomeTitle: `Добро пожаловать, ${currentUser.name}!`,
-    welcomeText: "Это ваше персональное пространство в Mecorion. Здесь всё, что нужно для работы, учёбы, развлечений и общения — в одном месте.",
-    services: [
-      {id: "music", title: "Music", description: "Музыка без ограничений", icon: "♫", route: "/music", art: musicArt, tone: "rose"},
-      {id: "video", title: "Video", description: "Фильмы, шоу и трансляции", icon: "▷", route: "/video", art: videoArt, tone: "cyan"},
-      {id: "books", title: "Books", description: "Книги и аудио в одном месте", icon: "▥", route: "/books", art: booksArt, tone: "amber"},
-      {id: "course", title: "Course", description: "Курсы и практика", icon: "△", route: "/course", art: booksArt, tone: "green"},
-      {id: "drive", title: "Drive", description: "Ваши файлы в безопасности", icon: "☁", route: "/drive", art: cloudArt, tone: "blue"},
-      {id: "vpn", title: "VPN", description: "Приватность без границ", icon: "◇", route: "/vpn", art: sentinelArt, tone: "green"},
-      {id: "spaces", title: "Spaces", description: "Создавайте пространства", icon: "⬡", route: "/spaces", art: sentinelArt, tone: "rose"},
-    ],
-    steps: [
-      {id: "email", number: 1, title: "Подтвердить email", text: "Подтвердите почту, чтобы защитить аккаунт.", action: "Подтвердить", icon: "✉"},
-      {id: "interests", number: 2, title: "Выбрать интересы", text: "Мы подберём контент и рекомендации для вас.", action: "Выбрать", icon: "♡"},
-      {id: "space", number: 3, title: "Создать пространство", text: "Организуйте работу, учёбу или личные проекты.", action: "Создать", icon: "⬡"},
-      {id: "profile", number: 4, title: "Настроить профиль", text: "Добавьте аватар и немного о себе.", action: "Настроить", icon: "♙"},
-    ],
-  },
-};
-
-const dashboard = computed(() => dashboardByRole[currentUser.role] ?? dashboardByRole.base);
-
-const trendingItems = [
-  {title: "Фильм дня", type: "Фильм", tone: "orange"},
-  {title: "Сериал недели", type: "Сериал", tone: "gold"},
-  {title: "Новый альбом", type: "Альбом", tone: "dark"},
-  {title: "Книга месяца", type: "Книга", tone: "paper"},
+useHead({title: 'Главная — Mecorion'});
+const user = readAuthSession()?.user;
+const name = user?.displayName || user?.username || '';
+const initials = name.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase() || 'M';
+const query = ref('');
+const view = ref('all');
+const pinned = ref([]);
+const preferencesReady = ref(false);
+const storageNotice = ref('');
+const storageKey = `mecorion.dashboard.pinned.${user?.id || 'local'}`;
+const services = [
+  {id: 'music', title: 'Music', text: 'Любимые треки, плейлисты и ваша локальная музыка.', icon: 'music', route: '/music', category: 'content', tone: 'rose'},
+  {id: 'video', title: 'Video', text: 'Фильмы, сериалы и новые истории.', icon: 'play', route: '/video', category: 'content', tone: 'cyan'},
+  {id: 'books', title: 'Books', text: 'Книги, заметки и идеи для вдохновения.', icon: 'book', route: '/books', category: 'content', tone: 'gold'},
+  {id: 'course', title: 'Course', text: 'Новые знания и пространство для развития.', icon: 'graduation-cap', route: '/course', category: 'content', tone: 'violet'},
+  {id: 'spaces', title: 'Spaces', text: 'Люди и контент, объединённые интересами.', icon: 'boxes', route: '/spaces', category: 'tools', tone: 'rose'},
+  {id: 'drive', title: 'Drive', text: 'Пространство для ваших файлов.', icon: 'cloud', route: '/drive', category: 'tools', tone: 'cyan'},
+  {id: 'vpn', title: 'VPN', text: 'Инструменты для приватного подключения.', icon: 'shield', route: '/vpn', category: 'tools', tone: 'green'},
 ];
-
-const activity = [
-  {label: "Сессии", value: "3", icon: "↯"},
-  {label: "Проведено времени", value: "2 ч 18 м", icon: "◷"},
-  {label: "Загружено файлов", value: "0", icon: "⇩"},
-  {label: "Просмотрено видео", value: "0", icon: "◉"},
-];
+const availableServices = computed(() => services.filter(service => canAccessPage(service.id)));
+const visibleServices = computed(() => availableServices.value.filter(service => {
+  const matchesView = view.value === 'all' || (view.value === 'pinned' ? pinned.value.includes(service.id) : service.category === view.value);
+  return matchesView && `${service.title} ${service.text}`.toLocaleLowerCase('ru').includes(query.value.trim().toLocaleLowerCase('ru'));
+}).sort((a,b) => Number(pinned.value.includes(b.id)) - Number(pinned.value.includes(a.id))));
+const emptyState = computed(() => {
+  if (!availableServices.value.length) return {title:'Ваши сервисы появятся здесь', description:'На главной отображаются сервисы, доступные вашему аккаунту.'};
+  if (view.value === 'pinned' && !query.value.trim()) return {title:'Любимые сервисы — ближе', description:'Нажмите на звезду у сервиса, чтобы закрепить его здесь.'};
+  return {title:'Сервисы не найдены', description:'Попробуйте другое название или вернитесь ко всем доступным сервисам.'};
+});
+const filters = [{id:'all',label:'Все'}, {id:'pinned',label:'Закреплённые'}, {id:'content',label:'Контент'}, {id:'tools',label:'Инструменты'}];
+const discoveries = computed(() => [
+  {id:'music', title:'Пусть день звучит по-вашему', text:'Найдите музыку под настроение или включите свою коллекцию.', label:'Открыть Music', route:'/music', art:musicArt, tone:'rose'},
+  {id:'video', title:'Время для новой истории', text:'Загляните в медиатеку и выберите, что посмотреть.', label:'Открыть медиатеку', route:'/video/library', art:videoArt, tone:'cyan'},
+  {id:'books', title:'Откройте следующую главу', text:'Найдите книгу, с которой захочется провести вечер.', label:'Открыть Books', route:'/books', art:booksArt, tone:'gold'},
+].filter(item => canAccessPage(item.id)));
+function togglePinned(id) {
+  pinned.value = pinned.value.includes(id) ? pinned.value.filter(item => item !== id) : [...pinned.value, id];
+}
+function resetFilters() {query.value=''; view.value='all';}
+onMounted(() => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    if (Array.isArray(saved)) pinned.value = [...new Set(saved.filter(id => services.some(service => service.id === id)))];
+  } catch { /* An unavailable or stale preference does not prevent navigation. */ }
+  preferencesReady.value = true;
+});
+watch(pinned, value => {
+  if (!preferencesReady.value) return;
+  try {localStorage.setItem(storageKey, JSON.stringify(value)); storageNotice.value='';}
+  catch {storageNotice.value='Закрепление работает в этой вкладке. Браузер не разрешил сохранить его для следующего посещения.';}
+});
 </script>
 
 <template>
-      <main class="dashboard-content">
-        <section class="dashboard-main-column">
-          <UiCard raw unstyled class="dashboard-hero">
-            <div class="dashboard-hero__copy">
-              <p class="workspace-eyebrow">Добро пожаловать</p>
-              <h1>{{ dashboard.welcomeTitle }}</h1>
-              <p>{{ dashboard.welcomeText }}</p>
+  <main class="home-dashboard">
+    <header class="home-dashboard__welcome">
+      <div>
+        <p class="home-dashboard__eyebrow">ВАШ MECORION</p>
+        <h1>{{ name ? `Рады видеть вас, ${name}` : 'Всё ваше. В одном месте.' }}</h1>
+        <p class="home-dashboard__lead">Любимые сервисы, новые открытия и пространство для себя.</p>
+      </div>
+      <UiButton v-if="canAccessPage('profile')" variant="outline" to="/profile"><SvgIcon name="user" />Мой профиль</UiButton>
+    </header>
+
+    <div class="home-dashboard__layout">
+      <div class="home-dashboard__main">
+        <section aria-labelledby="home-services-title" class="home-dashboard__section">
+          <div class="home-dashboard__section-heading">
+            <div><h2 id="home-services-title">Ваши сервисы</h2><p>Закрепите любимые — они всегда будут первыми.</p></div>
+            <UiBadge>{{ availableServices.length }} доступно</UiBadge>
+          </div>
+          <div class="home-dashboard__toolbar">
+            <div class="home-dashboard__filters" role="group" aria-label="Категории сервисов">
+              <UiButton v-for="filter in filters" :key="filter.id" :variant="view === filter.id ? 'primary' : 'ghost'" :aria-pressed="view === filter.id" @click="view = filter.id">{{ filter.label }}</UiButton>
             </div>
-            <div class="dashboard-profile-progress" aria-label="Настройка профиля">
-              <UiButton unstyled type="button" aria-label="Скрыть">×</UiButton>
-              <p>Настройка профиля</p>
-              <strong>{{ currentUser.profileProgress }}%</strong>
-              <UiProgress class="dashboard-profile-progress__bar" :value="currentUser.profileProgress" size="sm" label="Настройка профиля" />
-              <small>Заполните профиль и откройте больше возможностей.</small>
-              <UiButton unstyled class="dashboard-primary-action" type="button">Продолжить настройку <span>›</span></UiButton>
-            </div>
+            <UiInput v-model="query" size="md" clearable aria-label="Поиск сервисов" placeholder="Найти сервис" type="search"><template #prefix><SvgIcon name="search" /></template></UiInput>
+          </div>
+          <p v-if="storageNotice" class="home-dashboard__notice" role="status">{{ storageNotice }}</p>
+          <div v-if="visibleServices.length" class="home-dashboard__services" :data-count="visibleServices.length">
+            <UiCard v-for="service in visibleServices" :key="service.id" raw class="home-dashboard__service" :class="`home-dashboard__tone--${service.tone}`">
+              <div class="home-dashboard__service-top">
+                <div class="home-dashboard__service-heading"><span class="home-dashboard__service-icon"><SvgIcon :name="service.icon" /></span><div><span class="home-dashboard__service-category">{{ service.category === 'content' ? 'Для вдохновения' : 'Для ваших задач' }}</span><h3>{{ service.title }}</h3></div></div>
+                <UiButton variant="ghost" icon :aria-label="`${pinned.includes(service.id) ? 'Открепить' : 'Закрепить'} ${service.title}`" :aria-pressed="pinned.includes(service.id)" @click="togglePinned(service.id)"><SvgIcon name="star" :class="{'home-dashboard__star--active':pinned.includes(service.id)}" /></UiButton>
+              </div>
+              <SvgIcon :name="service.icon" class="home-dashboard__service-art" /><p>{{ service.text }}</p>
+              <UiButton variant="ghost" :to="service.route" :aria-label="`Открыть ${service.title}`" class="home-dashboard__service-link">Открыть<SvgIcon name="arrow-up-right-1" /></UiButton>
+            </UiCard>
+          </div>
+          <UiCard v-else raw>
+            <UiEmptyState :title="emptyState.title" :description="emptyState.description">
+              <template #media><SvgIcon :name="view === 'pinned' ? 'star' : 'search'" /></template>
+              <template v-if="availableServices.length" #actions><UiButton variant="outline" @click="resetFilters">Показать все</UiButton></template>
+            </UiEmptyState>
           </UiCard>
-
-          <section class="dashboard-section">
-            <h2>Быстрый доступ к сервисам</h2>
-            <div class="dashboard-service-grid">
-              <UiCard
-                v-for="service in dashboard.services"
-                :key="service.id"
-                :to="service.route"
-                raw
-                unstyled
-                class="dashboard-service-tile"
-                :class="`dashboard-service-tile--${service.tone}`"
-              >
-                <span class="dashboard-service-tile__icon">{{ service.icon }}</span>
-                <strong>{{ service.title }}</strong>
-                <p>{{ service.description }}</p>
-                <img :src="service.art" alt="" aria-hidden="true" />
-                <span class="dashboard-arrow" aria-hidden="true">→</span>
-              </UiCard>
-            </div>
-          </section>
-
-          <section class="dashboard-section">
-            <h2>Начните с главного</h2>
-            <div class="dashboard-step-grid">
-              <UiCard v-for="step in dashboard.steps" :key="step.id" raw unstyled class="dashboard-step-card">
-                <span class="dashboard-step-card__number">{{ step.number }}</span>
-                <span class="dashboard-step-card__icon" aria-hidden="true">{{ step.icon }}</span>
-                <div>
-                  <strong>{{ step.title }}</strong>
-                  <p>{{ step.text }}</p>
-                  <UiButton unstyled type="button">{{ step.action }}</UiButton>
-                </div>
-              </UiCard>
-            </div>
-          </section>
-
-          <section class="dashboard-section dashboard-section--inline">
-            <h2>Популярное сейчас</h2>
-            <UiButton unstyled type="button">Смотреть всё</UiButton>
-            <div class="dashboard-trending">
-              <UiCard v-for="item in trendingItems" :key="item.title" raw unstyled class="dashboard-trending-card" :class="`dashboard-trending-card--${item.tone}`">
-                <UiBadge class="dashboard-trending-card__badge">{{ item.type }}</UiBadge>
-                <strong>{{ item.title }}</strong>
-              </UiCard>
-            </div>
-          </section>
-
-          <section class="dashboard-premium-strip">
-            <span aria-hidden="true">△</span>
-            <div>
-              <strong>Раскройте все возможности Mecorion</strong>
-              <p>Перейдите на <b>Premium</b> и получите максимум свободы и инструментов.</p>
-            </div>
-            <UiButton unstyled type="button">Перейти на Premium</UiButton>
-          </section>
         </section>
 
-        <aside class="dashboard-side-column" aria-label="Сводка аккаунта">
-          <UiCard raw unstyled class="dashboard-widget dashboard-profile-card">
-            <h2>Мой профиль</h2>
-            <div class="dashboard-profile-card__user">
-              <UiAvatar :fallback="currentUser.initials" size="lg" />
-              <div>
-                <strong>{{ currentUser.name }} <UiBadge>{{ currentUser.plan }}</UiBadge></strong>
-                <small>Mecorion ID: {{ currentUser.id }}</small>
-              </div>
-            </div>
-            <div class="dashboard-profile-card__status">
-              <small>Статус аккаунта</small>
-              <strong>{{ roleLabels[currentUser.role] }}</strong>
-              <UiButton unstyled type="button">Сравнить планы →</UiButton>
-            </div>
-          </UiCard>
+        <section v-if="discoveries.length" class="home-dashboard__section" aria-labelledby="home-discover-title">
+          <div class="home-dashboard__section-heading"><div><p class="home-dashboard__eyebrow">В ВАШЕМ РИТМЕ</p><h2 id="home-discover-title">Чем займёмся сегодня?</h2></div></div>
+          <div class="home-dashboard__discoveries">
+            <UiCard v-for="item in discoveries" :key="item.id" raw class="home-dashboard__discovery" :class="`home-dashboard__tone--${item.tone}`">
+              <div class="home-dashboard__art"><img :src="item.art" alt="" /></div>
+              <div class="home-dashboard__discovery-copy"><h3>{{ item.title }}</h3><p>{{ item.text }}</p><UiButton variant="outline" :to="item.route">{{ item.label }}<SvgIcon name="arrow-up-right-1" /></UiButton></div>
+            </UiCard>
+          </div>
+        </section>
 
-          <UiCard raw unstyled class="dashboard-widget">
-            <div class="dashboard-widget__header">
-              <h2>Активность</h2>
-              <UiBadge>За 7 дней</UiBadge>
-            </div>
-            <ul class="dashboard-activity-list">
-              <li v-for="item in activity" :key="item.label"><span>{{ item.icon }}</span>{{ item.label }}<strong>{{ item.value }}</strong></li>
-            </ul>
-            <UiButton unstyled class="dashboard-widget__link" type="button">Смотреть всё →</UiButton>
-          </UiCard>
+        <UiCard v-if="canAccessPage('spaces')" raw class="home-dashboard__spaces">
+          <span class="home-dashboard__service-icon"><SvgIcon name="boxes" /></span>
+          <div><p class="home-dashboard__eyebrow">БОЛЬШЕ ОБЩЕГО</p><h2>Найдите своё пространство</h2><p>Откройте сообщества и коллекции вокруг того, что вам интересно.</p></div>
+          <UiButton variant="primary" to="/spaces">Исследовать<SvgIcon name="arrow-up-right-1" /></UiButton>
+        </UiCard>
+      </div>
 
-          <UiCard raw unstyled class="dashboard-widget dashboard-security-card">
-            <h2>Безопасность</h2>
-            <div>
-              <span aria-hidden="true">◇</span>
-              <strong>Ваш аккаунт защищён</strong>
-              <small>Рекомендации выполнены</small>
-            </div>
-            <UiButton unstyled type="button">Включите двухфакторную аутентификацию <span>›</span></UiButton>
-            <UiButton unstyled href="/settings">Открыть настройки →</UiButton>
-          </UiCard>
-
-          <UiCard raw unstyled class="dashboard-widget dashboard-premium-card">
-            <h2>Mecorion Premium</h2>
-            <p style="marginBottom: 10px;">Больше возможностей, никаких ограничений.</p>
-            <UiButton unstyled type="button">Узнать больше</UiButton>
-          </UiCard>
-        </aside>
-      </main>
+      <aside class="home-dashboard__aside" aria-label="Аккаунт и полезные действия">
+        <UiCard raw class="home-dashboard__account">
+          <div class="home-dashboard__account-heading"><UiAvatar :fallback="initials" :alt="name || 'Ваш аккаунт'" size="lg" /><div><p class="home-dashboard__eyebrow">ЕДИНЫЙ АККАУНТ</p><h2>{{ name || 'Ваш профиль' }}</h2><p v-if="user?.username">@{{ user.username }}</p></div></div>
+          <p>Один профиль для всех сервисов Mecorion.</p>
+          <UiButton v-if="canAccessPage('profile')" variant="outline" to="/profile">Настроить профиль<SvgIcon name="arrow-up-right-1" /></UiButton>
+        </UiCard>
+        <UiCard v-if="canAccessPage('settings')" raw class="home-dashboard__help">
+          <span class="home-dashboard__service-icon"><SvgIcon name="settings" /></span><h2>Сделайте Mecorion своим</h2><p>Выберите удобную тему оформления в настройках.</p><UiButton variant="ghost" to="/settings">Открыть настройки<SvgIcon name="arrow-up-right-1" /></UiButton>
+        </UiCard>
+        <UiCard v-if="canAccessPage('music')" raw class="home-dashboard__help">
+          <UiBadge variant="soft">ВАША КОЛЛЕКЦИЯ</UiBadge><h2>Музыка, которая уже с вами</h2><p>Добавьте локальные треки в Music и слушайте их через единый плеер.</p><UiButton variant="ghost" to="/music">Перейти в Music<SvgIcon name="arrow-up-right-1" /></UiButton>
+        </UiCard>
+        <UiItemGroup class="home-dashboard__utility">
+          <UiItem v-if="canAccessPage('saved')" title="Сохранённое" description="Вернитесь к важному" to="/saved"><template #media><SvgIcon name="star" /></template><template #actions><SvgIcon name="arrow-up-right-1" /></template></UiItem>
+          <UiItem v-if="canAccessPage('support')" title="Нужна помощь?" description="Поддержка Mecorion" to="/support"><template #media><SvgIcon name="circle-alert" /></template><template #actions><SvgIcon name="arrow-up-right-1" /></template></UiItem>
+        </UiItemGroup>
+      </aside>
+    </div>
+  </main>
 </template>

@@ -21,6 +21,19 @@
 @use 'components/mcrn-service';
 @use 'pages/mcrn-publications';
 @use 'pages/mcrn-placeholder';
+@use 'pages/mcrn-music-onboarding';
+@use 'pages/mcrn-music-search';
+@use 'pages/mcrn-dashboard-home';
+@use 'pages/mcrn-account-profile';
 @use 'mcrn-media';
 @use 'pages/mcrn-dashboard';
 @use 'pages/mcrn-music-responsive';
+@use 'pages/mcrn-music-release';
+@use 'pages/mcrn-music-player';
+@use 'layouts/mcrn-workspace-sidebar';
+@use 'pages/mcrn-music-library';
+
+@use 'pages/mcrn-video-cards';
+@use 'pages/mcrn-video-player';
+
+@use 'pages/mcrn-video-hero';

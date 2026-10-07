@@ -355,13 +355,17 @@
   .dashboard-user-chip > .mcrn-user-chip__content {
     width: auto;
     height: auto;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-self: start;
     min-width: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
     color: inherit;
     font-weight: inherit;
+    text-align: left;
   }
   .dashboard-shell {
     background: var(--mcrn-dashboard-shell-background);

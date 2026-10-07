@@ -24,6 +24,9 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
     isShuffle: false,
     repeatMode: "off",
     likedTrackIds: [],
+    likedPlaylistIds: [],
+    likedAlbumIds: [],
+    likedArtistNames: [],
     recentlyPlayedIds: [],
     localTrackIds: [],
     localFolderName: "",
@@ -64,6 +67,9 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
       this.volume = typeof saved.volume === "number" ? saved.volume : this.volume;
       this.isMuted = Boolean(saved.isMuted);
       this.likedTrackIds = Array.isArray(saved.likedTrackIds) ? saved.likedTrackIds : [];
+      this.likedPlaylistIds = Array.isArray(saved.likedPlaylistIds) ? saved.likedPlaylistIds : [];
+      this.likedAlbumIds = Array.isArray(saved.likedAlbumIds) ? saved.likedAlbumIds : [];
+      this.likedArtistNames = Array.isArray(saved.likedArtistNames) ? saved.likedArtistNames : [];
       this.repeatMode = ["off", "all", "one"].includes(saved.repeatMode) ? saved.repeatMode : "off";
       this.isShuffle = Boolean(saved.isShuffle);
       this.isInitialized = true;
@@ -76,6 +82,9 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
         volume: this.volume,
         isMuted: this.isMuted,
         likedTrackIds: this.likedTrackIds,
+        likedPlaylistIds: this.likedPlaylistIds,
+        likedAlbumIds: this.likedAlbumIds,
+        likedArtistNames: this.likedArtistNames,
         repeatMode: this.repeatMode,
         isShuffle: this.isShuffle,
       }));
@@ -146,6 +155,27 @@ export const useMusicPlayerStore = defineStore("musicPlayer", {
       this.likedTrackIds = this.likedTrackIds.includes(trackId)
         ? this.likedTrackIds.filter((id) => id !== trackId)
         : [...this.likedTrackIds, trackId];
+      this.persistPreferences();
+    },
+
+    togglePlaylistLike(playlistId) {
+      this.likedPlaylistIds = this.likedPlaylistIds.includes(playlistId)
+        ? this.likedPlaylistIds.filter((id) => id !== playlistId)
+        : [...this.likedPlaylistIds, playlistId];
+      this.persistPreferences();
+    },
+
+    toggleAlbumLike(albumId) {
+      this.likedAlbumIds = this.likedAlbumIds.includes(albumId)
+        ? this.likedAlbumIds.filter((id) => id !== albumId)
+        : [...this.likedAlbumIds, albumId];
+      this.persistPreferences();
+    },
+
+    toggleArtistLike(artistName) {
+      this.likedArtistNames = this.likedArtistNames.includes(artistName)
+        ? this.likedArtistNames.filter((name) => name !== artistName)
+        : [...this.likedArtistNames, artistName];
       this.persistPreferences();
     },
 

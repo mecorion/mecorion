@@ -1,0 +1,136 @@
+@layer components {
+  .mevideo-search-view h1 { font-size: clamp(var(--mc-font-lg), 3vw, 36px); overflow-wrap: anywhere; }
+  .mevideo-search-view .ui-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); width: 100%; min-width: 0; }
+  .mevideo-search-view .ui-tabs__trigger { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+  .mevideo-watch-view {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
+    gap: var(--mc-space-6);
+    min-width: 0;
+    align-items: start;
+  }
+  .mevideo-watch-view__main, .mevideo-watch-view__aside { min-width: 0; }
+  .mevideo-player {
+    --mc-text-primary: #fff;
+    --mc-text-secondary: #d8d5e5;
+    --mc-text-muted: #aaa5be;
+    --mc-surface: #181622;
+    --mc-surface-hover: #292535;
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--mc-border-soft);
+    border-radius: var(--mc-radius-md);
+    background: #0c0b12;
+    color: var(--mc-text-primary);
+  }
+  .mevideo-player:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: var(--mc-space-1); }
+  .mevideo-player__viewport { width: 100%; position: relative; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; aspect-ratio: 16 / 9; min-width: 0; overflow: hidden; }
+  .mevideo-player__viewport video, .mevideo-player__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .mevideo-player__poster { object-fit: cover; opacity: .3; }
+  .mevideo-player__art {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mc-space-3);
+    color: color-mix(in srgb, var(--mc-accent) 25%, transparent);
+    background: radial-gradient(ellipse at 75% 20%, color-mix(in srgb, var(--mc-accent) 18%, transparent), transparent 60%), #0c0b12;
+  }
+  .mevideo-player__art > .svg-icon { width: var(--mc-space-8); height: var(--mc-space-8); }
+  .mevideo-player__art > span { font-size: var(--mc-font-xs); letter-spacing: .15em; }
+  .mevideo-player__empty { position: relative; display: grid; justify-items: center; gap: var(--mc-space-3); padding: var(--mc-space-6); text-align: center; width: 100%; }
+  .mevideo-player__empty > .svg-icon { width: var(--mc-space-12); height: var(--mc-space-12); padding: var(--mc-space-3); border: 1px solid rgb(255 255 255 / 15%); border-radius: var(--mc-radius-pill); background: rgb(255 255 255 / 5%); }
+  .mevideo-player__empty strong { min-width: 0; max-width: 100%; overflow-wrap: anywhere; font-size: var(--mc-font-lg); }
+  .mevideo-player__empty p { min-width: 0; margin: 0; max-width: 30rem; color: var(--mc-text-muted); font-size: var(--mc-font-sm); overflow-wrap: anywhere; }
+  .mevideo-player__badge { position: absolute; top: var(--mc-space-4); left: var(--mc-space-4); right: var(--mc-space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--mc-space-2); }
+  .mevideo-player__badge .ui-select { flex: 0 1 150px; min-width: 0; max-width: 100%; margin: 0; }
+  .mevideo-player__badge .mevideo-player__episode { flex-basis: 210px; }
+  .mevideo-player__badge .ui-select__trigger {
+    background: var(--mc-surface);
+    color: var(--mc-text-primary);
+    border-color: rgb(255 255 255 / 15%);
+  }
+  .mevideo-player__badge .ui-badge { background: rgb(0 0 0 / 35%); color: #d8d5e5; border-color: rgb(255 255 255 / 15%); }
+  .mevideo-player__center { z-index: 1; width: var(--mc-space-12); height: var(--mc-space-12); border-radius: var(--mc-radius-pill); }
+  .mevideo-player__notice { padding: var(--mc-space-3); margin: 0; font-size: var(--mc-font-sm); overflow-wrap: anywhere; }
+  .mevideo-player__controls { padding: 0 var(--mc-space-3) var(--mc-space-2); border-top: 1px solid rgb(255 255 255 / 6%); background: linear-gradient(#15121e, #0c0b12); }
+  .mevideo-player__timeline { width: 100%; }
+  .mevideo-player__bar, .mevideo-player__transport, .mevideo-player__tools { display: flex; align-items: center; min-width: 0; gap: var(--mc-space-1); flex-wrap: wrap; }
+  .mevideo-player__bar { justify-content: space-between; column-gap: var(--mc-space-3); }
+  .mevideo-player__bar .mc-button { color: #f5f3ff; min-width: 44px; min-height: 44px; }
+  .mevideo-player__bar .mc-button:disabled { opacity: .35; }
+  .mevideo-player__bar .mc-button:hover:not(:disabled) { background: rgb(255 255 255 / 10%); }
+  .mevideo-player__time { font-size: var(--mc-font-xs); font-variant-numeric: tabular-nums; padding-inline: var(--mc-space-2); white-space: nowrap; }
+  .mevideo-player__time > span { color: var(--mc-text-muted); }
+  .mevideo-player__volume { width: var(--mc-space-12); }
+  .mevideo-player:fullscreen { display: flex; flex-direction: column; border: 0; border-radius: 0; }
+  .mevideo-player:fullscreen .mevideo-player__viewport { flex: 1; aspect-ratio: auto; }
+  .mevideo-player:fullscreen .mevideo-player__controls { flex: 0 0 auto; }
+  .mevideo-watch-view__meta { display: grid; gap: var(--mc-space-4); padding-block: var(--mc-space-5); min-width: 0; }
+  .mevideo-watch-view__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: var(--mc-space-3); color: var(--mc-text-muted); font-size: var(--mc-font-xs); }
+  .mevideo-watch-view__meta h1 { margin: 0; font-size: var(--mc-font-title-2); line-height: 1.3; overflow-wrap: anywhere; }
+  .mevideo-watch-view__episode { margin: 0; color: var(--mc-accent); font-size: var(--mc-font-sm); }
+  .mevideo-watch-view__identity { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--mc-space-4); min-width: 0; }
+  .mevideo-watch-view__author { display: flex; align-items: center; gap: var(--mc-space-3); min-width: 0; }
+  .mevideo-watch-view__author > div { display: grid; gap: var(--mc-space-1); min-width: 0; overflow-wrap: anywhere; }
+  .mevideo-watch-view__author strong { font-size: var(--mc-font-sm); }
+  .mevideo-watch-view__author span { font-size: var(--mc-font-xs); color: var(--mc-text-muted); }
+  .mevideo-watch-view__actions .svg-icon { width: var(--mc-space-5); height: var(--mc-space-5); flex: 0 0 var(--mc-space-5); }
+  .mevideo-watch-view__actions { display: flex; flex-wrap: wrap; gap: var(--mc-space-2); min-width: 0; }
+  .mevideo-watch-view__description { padding: var(--mc-space-4); background: color-mix(in srgb, var(--mc-surface) 75%, transparent); }
+  .mevideo-watch-view__description p { margin: 0; font-size: var(--mc-font-sm); color: var(--mc-text-secondary); overflow-wrap: anywhere; }
+  .mevideo-watch-view__description p + p { margin-top: var(--mc-space-2); color: var(--mc-text-muted); }
+  .mevideo-watch-view__aside { display: grid; gap: var(--mc-space-4); }
+  .mevideo-watch-view__aside h2 { margin: 0; font-size: var(--mc-font-lg); }
+  .mevideo-watch-view__recommendations { display: grid; gap: var(--mc-space-5); }
+  .mevideo-watch-view__aside .mevideo-season-tabs { flex-wrap: wrap; overflow: visible; }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) { min-width: 0; }
+  .mevideo-watch-view__aside .mevideo-episode-list :is(button, a) > span { white-space: normal; overflow-wrap: anywhere; }
+  .mevideo-watch-view__aside .mevideo-episode-progress { grid-column: 1 / -1; width: 100%; }
+  .mevideo-player-settings { display: grid; gap: var(--mc-space-5); min-width: 0; }
+  .mevideo-player-settings > * { min-width: 0; }
+  .mevideo-player-settings p { margin: 0; font-size: var(--mc-font-sm); color: var(--mc-text-muted); overflow-wrap: anywhere; }
+}
+
+@layer components {
+  .mevideo-player { container-type: inline-size; }
+  .mevideo-player-menu.ui-popover {
+    z-index: 10;
+    background: rgb(18 17 22 / 94%);
+    color: #f5f3ff;
+    border-color: rgb(255 255 255 / 12%);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 var(--mc-space-2) var(--mc-space-6) rgb(0 0 0 / 35%);
+    overscroll-behavior: contain;
+  }
+  .mevideo-player-menu .ui-popover__header { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+  .mevideo-player-menu .ui-popover__content { padding: var(--mc-space-2) 0; }
+  .mevideo-player-menu__row, .mevideo-player-menu__option, .mevideo-player-menu__back {
+    display: grid;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    gap: var(--mc-space-3);
+    padding: var(--mc-space-3) var(--mc-space-4);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: var(--mc-font-sm);
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+  }
+  .mevideo-player-menu__row { grid-template-columns: var(--mc-space-5) minmax(0, 1fr) minmax(0, 1fr) var(--mc-space-5); }
+  .mevideo-player-menu__row > span { min-width: 0; overflow-wrap: anywhere; }
+  .mevideo-player-menu__value { color: #bcb8cb; text-align: right; font-size: var(--mc-font-xs); }
+  .mevideo-player-menu__option, .mevideo-player-menu__back { grid-template-columns: var(--mc-space-5) minmax(0, 1fr); }
+  .mevideo-player-menu__option > span, .mevideo-player-menu__back > span { overflow-wrap: anywhere; }
+  .mevideo-player-menu__back { border-bottom: 1px solid rgb(255 255 255 / 12%); margin-bottom: var(--mc-space-2); }
+  .mevideo-player-menu__back .svg-icon { transform: rotate(180deg); }
+  .mevideo-player-menu button:hover:not(:disabled), .mevideo-player-menu button:focus-visible { background: rgb(255 255 255 / 10%); }
+  .mevideo-player-menu button:disabled { opacity: .4; cursor: default; }
+}

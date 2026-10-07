@@ -3,6 +3,10 @@
 // Loaded after the shared responsive layer so Music keeps the same UI Kit
 // density and touch targets at every workspace breakpoint.
 @layer components {
+  .memusic-media-grid.memusic-media-grid--shelf {
+    grid-template-columns: repeat(var(--playlist-columns, 3), minmax(0, 1fr));
+  }
+
   @media (max-width: #{root.$mcrn-breakpoint-840}) {
     .memusic-app {
       grid-template-columns: minmax(0, 1fr);
@@ -115,6 +119,22 @@
   }
 }
 
+.memusic-player:not(.memusic-player--release) {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: var(--mc-sidebar-width);
+  z-index: 50;
+  width: auto;
+}
+
+.dashboard-shell--sidebar-collapsed .memusic-player:not(.memusic-player--release) { left: var(--mcrn-size-72px); }
+
+@media (max-width: 1180px) {
+  .memusic-player:not(.memusic-player--release),
+  .dashboard-shell--sidebar-collapsed .memusic-player:not(.memusic-player--release) { left: 0; }
+}
+
 /* The shared narrow-screen layer expands every control by default. Music uses
    a one-row mini player here; the artwork still opens the full player mode. */
 @media (max-width: #{root.$mcrn-breakpoint-840}) {
@@ -122,9 +142,6 @@
     grid-template-rows: minmax(0, 1fr) 72px;
   }
   .memusic-player {
-    position: sticky;
-    bottom: 0;
-    z-index: 40;
     grid-column: 1;
     grid-row: 2;
     grid-template-columns: minmax(0, 1fr) 44px;
@@ -164,12 +181,6 @@
 }
 
 @layer components {
-  @media (max-width: 1200px) {
-    .memusic-playlist-strip {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
   @media (max-width: #{root.$mcrn-breakpoint-840}) {
     .memusic-collection-heading {
       grid-template-columns: minmax(0, 1fr) 210px;
@@ -178,17 +189,6 @@
     }
     .memusic-collection-heading__art { height: 180px; }
     .memusic-collection-heading h1 { font-size: clamp(2rem, 5vw, 3.25rem); }
-    .memusic-album-strip {
-      display: flex;
-      overflow-x: auto;
-      overscroll-behavior-inline: contain;
-      scroll-snap-type: x proximity;
-      padding-bottom: var(--mc-space-3);
-    }
-    .memusic-album-card {
-      flex: 0 0 clamp(150px, 28vw, 210px);
-      scroll-snap-align: start;
-    }
   }
 
   @media (max-width: 680px) {
@@ -197,15 +197,6 @@
     .memusic-collection-heading__art img { width: 130px; }
     .memusic-collection-heading__art-note { left: 50%; transform: translateX(-50%); white-space: nowrap; }
     .memusic-collection-tracks { grid-template-columns: minmax(0, 1fr); }
-    .memusic-artist-grid {
-      display: flex;
-      overflow-x: auto;
-      overscroll-behavior-inline: contain;
-      scroll-snap-type: x proximity;
-      padding-bottom: var(--mc-space-3);
-    }
-    .memusic-artist-card { flex: 0 0 160px; scroll-snap-align: start; }
-    .memusic-playlist-strip { grid-template-columns: minmax(0, 1fr); }
   }
 
   @media (max-width: #{root.$mcrn-breakpoint-480}) {
@@ -217,8 +208,6 @@
     .memusic-collection-section-title > span,
     .memusic-collection-subhead > span { display: none; }
     .memusic-collection-subhead { margin-top: var(--mc-space-6); }
-    .memusic-artist-card { flex-basis: 138px; }
-    .memusic-album-card { flex-basis: 160px; }
   }
 
   @media (max-width: 320px) {
@@ -248,7 +237,6 @@
     .memusic-library-title { grid-template-columns: 44px minmax(0, 1fr) 16px; gap: var(--mc-space-2); }
     .memusic-library-title__cover { width: 44px; height: 44px; }
     .memusic-library-title strong { font-size: var(--mc-font-md); }
-    .memusic-artist-card { flex-basis: 124px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
